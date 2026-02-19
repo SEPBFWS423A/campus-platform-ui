@@ -30,7 +30,7 @@ jobs:
         run: npm ci
         
       - name: Build Angular App
-        run: npm run build -- --configuration production --base-href=/campus-platform-ui/
+        run: npm run build -- --configuration production --base-href=/
         
       - name: Setup SPA Routing for GitHub Pages
         run: cp dist/campus-platform-ui/browser/index.html dist/campus-platform-ui/browser/404.html
