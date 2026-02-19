@@ -23,7 +23,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: '20'
           cache: 'npm'
           
       - name: Install Dependencies
@@ -33,12 +33,12 @@ jobs:
         run: npm run build -- --configuration production
         
       - name: Setup SPA Routing for GitHub Pages
-        run: cp dist/campus-platform-ui/browser/index.html dist/campus-platform-ui/browser/404.html
+        run: cp dist/campus-platform-ui/index.html dist/campus-platform-ui/404.html
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: 'dist/campus-platform-ui/browser'
+          path: 'dist/campus-platform-ui'
 
   deploy:
     environment:
