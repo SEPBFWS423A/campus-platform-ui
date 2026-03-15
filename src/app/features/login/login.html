@@ -11,14 +11,16 @@
     <form class="form">
       <mat-form-field>
         <mat-label>{{ "login.username" | translate }}</mat-label>
+        <mat-icon matIconPrefix fontIcon="person"></mat-icon>
         <input matInput>
       </mat-form-field>
       <mat-form-field>
         <mat-label>{{ "login.password" | translate }}</mat-label>
+        <mat-icon matIconPrefix fontIcon="lock"></mat-icon>
         <input matInput>
         <mat-hint class="password-hint">{{ "login.passwordHint" | translate }}</mat-hint>
       </mat-form-field>
-      <button matButton="filled">{{ "login.button" | translate }}<mat-icon iconPositionEnd>login</mat-icon></button>
+      <button matButton="filled" class="login-button" routerLink="student">{{ "login.button" | translate }}<mat-icon iconPositionEnd>login</mat-icon></button>
       <button matButton>{{ "login.forgotPassword" | translate }}</button>
     </form>
     <div class="footer">
