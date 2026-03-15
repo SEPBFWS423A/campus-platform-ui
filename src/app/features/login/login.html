@@ -1,0 +1,29 @@
+<div class="outer-wrapper">
+  <div class="login-card">
+    <div class="header">
+      <div class="login-branding">
+        <span><mat-icon aria-hidden="false" aria-label="brand icon" fontIcon="school"></mat-icon></span>
+        <span class="platform-name">{{ "platformName" | translate }}</span>
+      </div>
+      <h1>{{ "login.welcome" | translate }}</h1>
+      <p>{{ "login.loginText" | translate }}</p>
+    </div>
+    <form class="form">
+      <mat-form-field>
+        <mat-label>{{ "login.username" | translate }}</mat-label>
+        <input matInput>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>{{ "login.password" | translate }}</mat-label>
+        <input matInput>
+        <mat-hint class="password-hint">{{ "login.passwordHint" | translate }}</mat-hint>
+      </mat-form-field>
+      <button matButton="filled">{{ "login.button" | translate }}<mat-icon iconPositionEnd>login</mat-icon></button>
+      <button matButton>{{ "login.forgotPassword" | translate }}</button>
+    </form>
+    <div class="footer">
+      <hr class="hr">
+      <p class="text"><mat-icon aria-hidden="false" aria-label="copyright icon" class="icon">copyright</mat-icon><span>{{ currentDate | date: 'yyyy' }}</span><span>{{ "platformName" | translate }}</span></p>
+    </div>
+  </div>
+</div>

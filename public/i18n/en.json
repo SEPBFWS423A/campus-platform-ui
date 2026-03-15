@@ -1,0 +1,12 @@
+{
+  "platformName": "CampusPlatform",
+  "login": {
+    "welcome": "Welcome",
+    "loginText": "Please log in with your credentials",
+    "username": "Username",
+    "password": "Password",
+    "passwordHint": "Pls keep your password secret",
+    "button": "login",
+    "forgotPassword": "Forgot password?"
+  }
+}
