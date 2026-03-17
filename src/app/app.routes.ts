@@ -4,6 +4,8 @@ import {MainLayout} from './shared/layouts/main-layout/main-layout';
 import {authGuard} from './core/auth/auth-guard';
 import {roleGuard} from './core/auth/role-guard';
 import {UserRole} from './core/models/user-role';
+import {inject} from '@angular/core';
+import {Auth} from './core/auth/auth';
 
 export const routes: Routes = [
   {
@@ -15,6 +17,15 @@ export const routes: Routes = [
     component: MainLayout,
     canActivate: [authGuard],
     children: [
+      {
+        path: '',
+        pathMatch: 'full',
+        redirectTo: () => {
+          const auth = inject(Auth);
+          const user = auth.currentUser();
+          return user ? `/${user}` : '/login';
+        }
+      },
       {
         path: 'admin',
         canActivate: [roleGuard],

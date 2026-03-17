@@ -20,7 +20,13 @@ a {
   display: flex;
   align-items: center;
   text-decoration: none;
+  font: var(--mat-sys-title-medium);
+  color: var(--mat-sys-primary);
   gap: 0.5rem;
+
+  &:hover, &.active {
+    font-weight: bold;
+  }
 }
 
 .platform-name {
