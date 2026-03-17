@@ -52,6 +52,13 @@
 
     .login-button {
       margin-top: 2rem;
+
+      .content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+      }
     }
   }
 

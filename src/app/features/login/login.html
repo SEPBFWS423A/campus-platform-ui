@@ -2,30 +2,69 @@
   <div class="login-card">
     <div class="header">
       <div class="login-branding">
-        <span><mat-icon aria-hidden="false" aria-label="brand icon" fontIcon="school"></mat-icon></span>
+        <span><mat-icon fontIcon="school"></mat-icon></span>
         <span class="platform-name">{{ "platformName" | translate }}</span>
       </div>
       <h1>{{ "login.welcome" | translate }}</h1>
       <p>{{ "login.loginText" | translate }}</p>
     </div>
-    <form class="form">
+
+    <form class="form" (submit)="onLogin(); $event.preventDefault()">
       <mat-form-field>
         <mat-label>{{ "login.username" | translate }}</mat-label>
         <mat-icon matIconPrefix fontIcon="person"></mat-icon>
-        <input matInput>
+        <input matInput
+               [ngModel]="username()"
+               (ngModelChange)="username.set($event)"
+               name="username"
+               required>
       </mat-form-field>
+
       <mat-form-field>
         <mat-label>{{ "login.password" | translate }}</mat-label>
         <mat-icon matIconPrefix fontIcon="lock"></mat-icon>
-        <input matInput type="password">
+        <input matInput
+               type="password"
+               [ngModel]="password()"
+               (ngModelChange)="password.set($event)"
+               name="password">
         <mat-hint class="password-hint">{{ "login.passwordHint" | translate }}</mat-hint>
       </mat-form-field>
-      <button matButton="filled" class="login-button" routerLink="student">{{ "login.button" | translate }}<mat-icon iconPositionEnd>login</mat-icon></button>
-      <button matButton>{{ "login.forgotPassword" | translate }}</button>
+
+      @if (loginError()) {
+        <p style="color: red; font-size: 0.8rem; margin-bottom: 1rem;">
+          {{ "login.error" | translate }} (Erlaubt: admin, lecturer, student)
+        </p>
+      }
+
+      <button mat-flat-button
+              color="primary"
+              class="login-button"
+              type="submit"
+              [disabled]="isLoading()">
+        @if (isLoading()) {
+          <mat-icon fontIcon="autorenew"></mat-icon>
+        }
+        @else {
+          <div class="content">
+            {{ "login.button" | translate }}
+            <mat-icon fontIcon="login"></mat-icon>
+          </div>
+        }
+      </button>
+
+      <button mat-button type="button">
+        {{ "login.forgotPassword" | translate }}
+      </button>
     </form>
+
     <div class="footer">
       <hr class="hr">
-      <p class="text"><mat-icon aria-hidden="false" aria-label="copyright icon" class="icon">copyright</mat-icon><span>{{ currentDate | date: 'yyyy' }}</span><span>{{ "platformName" | translate }}</span></p>
+      <p class="text">
+        <mat-icon class="icon" fontIcon="copyright"></mat-icon>
+        <span>{{ currentDate | date: 'yyyy' }}</span>
+        <span>{{ "platformName" | translate }}</span>
+      </p>
     </div>
   </div>
 </div>

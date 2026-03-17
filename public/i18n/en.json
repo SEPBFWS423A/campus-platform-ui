@@ -7,6 +7,33 @@
     "password": "Password",
     "passwordHint": "Pls keep your password secret",
     "button": "login",
-    "forgotPassword": "Forgot password?"
+    "forgotPassword": "Forgot password?",
+    "error": "Invalid username or password!"
+  },
+  "navigation": {
+    "common": {
+      "downloads": "Downloads",
+      "infoCenter": "Info-Center"
+    },
+    "admin": {
+      "home": "Home",
+      "userManagement": "User Management",
+      "roomManagement": "Room Management",
+      "eventManagement": "Event Management",
+      "examManagement": "Exam Management"
+    },
+    "lecturer": {
+      "home": "Home",
+      "myCourses": "My Courses",
+      "grading": "Grading",
+      "submissionsOverview": "Submissions Overview"
+    },
+    "student": {
+      "home": "Home",
+      "timetable": "Timetable",
+      "grades": "Grades",
+      "submissions": "Submissions"
+    },
+    "logout": "Logout"
   }
 }
