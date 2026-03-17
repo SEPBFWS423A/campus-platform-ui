@@ -1,0 +1,40 @@
+.nav-wrapper {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  background-color: var(--mat-sys-background);
+}
+
+.nav-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  gap: 0.5rem;
+}
+
+.platform-name {
+  font: var(--mat-sys-title-medium);
+  font-weight: bold;
+  color: var(--mat-sys-primary);
+}
+
+.nav-icon {
+  color: var(--mat-sys-primary);
+}
+
+.logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}

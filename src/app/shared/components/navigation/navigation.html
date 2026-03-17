@@ -1,1 +1,34 @@
-<p>navigation works!</p>
+<nav class="nav-wrapper">
+  <a class="nav-header">
+    <mat-icon class="nav-icon" fontIcon="school"></mat-icon>
+    <span class="platform-name">{{ "platformName" | translate }}</span>
+  </a>
+
+  <ul class="nav-list">
+    @for (link of currentLinks(); track link.path) {
+      <li>
+        <a [routerLink]="link.path"
+           routerLinkActive="active"
+           [routerLinkActiveOptions]="{exact: link.exact}"
+           #rla="routerLinkActive"
+           (mouseenter)="hoveredItem.set(link.path)"
+           (mouseleave)="hoveredItem.set(null)">
+
+          <mat-icon
+            class="nav-icon"
+            [class]="(rla.isActive || hoveredItem() === link.path) ? 'material-icons' : 'material-icons-outlined'"
+            [fontIcon]="((rla.isActive || hoveredItem() === link.path) && link.activeIcon) ? link.activeIcon : link.icon">
+          </mat-icon>
+          {{ link.label | translate }}
+        </a>
+      </li>
+    }
+  </ul>
+
+  <div class="nav-actions">
+    <button mat-flat-button (click)="auth.logout()" class="logout-btn">
+      <mat-icon fontIcon="logout"></mat-icon>
+      {{ "navigation.logout" | translate }}
+    </button>
+  </div>
+</nav>

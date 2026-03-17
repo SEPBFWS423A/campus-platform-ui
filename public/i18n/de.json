@@ -7,6 +7,33 @@
     "password": "Passwort",
     "passwordHint": "Bitte halten Sie Ihr Passwort geheim",
     "button": "Anmelden",
-    "forgotPassword": "Passwort vergessen?"
+    "forgotPassword": "Passwort vergessen?",
+    "error": "Ungültiger Benutzername oder Passwort!"
+  },
+  "navigation": {
+    "common": {
+      "downloads": "Downloads",
+      "infoCenter": "Info-Center"
+    },
+    "admin": {
+      "home": "Home",
+      "userManagement": "Benutzerverwaltung",
+      "roomManagement": "Raumverwaltung",
+      "eventManagement": "Veranstaltungen",
+      "examManagement": "Prüfungsamt"
+    },
+    "lecturer": {
+      "home": "Home",
+      "myCourses": "Meine Kurse",
+      "grading": "Notenvergabe",
+      "submissionsOverview": "Abgabenübersicht"
+    },
+    "student": {
+      "home": "Home",
+      "timetable": "Stundenplan",
+      "grades": "Notenübersicht",
+      "submissions": "Abgaben"
+    },
+    "logout": "Abmelden"
   }
 }
