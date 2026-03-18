@@ -6,11 +6,16 @@ import {roleGuard} from './core/auth/role-guard';
 import {UserRole} from './core/models/user-role';
 import {inject} from '@angular/core';
 import {Auth} from './core/auth/auth';
+import {Unauthorized} from './features/common/unauthorized/unauthorized';
 
 export const routes: Routes = [
   {
     path: 'login',
     component: Login
+  },
+  {
+    path: 'unauthorized',
+    component: Unauthorized
   },
   {
     path: '',

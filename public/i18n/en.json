@@ -51,18 +51,23 @@
       "confirmPassword": "Confirm Password",
       "passwordLengthError": "Password must be at least 8 characters.",
       "passwordMismatchError": "Passwords do not match."
+    },
+    "themeColors": {
+      "theme-azure": "Azure",
+      "theme-blue": "Blue",
+      "theme-cyan": "Cyan",
+      "theme-green": "Green",
+      "theme-yellow": "Yellow",
+      "theme-orange": "Orange",
+      "theme-red": "Red",
+      "theme-violet": "Violet",
+      "theme-magenta": "Magenta",
+      "theme-rose": "Rose"
     }
   },
-  "themeColors": {
-    "theme-azure": "Azure",
-    "theme-blue": "Blue",
-    "theme-cyan": "Cyan",
-    "theme-green": "Green",
-    "theme-yellow": "Yellow",
-    "theme-orange": "Orange",
-    "theme-red": "Red",
-    "theme-violet": "Violet",
-    "theme-magenta": "Magenta",
-    "theme-rose": "Rose"
+  "unauthorized": {
+    "title": "Access Denied",
+    "message": "You do not have permission to access this page.",
+    "backButton": "Back to my dashboard"
   }
 }

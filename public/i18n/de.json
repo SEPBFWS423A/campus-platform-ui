@@ -51,18 +51,23 @@
       "confirmPassword": "Passwort bestätigen",
       "passwordLengthError": "Passwort muss mindestens 8 Zeichen lang sein.",
       "passwordMismatchError": "Passwörter stimmen nicht überein."
+    },
+    "themeColors": {
+      "theme-azure": "Azurblau",
+      "theme-blue": "Blau",
+      "theme-cyan": "Türkis",
+      "theme-green": "Grün",
+      "theme-yellow": "Gelb",
+      "theme-orange": "Orange",
+      "theme-red": "Rot",
+      "theme-violet": "Violett",
+      "theme-magenta": "Magenta",
+      "theme-rose": "Rosa"
     }
   },
-  "themeColors": {
-    "theme-azure": "Azurblau",
-    "theme-blue": "Blau",
-    "theme-cyan": "Türkis",
-    "theme-green": "Grün",
-    "theme-yellow": "Gelb",
-    "theme-orange": "Orange",
-    "theme-red": "Rot",
-    "theme-violet": "Violett",
-    "theme-magenta": "Magenta",
-    "theme-rose": "Rosa"
+  "unauthorized": {
+    "title": "Zugriff verweigert",
+    "message": "Du hast keine Berechtigung, diese Seite aufzurufen.",
+    "backButton": "Zurück zu meinem Dashboard"
   }
 }

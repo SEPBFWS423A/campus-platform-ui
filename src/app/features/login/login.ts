@@ -43,8 +43,9 @@ export class Login {
 
       if (!success) {
         this.loginError.set(true);
-        this.isLoading.set(false);
       }
+
+      this.isLoading.set(false);
     }
   }
 }

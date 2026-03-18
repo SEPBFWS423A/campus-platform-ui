@@ -1,0 +1,9 @@
+<div class="unauthorized-container">
+  <mat-icon color="warn">gpp_bad</mat-icon>
+  <h1>{{ 'unauthorized.title' | translate }}</h1>
+  <p>{{ 'unauthorized.message' | translate }}</p>
+
+  <button mat-button color="primary" (click)="goHome()">
+    {{ 'unauthorized.backButton' | translate }}
+  </button>
+</div>
