@@ -1,0 +1,92 @@
+<h2 mat-dialog-title>{{ 'navigation.profileAndSettings.profileAndSettingsName' | translate }}</h2>
+
+<mat-dialog-content>
+  <div style="display: flex; flex-direction: column; gap: 24px; min-width: 300px; padding-top: 8px;">
+
+    <!-- User Information Section -->
+    <div style="display: flex; flex-direction: column; gap: 16px; padding-bottom: 24px; border-bottom: 1px solid var(--sys-outline-variant, #e0e0e0);">
+      <p style="margin: 0; color: var(--mat-sys-on-surface); font-size: 1.25em;">
+        <strong>{{ 'navigation.profileAndSettings.loggedInAs' | translate }}</strong> <span style="font-weight: 500;"> {{ auth.currentUser() || 'Unknown User' }}</span>
+      </p>
+
+      <div class="buttons-wrapper" [class.collapsed]="isChangingPassword">
+        <button mat-stroked-button color="warn" style="flex: 1;" (click)="toggleChangePassword()">
+          <mat-icon>lock</mat-icon>
+          {{ 'navigation.profileAndSettings.changePassword' | translate }}
+        </button>
+        <button mat-flat-button color="primary" (click)="logout()" style="flex: 1;">
+          <mat-icon fontIcon="logout"></mat-icon>
+          {{ "navigation.profileAndSettings.logout" | translate }}
+        </button>
+      </div>
+
+      <!-- Password Change Form -->
+      <div class="password-form-wrapper" [class.expanded]="isChangingPassword">
+        <form [formGroup]="passwordForm" (ngSubmit)="submitNewPassword()" style="padding-top: 8px; padding-bottom: 4px; padding-left: 2px; padding-right: 2px; display: flex; flex-direction: column; gap: 4px;">
+          
+          <mat-form-field appearance="outline" style="width: 100%;">
+            <mat-label>{{ 'navigation.profileAndSettings.currentPassword' | translate }}</mat-label>
+            <input matInput type="password" formControlName="currentPassword">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" style="width: 100%;">
+            <mat-label>{{ 'navigation.profileAndSettings.newPassword' | translate }}</mat-label>
+            <input matInput type="password" formControlName="newPassword">
+            <mat-error *ngIf="passwordForm.get('newPassword')?.hasError('minlength')">
+              {{ 'navigation.profileAndSettings.passwordLengthError' | translate }}
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" style="width: 100%;">
+            <mat-label>{{ 'navigation.profileAndSettings.confirmPassword' | translate }}</mat-label>
+            <input matInput type="password" formControlName="confirmPassword">
+            <mat-error *ngIf="passwordForm.hasError('mismatch') || passwordForm.get('confirmPassword')?.hasError('mismatch')">
+              {{ 'navigation.profileAndSettings.passwordMismatchError' | translate }}
+            </mat-error>
+          </mat-form-field>
+
+          <div style="display: flex; gap: 12px; justify-content: flex-end;">
+            <button mat-button type="button" (click)="toggleChangePassword()">
+              {{ 'navigation.profileAndSettings.cancel' | translate }}
+            </button>
+            <button mat-flat-button color="primary" type="submit" [disabled]="!passwordForm.valid">
+              {{ 'navigation.profileAndSettings.save' | translate }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Appearance Section -->
+    <div>
+      <h4 style="margin: 0 0 16px 0; font-size: 1.2em;">{{ 'navigation.profileAndSettings.appearance' | translate }}</h4>
+      
+      <div style="display: flex; flex-direction: column; gap: 20px;">
+        <button mat-stroked-button (click)="toggleBrightness()" style="width: 100%; justify-content: flex-start;">
+          <mat-icon>{{ themeController.activeBrightness === ThemeBrightness.light ? 'dark_mode' : 'light_mode' }}</mat-icon>
+          {{ 'navigation.profileAndSettings.toggleBrightness' | translate }}
+        </button>
+
+        <div>
+          <h4 style="margin: 0 0 16px 0; font-size: 1.2em;">
+            {{ 'navigation.profileAndSettings.themeColor' | translate }}
+          </h4>
+          <mat-radio-group style="display: flex; flex-direction: column; gap: 10px;"
+            [ngModel]="themeController.activeTheme" 
+            (ngModelChange)="themeController.setColorTheme($event)">
+
+            <mat-radio-button *ngFor="let theme of themeOptions" [value]="theme.value">
+              <span [style.color]="theme.colorHex" style="font-size: 1.2em; vertical-align: middle; margin-right: 8px;">●</span>
+              {{ 'themeColors.' + theme.value | translate }}
+            </mat-radio-button>
+
+          </mat-radio-group>
+        </div>
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" style="padding-bottom: 16px; padding-right: 24px;">
+  <button mat-button mat-dialog-close>{{ 'navigation.profileAndSettings.close' | translate }}</button>
+</mat-dialog-actions>

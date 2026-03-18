@@ -26,9 +26,9 @@
   </ul>
 
   <div class="nav-actions">
-    <button mat-flat-button (click)="auth.logout()" class="logout-btn">
-      <mat-icon fontIcon="logout"></mat-icon>
-      {{ "navigation.logout" | translate }}
+    <button mat-flat-button (click)="openSettings()" class="settings-btn">
+      <mat-icon fontIcon="account_circle"></mat-icon>
+      {{ "navigation.profileAndSettings.profileAndSettingsName" | translate }}
     </button>
   </div>
 </nav>

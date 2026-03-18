@@ -56,4 +56,10 @@ export class Auth {
     localStorage.removeItem('currentUser');
     this.router.navigate(['/login']);
   }
+
+  changePassword(currentPassword: string, newPassword: string): boolean {
+    if (!this.isLoggedIn()) return false;
+    //TODO: Implement password change
+    return true;
+  }
 }

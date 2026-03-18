@@ -34,6 +34,35 @@
       "grades": "Grades",
       "submissions": "Submissions"
     },
-    "logout": "Logout"
+    "profileAndSettings": {
+      "profileAndSettingsName": "Profile & Settings",
+      "logout": "Logout",
+      "loggedInAs": "Logged in as:",
+      "appearance": "Appearance",
+      "toggleBrightness": "Toggle Brightness",
+      "themeColor": "Theme Color",
+      "close": "Close",
+      "changePassword": "Change Password",
+      "newPassword": "New Password",
+      "cancel": "Cancel",
+      "save": "Save",
+      "passwordChangedSuccess": "Password successfully changed!",
+      "currentPassword": "Current Password",
+      "confirmPassword": "Confirm Password",
+      "passwordLengthError": "Password must be at least 8 characters.",
+      "passwordMismatchError": "Passwords do not match."
+    }
+  },
+  "themeColors": {
+    "theme-azure": "Azure",
+    "theme-blue": "Blue",
+    "theme-cyan": "Cyan",
+    "theme-green": "Green",
+    "theme-yellow": "Yellow",
+    "theme-orange": "Orange",
+    "theme-red": "Red",
+    "theme-violet": "Violet",
+    "theme-magenta": "Magenta",
+    "theme-rose": "Rose"
   }
 }

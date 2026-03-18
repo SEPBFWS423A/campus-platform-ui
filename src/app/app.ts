@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { ThemeController } from './core/theme/theme-controller';
 
 @Component({
   selector: 'app-root',
@@ -8,4 +9,5 @@ import { RouterOutlet } from '@angular/router';
   styleUrl: './app.scss'
 })
 export class App {
+  private themeController = inject(ThemeController);
 }
