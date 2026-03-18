@@ -3,21 +3,39 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Auth } from '../../core/auth/auth';
 import { CommonModule } from '@angular/common';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatCardModule } from '@angular/material/card';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-complete-registration',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [
+    ReactiveFormsModule,
+    CommonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatProgressSpinnerModule,
+    MatCardModule,
+    TranslateModule,
+  ],
   templateUrl: './complete-registration.html',
+  styleUrl: './complete-registration.scss',
 })
 export class CompleteRegistration implements OnInit {
   private fb = inject(FormBuilder);
   private auth = inject(Auth);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private translate = inject(TranslateService);
 
   token: string | null = null;
   isLoading = signal(false);
+  isRedirecting = signal(false);
   message = signal<string | null>(null);
 
   form = this.fb.group({
@@ -36,7 +54,9 @@ export class CompleteRegistration implements OnInit {
   ngOnInit(): void {
     this.token = this.route.snapshot.queryParamMap.get('token');
     if (!this.token) {
-      this.message.set('Invalid or missing invitation token.');
+      this.translate.get('completeRegistration.invalidToken').subscribe((res: string) => {
+        this.message.set(res);
+      });
     }
   }
 
@@ -52,12 +72,17 @@ export class CompleteRegistration implements OnInit {
     this.auth.completeRegistration(this.token, firstname!, lastname!, password!).subscribe({
       next: () => {
         this.isLoading.set(false);
-        this.message.set('Registration complete! Redirecting to login...');
+        this.isRedirecting.set(true);
+        this.translate.get('completeRegistration.successMessage').subscribe((res: string) => {
+          this.message.set(res);
+        });
         setTimeout(() => this.router.navigate(['/login']), 3000);
       },
       error: (err) => {
         this.isLoading.set(false);
-        this.message.set(err.error?.message || 'This invitation is invalid or has expired.');
+        this.translate.get('completeRegistration.failureMessage').subscribe((res: string) => {
+          this.message.set(err.error?.message || res);
+        });
       },
     });
   }

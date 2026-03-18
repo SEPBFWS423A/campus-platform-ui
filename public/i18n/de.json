@@ -69,5 +69,44 @@
     "title": "Zugriff verweigert",
     "message": "Du hast keine Berechtigung, diese Seite aufzurufen.",
     "backButton": "Zurück zu meinem Dashboard"
+  },
+  "userManagement": {
+    "title": "Neuen Benutzer einladen",
+    "emailLabel": "E-Mail-Adresse",
+    "roleLabel": "Rolle zuweisen",
+    "sendButton": "Einladung senden",
+    "existingUsersTitle": "Bestehende Benutzer",
+    "existingUsersPlaceholder": "(Benutzerliste und Verwaltungsfunktionen werden hier angezeigt.)",
+    "invitationSuccess": "Einladung erfolgreich an {{email}} gesendet.",
+    "invitationFailure": "Einladung konnte nicht gesendet werden."
+  },
+  "completeRegistration": {
+    "title": "Registrierung abschließen",
+    "firstNameLabel": "Vorname",
+    "lastNameLabel": "Nachname",
+    "passwordLabel": "Passwort",
+    "confirmPasswordLabel": "Passwort bestätigen",
+    "passwordMismatchError": "Passwörter stimmen nicht überein",
+    "completeButton": "Registrierung abschließen",
+    "invalidToken": "Ungültiger oder fehlender Einladungs-Token.",
+    "successMessage": "Registrierung abgeschlossen! Sie werden zum Login weitergeleitet...",
+    "failureMessage": "Diese Einladung ist ungültig oder abgelaufen."
+  },
+  "forgotPassword": {
+    "title": "Passwort vergessen",
+    "instruction": "Geben Sie Ihre E-Mail-Adresse ein und wir senden Ihnen einen Link zum Zurücksetzen Ihres Passworts.",
+    "emailLabel": "E-Mail",
+    "sendButton": "Link zum Zurücksetzen senden",
+    "resendButton": "Link erneut senden",
+    "successMessage": "Wenn ein Konto mit dieser E-Mail-Adresse existiert, wurde ein Link zum Zurücksetzen des Passworts gesendet.",
+    "failureMessage": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut."
+  },
+  "resetPassword": {
+    "title": "Passwort zurücksetzen",
+    "invalidToken": "Ungültiger oder fehlender Token zum Zurücksetzen.",
+    "newPasswordLabel": "Neues Passwort",
+    "resetButton": "Passwort zurücksetzen",
+    "successMessage": "Das Passwort wurde erfolgreich zurückgesetzt! Sie werden zum Login weitergeleitet...",
+    "failureMessage": "Das Passwort konnte nicht zurückgesetzt werden."
   }
 }

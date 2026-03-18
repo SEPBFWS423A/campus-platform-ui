@@ -69,5 +69,44 @@
     "title": "Access Denied",
     "message": "You do not have permission to access this page.",
     "backButton": "Back to my dashboard"
+  },
+  "userManagement": {
+    "title": "Invite New User",
+    "emailLabel": "Email Address",
+    "roleLabel": "Assign Role",
+    "sendButton": "Send Invitation",
+    "existingUsersTitle": "Existing Users",
+    "existingUsersPlaceholder": "(User list and management features will be displayed here.)",
+    "invitationSuccess": "Invitation sent successfully to {{email}}.",
+    "invitationFailure": "Failed to send invitation."
+  },
+  "completeRegistration": {
+    "title": "Complete Your Registration",
+    "firstNameLabel": "First Name",
+    "lastNameLabel": "Last Name",
+    "passwordLabel": "Password",
+    "confirmPasswordLabel": "Confirm Password",
+    "passwordMismatchError": "Passwords do not match",
+    "completeButton": "Complete Registration",
+    "invalidToken": "Invalid or missing invitation token.",
+    "successMessage": "Registration complete! Redirecting to login...",
+    "failureMessage": "This invitation is invalid or has expired."
+  },
+  "forgotPassword": {
+    "title": "Forgot Password",
+    "instruction": "Enter your email address and we'll send you a link to reset your password.",
+    "emailLabel": "Email",
+    "sendButton": "Send Reset Link",
+    "resendButton": "Resend Link",
+    "successMessage": "If an account with that email exists, a password reset link has been sent.",
+    "failureMessage": "An error occurred. Please try again."
+  },
+  "resetPassword": {
+    "title": "Reset Password",
+    "invalidToken": "Invalid or missing reset token.",
+    "newPasswordLabel": "New Password",
+    "resetButton": "Reset Password",
+    "successMessage": "Password has been reset successfully! Redirecting to login...",
+    "failureMessage": "Failed to reset password."
   }
 }
