@@ -11,12 +11,13 @@
 
     <form class="form" (submit)="onLogin(); $event.preventDefault()">
       <mat-form-field>
-        <mat-label>{{ "login.username" | translate }}</mat-label>
+        <mat-label>{{ "login.email" | translate }}</mat-label>
         <mat-icon matIconPrefix fontIcon="person"></mat-icon>
         <input matInput
-               [ngModel]="username()"
-               (ngModelChange)="username.set($event)"
-               name="username"
+               type="email"
+               [ngModel]="email()"
+               (ngModelChange)="email.set($event)"
+               name="email"
                required>
       </mat-form-field>
 
@@ -27,13 +28,13 @@
                type="password"
                [ngModel]="password()"
                (ngModelChange)="password.set($event)"
-               name="password">
-        <mat-hint class="password-hint">{{ "login.passwordHint" | translate }}</mat-hint>
+               name="password"
+               required>
       </mat-form-field>
 
       @if (loginError()) {
         <p style="color: red; font-size: 0.8rem; margin-bottom: 1rem;">
-          {{ "login.error" | translate }} (Erlaubt: admin, lecturer, student)
+          {{ "login.error" | translate }}
         </p>
       }
 
@@ -41,7 +42,7 @@
               color="primary"
               class="login-button"
               type="submit"
-              [disabled]="isLoading()">
+              [disabled]="isLoading() || !email() || !password()">
         @if (isLoading()) {
           <mat-icon fontIcon="autorenew"></mat-icon>
         }
@@ -53,9 +54,14 @@
         }
       </button>
 
-      <button mat-button type="button">
-        {{ "login.forgotPassword" | translate }}
-      </button>
+      <div class="actions">
+        <a mat-button routerLink="/forgot-password">
+          {{ "login.forgotPassword" | translate }}
+        </a>
+        <a mat-button routerLink="/register">
+          {{ "login.register" | translate }}
+        </a>
+      </div>
     </form>
 
     <div class="footer">

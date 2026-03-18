@@ -1,0 +1,38 @@
+<div>
+  <h2>Complete Your Registration</h2>
+  @if (!token) {
+    <p class="error-message">{{ message() }}</p>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="completeRegistration()">
+      <div class="form-field">
+        <label for="firstname">First Name</label>
+        <input id="firstname" formControlName="firstname">
+      </div>
+      <div class="form-field">
+        <label for="lastname">Last Name</label>
+        <input id="lastname" formControlName="lastname">
+      </div>
+      <div class="form-field">
+        <label for="password">Password</label>
+        <input id="password" type="password" formControlName="password">
+      </div>
+      <div class="form-field">
+        <label for="confirmPassword">Confirm Password</label>
+        <input id="confirmPassword" type="password" formControlName="confirmPassword">
+        @if (form.hasError('mismatch')) {
+          <div class="error-message">Passwords do not match.</div>
+        }
+      </div>
+      <button type="submit" [disabled]="form.invalid || isLoading()">
+        @if (isLoading()) {
+          <span>Completing Registration...</span>
+        } @else {
+          <span>Submit</span>
+        }
+      </button>
+      @if (message()) {
+        <div class="message">{{ message() }}</div>
+      }
+    </form>
+  }
+</div>

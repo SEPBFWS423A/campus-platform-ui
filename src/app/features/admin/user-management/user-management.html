@@ -1,1 +1,38 @@
-<p>user-management works!</p>
+<div class="user-management-container">
+  <div class="invite-section">
+    <h2>Invite New User</h2>
+    <form [formGroup]="invitationForm" (ngSubmit)="sendInvitation()">
+      <div class="form-field">
+        <label for="email">Email Address</label>
+        <input id="email" type="email" formControlName="email">
+      </div>
+      <div class="form-field">
+        <label for="role">Assign Role</label>
+        <select id="role" formControlName="role">
+          @for (role of roles; track role) {
+            <option [value]="role">{{ role }}</option>
+          }
+        </select>
+      </div>
+      <button type="submit" [disabled]="invitationForm.invalid || isLoading()">
+        @if (isLoading()) {
+          <span>Sending Invitation...</span>
+        } @else {
+          <span>Send Invitation</span>
+        }
+      </button>
+      @if (message()) {
+        <div class="message">{{ message() }}</div>
+      }
+    </form>
+  </div>
+
+  <hr class="divider">
+
+  <div class="user-list-section">
+    <h2>Existing Users</h2>
+    <p><i>(User list and management features will be displayed here.)</i></p>
+    <!-- TODO: Implement a table or list to display users -->
+  </div>
+
+</div>

@@ -7,11 +7,26 @@ import {UserRole} from './core/models/user-role';
 import {inject} from '@angular/core';
 import {Auth} from './core/auth/auth';
 import {Unauthorized} from './features/common/unauthorized/unauthorized';
+import { CompleteRegistration } from './features/complete-registration/complete-registration';
+import {ForgotPassword} from './features/forgot-password/forgot-password';
+import {ResetPassword} from './features/reset-password/reset-password';
 
 export const routes: Routes = [
   {
     path: 'login',
     component: Login
+  },
+  {
+    path: 'complete-registration',
+    component: CompleteRegistration
+  },
+  {
+    path: 'forgot-password',
+    component: ForgotPassword
+  },
+  {
+    path: 'reset-password',
+    component: ResetPassword
   },
   {
     path: 'unauthorized',
@@ -28,7 +43,7 @@ export const routes: Routes = [
         redirectTo: () => {
           const auth = inject(Auth);
           const user = auth.currentUser();
-          return user ? `/${user}` : '/login';
+          return user ? `/${user.role.toLowerCase()}` : '/login';
         }
       },
       {

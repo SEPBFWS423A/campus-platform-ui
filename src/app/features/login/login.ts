@@ -7,6 +7,7 @@ import {DatePipe} from '@angular/common';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {Auth} from '../../core/auth/auth';
 import {FormsModule} from '@angular/forms';
+import {RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -17,7 +18,8 @@ import {FormsModule} from '@angular/forms';
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
-    FormsModule
+    FormsModule,
+    RouterLink
   ],
   templateUrl: './login.html',
   styleUrl: './login.scss',
@@ -28,7 +30,7 @@ export class Login {
 
   currentDate = new Date();
 
-  username = signal('');
+  email = signal('');
   password = signal('');
 
   loginError = signal(false);
@@ -36,16 +38,21 @@ export class Login {
 
   onLogin() {
     this.loginError.set(false);
-
-    if (this.username()) {
-      this.isLoading.set(true);
-      const success = this.auth.login(this.username());
-
-      if (!success) {
-        this.loginError.set(true);
-      }
-
-      this.isLoading.set(false);
+    if (!this.email()) {
+      return;
     }
+
+    this.isLoading.set(true);
+    this.auth.login(this.email(), this.password()).subscribe({
+      next: () => {
+        console.log('Login successful. Token received.');
+        this.isLoading.set(false);
+      },
+      error: (err) => {
+        console.error('Login failed:', err);
+        this.loginError.set(true);
+        this.isLoading.set(false);
+      }
+    });
   }
 }
