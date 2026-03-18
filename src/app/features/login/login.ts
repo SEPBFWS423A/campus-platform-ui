@@ -45,7 +45,6 @@ export class Login {
     this.isLoading.set(true);
     this.auth.login(this.email(), this.password()).subscribe({
       next: () => {
-        console.log('Login successful. Token received.');
         this.isLoading.set(false);
       },
       error: (err) => {

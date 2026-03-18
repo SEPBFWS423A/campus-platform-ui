@@ -3,8 +3,8 @@ import { Router } from '@angular/router';
 import { UserRole } from '../models/user-role';
 import { environment } from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
-import { User } from '../models/user';
-import { Observable, tap } from 'rxjs';
+import {catchError, Observable, switchMap, tap} from 'rxjs';
+import {UserProfile, UserService} from '../user/user.service';
 
 interface LoginResponse {
   token: string;
@@ -12,12 +12,8 @@ interface LoginResponse {
 
 interface JwtPayload {
   id: number;
-  sub: string; // Subject (email)
+  sub: string;
   role: UserRole;
-  firstname: string;
-  lastname: string;
-  theme: string;
-  brightness: string;
 }
 
 @Injectable({
@@ -26,57 +22,59 @@ interface JwtPayload {
 export class Auth {
   private router = inject(Router);
   private http = inject(HttpClient);
+  private userService = inject(UserService);
   private authApiUrl = environment.apiUrl + '/auth';
 
   token = signal<string | null>(localStorage.getItem('token'));
 
-  currentUser = computed<User | null>(() => {
+  isLoggedIn = computed(() => !!this.token());
+
+  userRole = computed<UserRole | null>(() => {
     const currentToken = this.token();
     if (!currentToken) return null;
     try {
       const payload = JSON.parse(atob(currentToken.split('.')[1])) as JwtPayload;
-      return {
-        id: payload.id,
-        email: payload.sub,
-        firstname: payload.firstname,
-        lastname: payload.lastname,
-        role: payload.role,
-        theme: payload.theme,
-        brightness: payload.brightness,
-        enabled: true,
-      };
+      return payload.role;
     } catch (e) {
       console.error('Failed to decode JWT token:', e);
       return null;
     }
   });
 
-  isLoggedIn = computed(() => !!this.currentUser() && !!this.token());
-  userRole = computed<UserRole | null>(() => this.currentUser()?.role || null);
+  constructor() {
+    if (this.token()) {
+      this.userService.getProfile().subscribe({
+        error: () => this.logout()
+      });
+    }
+  }
 
-  login(email: string, password?: string): Observable<LoginResponse> {
+  login(email: string, password?: string): Observable<UserProfile> {
     return this.http.post<LoginResponse>(`${this.authApiUrl}/login`, { email, password }).pipe(
       tap(({ token }) => {
         localStorage.setItem('token', token);
         this.token.set(token);
-
-        try {
-          const payload = JSON.parse(atob(token.split('.')[1])) as JwtPayload;
-          if (payload && payload.role) {
-            const rolePath = payload.role.toLowerCase();
-            this.router.navigate([`/${rolePath}`]);
-          } else {
-            this.router.navigate(['/']);
-          }
-        } catch (e) {
-          this.router.navigate(['/login']);
+      }),
+      // Delegate to UserService to fetch the profile!
+      switchMap(() => this.userService.getProfile()),
+      tap((user) => {
+        if (user && user.role) {
+          const rolePath = user.role.toLowerCase();
+          this.router.navigate([`/${rolePath}`]);
+        } else {
+          this.router.navigate(['/']);
         }
+      }),
+      catchError((error) => {
+        this.router.navigate(['/login']);
+        throw error;
       })
     );
   }
 
   logout() {
     this.token.set(null);
+    this.userService.clearProfile();
     localStorage.removeItem('token');
     this.router.navigate(['/login']);
   }

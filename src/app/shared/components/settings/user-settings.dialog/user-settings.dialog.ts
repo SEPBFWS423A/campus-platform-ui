@@ -6,10 +6,11 @@ import { ThemeController } from '../../../../core/theme/theme-controller';
 import { THEME_PALETTE_OPTIONS, ThemeBrightness } from '../../../../core/theme/theme-options';
 import { Auth } from '../../../../core/auth/auth';
 import { MatIcon } from "@angular/material/icon";
-import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { MatRadioButton, MatRadioGroup } from '@angular/material/radio';
 import { Router } from '@angular/router';
 import {FormsModule} from '@angular/forms';
+import {UserService} from '../../../../core/user/user.service';
 
 @Component({
   selector: 'app-user-settings-dialog',
@@ -20,8 +21,8 @@ import {FormsModule} from '@angular/forms';
 export class UserSettingsDialog {
   themeController = inject(ThemeController);
   auth = inject(Auth);
+  userService = inject(UserService);
   dialogRef = inject(MatDialogRef<UserSettingsDialog>);
-  translateService = inject(TranslateService);
   router = inject(Router);
 
   themeOptions = THEME_PALETTE_OPTIONS;
@@ -33,7 +34,7 @@ export class UserSettingsDialog {
   }
 
   toggleBrightness() {
-    const newBrightness = this.themeController.activeBrightness === ThemeBrightness.light
+    const newBrightness = this.themeController.activeBrightness() === ThemeBrightness.light
       ? ThemeBrightness.dark
       : ThemeBrightness.light;
     this.themeController.setBrightness(newBrightness);

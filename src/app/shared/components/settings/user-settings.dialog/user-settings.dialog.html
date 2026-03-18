@@ -5,7 +5,13 @@
 
     <div style="display: flex; flex-direction: column; gap: 16px; padding-bottom: 24px; border-bottom: 1px solid var(--mat-sys-outline-variant, #e0e0e0);">
       <p style="margin: 0; color: var(--mat-sys-on-surface); font-size: 1.25em;">
-        <strong>{{ 'navigation.profileAndSettings.loggedInAs' | translate }}</strong> <span style="font-weight: 500;"> {{ auth.currentUser() || 'Unknown User' }}</span>
+        <strong>{{ 'navigation.profileAndSettings.loggedInAs' | translate }}</strong> <span style="font-weight: 500;">
+          @if (userService.profile(); as profile) {
+            {{ profile.firstname }} {{ profile.lastname }}
+          } @else {
+            Unknown User
+          }
+      </span>
       </p>
 
       <div class="buttons-wrapper">
@@ -25,7 +31,7 @@
 
       <div style="display: flex; flex-direction: column; gap: 20px;">
         <button mat-stroked-button (click)="toggleBrightness()" style="width: 100%; justify-content: flex-start;">
-          <mat-icon>{{ themeController.activeBrightness === ThemeBrightness.light ? 'dark_mode' : 'light_mode' }}</mat-icon>
+          <mat-icon>{{ themeController.activeBrightness() === ThemeBrightness.light ? 'dark_mode' : 'light_mode' }}</mat-icon>
           {{ 'navigation.profileAndSettings.toggleBrightness' | translate }}
         </button>
 
@@ -34,13 +40,15 @@
             {{ 'navigation.profileAndSettings.themeColor' | translate }}
           </h4>
           <mat-radio-group style="display: flex; flex-direction: column; gap: 10px;"
-            [ngModel]="themeController.activeTheme"
+            [ngModel]="themeController.activeTheme()"
             (ngModelChange)="themeController.setColorTheme($event)">
 
-            <mat-radio-button *ngFor="let theme of themeOptions" [value]="theme.value">
-              <span [style.color]="theme.colorHex" style="font-size: 1.2em; vertical-align: middle; margin-right: 8px;">●</span>
-              {{ 'themeColors.' + theme.value | translate }}
-            </mat-radio-button>
+            @for (theme of themeOptions; track theme) {
+              <mat-radio-button [value]="theme.value">
+                <span [style.color]="theme.colorHex" style="font-size: 1.2em; vertical-align: middle; margin-right: 8px;">●</span>
+                {{ 'themeColors.' + theme.value | translate }}
+              </mat-radio-button>
+            }
 
           </mat-radio-group>
         </div>

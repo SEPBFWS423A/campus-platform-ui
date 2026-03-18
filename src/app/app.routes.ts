@@ -42,8 +42,8 @@ export const routes: Routes = [
         pathMatch: 'full',
         redirectTo: () => {
           const auth = inject(Auth);
-          const user = auth.currentUser();
-          return user ? `/${user.role.toLowerCase()}` : '/login';
+          const role = auth.userRole();
+          return role ? `/${role.toLowerCase()}` : '/login';
         }
       },
       {

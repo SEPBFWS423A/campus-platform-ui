@@ -1,20 +1,55 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal, WritableSignal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
+import {UserRole} from '../models/user-role';
+
+export interface UserProfile {
+  id: string;
+  email: string;
+  firstname: string;
+  lastname: string;
+  role: UserRole;
+  theme: string;
+  brightness: string;
+}
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
   private http = inject(HttpClient);
-  private apiUrl = environment.apiUrl + '/user';
+  private apiUrl = environment.apiUrl + '/users';
+
+  private _profile: WritableSignal<UserProfile | null> = signal(null);
+  public readonly profile = this._profile.asReadonly();
+
+  getProfile(): Observable<UserProfile> {
+    return this.http.get<UserProfile>(`${this.apiUrl}/me`).pipe(
+      tap(profile => this._profile.set(profile))
+    );
+  }
 
   changePassword(oldPassword: string, newPassword: string): Observable<void> {
     return this.http.post<void>(`${this.apiUrl}/change-password`, { oldPassword, newPassword });
   }
 
   updateThemeSettings(theme: string, brightness: string): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/profile/preferences`, { theme, brightness });
+    return this.http.put<void>(`${this.apiUrl}/profile/preferences`, { theme, brightness }).pipe(
+      tap(() => {
+        const currentProfile = this._profile();
+        if (currentProfile) {
+          this._profile.set({
+            ...currentProfile,
+            theme: theme,
+            brightness: brightness
+          });
+        }
+      })
+    );
+  }
+
+  clearProfile() {
+    this._profile.set(null);
   }
 }

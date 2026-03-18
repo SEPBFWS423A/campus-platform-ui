@@ -20,7 +20,7 @@ export class Unauthorized {
   private auth = inject(Auth);
 
   goHome() {
-    const user = this.auth.currentUser();
-    this.router.navigate([user ? `/${user}` : '/login']);
+    const role = this.auth.userRole();
+    this.router.navigate([role ? `/${role?.toLowerCase()}` : '/login']);
   }
 }
