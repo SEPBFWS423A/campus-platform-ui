@@ -5,6 +5,8 @@ import {RouterLink, RouterLinkActive} from '@angular/router';
 import {UserRole} from '../../../core/models/user-role';
 import {TranslatePipe} from '@ngx-translate/core';
 import {MatButton} from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
+import { UserSettingsDialog } from '../settings/user-settings.dialog/user-settings.dialog';
 
 export type NavLink = {
   path: string;
@@ -55,6 +57,7 @@ const NAVIGATION_CONFIG: Record<string, NavLink[]> = {
 })
 export class Navigation {
   public auth = inject(Auth);
+  private dialog = inject(MatDialog);
   hoveredItem = signal<string | null>(null);
 
   currentLinks = computed(() => {
@@ -65,4 +68,8 @@ export class Navigation {
 
     return [...roleSpecific, ...COMMON_LINKS];
   });
+
+  openSettings() {
+    this.dialog.open(UserSettingsDialog, { width: '400px' });
+  }
 }

@@ -2,7 +2,7 @@
   display: flex;
   justify-content: space-between;
   padding: 1rem 1.5rem;
-  background-color: var(--mat-sys-background);
+  background-color: var(--mat-sys-surface-container);
 }
 
 .nav-list {
@@ -39,8 +39,7 @@ a {
   color: var(--mat-sys-primary);
 }
 
-.logout-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+.filled-icon-button {
+  background-color: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary);
 }
