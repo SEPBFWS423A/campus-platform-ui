@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://api.campusplatform.de'
+  apiUrl: 'https://api.campusplatform.de/api'
 };
