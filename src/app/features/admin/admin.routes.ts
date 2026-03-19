@@ -3,6 +3,7 @@ import {AdminHome} from './admin-home/admin-home';
 import {RoomManagement} from './room-management/room-management';
 import {EventManagement} from './event-management/event-management';
 import {UserManagement} from './user-management/user-management';
+import {ExamManagement} from './exam-management/exam-management';
 
 export const adminRoutes: Routes = [
   {
@@ -23,6 +24,6 @@ export const adminRoutes: Routes = [
   },
   {
     path: 'exam-management',
-    component: EventManagement
+    component: ExamManagement
   },
 ];
