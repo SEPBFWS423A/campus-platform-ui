@@ -1,5 +1,5 @@
-import { Component, inject, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import {Component, inject, signal, ViewChild} from '@angular/core';
+import {FormBuilder, NgForm, ReactiveFormsModule, Validators} from '@angular/forms';
 import { UserRole } from '../../../core/models/user-role';
 import { AdminService } from '../admin.service';
 import { CommonModule } from '@angular/common';
@@ -33,6 +33,8 @@ export class UserManagement {
   private adminService = inject(AdminService);
   private translate = inject(TranslateService);
 
+  @ViewChild('formDirective') formDirective!: NgForm;
+
   roles = [UserRole.Student, UserRole.Lecturer, UserRole.Admin];
 
   isLoading = signal(false);
@@ -58,7 +60,10 @@ export class UserManagement {
         this.translate.get('userManagement.invitationSuccess', { email }).subscribe((res: string) => {
           this.message.set(res);
         });
-        this.invitationForm.reset({ role: this.roles[0] });
+        this.formDirective.resetForm({
+          role: this.roles[0],
+          email: ''
+        });
       },
       error: (err) => {
         this.isLoading.set(false);

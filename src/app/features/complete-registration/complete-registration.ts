@@ -34,6 +34,7 @@ export class CompleteRegistration implements OnInit {
   private translate = inject(TranslateService);
 
   token: string | null = null;
+  email: string | null = null;
   isLoading = signal(false);
   isRedirecting = signal(false);
   message = signal<string | null>(null);
@@ -53,6 +54,7 @@ export class CompleteRegistration implements OnInit {
 
   ngOnInit(): void {
     this.token = this.route.snapshot.queryParamMap.get('token');
+    this.email = this.route.snapshot.queryParamMap.get('email');
     if (!this.token) {
       this.translate.get('completeRegistration.invalidToken').subscribe((res: string) => {
         this.message.set(res);

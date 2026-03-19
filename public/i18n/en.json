@@ -82,6 +82,7 @@
   },
   "completeRegistration": {
     "title": "Complete Your Registration",
+    "emailLabel": "Email",
     "firstNameLabel": "First Name",
     "lastNameLabel": "Last Name",
     "passwordLabel": "Password",

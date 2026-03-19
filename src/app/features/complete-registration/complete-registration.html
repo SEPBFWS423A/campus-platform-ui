@@ -5,6 +5,9 @@
     </mat-card-header>
     <mat-card-content>
       @if (token) {
+        @if (email) {
+          <p>{{ 'completeRegistration.emailLabel' | translate }}: {{ email }}</p>
+        }
         <form [formGroup]="form" (ngSubmit)="completeRegistration()">
           <mat-form-field appearance="fill">
             <mat-label>{{ 'completeRegistration.firstNameLabel' | translate }}</mat-label>
