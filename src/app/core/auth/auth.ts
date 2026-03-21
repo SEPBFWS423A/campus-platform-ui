@@ -49,18 +49,21 @@ export class Auth {
     }
   }
 
-  login(email: string, password?: string): Observable<UserProfile> {
+  login(email: string, password?: string, returnUrl?: string | null): Observable<UserProfile> {
     return this.http.post<LoginResponse>(`${this.authApiUrl}/login`, { email, password }).pipe(
       tap(({ token }) => {
         localStorage.setItem('token', token);
         this.token.set(token);
       }),
-      // Delegate to UserService to fetch the profile!
       switchMap(() => this.userService.getProfile()),
       tap((user) => {
         if (user && user.role) {
-          const rolePath = user.role.toLowerCase();
-          this.router.navigate([`/${rolePath}`]);
+          if (returnUrl && returnUrl !== '/' && this.canAccess(user.role, returnUrl)) {
+            this.router.navigateByUrl(returnUrl);
+          } else {
+            const rolePath = user.role.toLowerCase();
+            this.router.navigate([`/${rolePath}`]);
+          }
         } else {
           this.router.navigate(['/']);
         }
@@ -90,5 +93,10 @@ export class Auth {
 
   resetPassword(token: string, newPassword: string): Observable<void> {
     return this.http.post<void>(`${this.authApiUrl}/reset-password`, { newPassword }, { params: { token } });
+  }
+
+  private canAccess(role: UserRole, url: string): boolean {
+    const rolePath = role.toLowerCase();
+    return url.startsWith(`/${rolePath}`);
   }
 }

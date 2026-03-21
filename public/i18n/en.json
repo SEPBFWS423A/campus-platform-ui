@@ -72,13 +72,39 @@
   },
   "userManagement": {
     "title": "Invite New User",
-    "emailLabel": "Email Address",
-    "roleLabel": "Assign Role",
-    "sendButton": "Send Invitation",
-    "existingUsersTitle": "Existing Users",
-    "existingUsersPlaceholder": "(User list and management features will be displayed here.)",
+    "email": "Email Address",
+    "role": "Assign Role",
+    "sendInvitation": "Send Invitation",
+    "userList": "User List",
+    "filterByRole": "Filter by role",
+    "allRoles": "All Roles",
+    "search": "Search",
+    "editUserTitle": "Edit User",
+    "save": "Save",
+    "cancel": "Cancel",
+    "deleteUserTitle": "Delete User",
+    "deleteUserMessage": "Are you sure you want to delete this user? This action cannot be undone.",
+    "userDeleteSuccess": "User deleted successfully.",
+    "userDeleteFailure": "Failed to delete user.",
     "invitationSuccess": "Invitation sent successfully to {{email}}.",
-    "invitationFailure": "Failed to send invitation."
+    "invitationFailure": "Failed to send invitation.",
+    "userUpdateSuccess": "User updated successfully.",
+    "userUpdateFailure": "Failed to update user."
+  },
+  "user": {
+    "firstname": "First Name",
+    "lastname": "Last Name",
+    "email": "Email",
+    "role": "Role"
+  },
+  "userRole": {
+    "ADMIN": "Admin",
+    "LECTURER": "Lecturer",
+    "STUDENT": "Student"
+  },
+  "confirmationDialog": {
+    "confirm": "Confirm",
+    "cancel": "Cancel"
   },
   "completeRegistration": {
     "title": "Complete Your Registration",
@@ -109,5 +135,20 @@
     "resetButton": "Reset Password",
     "successMessage": "Password has been reset successfully! Redirecting to login...",
     "failureMessage": "Failed to reset password."
+  },
+  "error": {
+    "invitation": {
+      "invalidToken": "The invitation token is invalid.",
+      "alreadyCompleted": "This invitation has already been completed."
+    },
+    "user": {
+      "notFound": "The user was not found."
+    },
+    "password": {
+      "invalidOld": "The old password you entered is incorrect."
+    },
+    "verification": {
+      "invalidToken": "The verification token is invalid."
+    }
   }
 }

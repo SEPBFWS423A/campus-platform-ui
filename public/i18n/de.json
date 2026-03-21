@@ -72,13 +72,39 @@
   },
   "userManagement": {
     "title": "Neuen Benutzer einladen",
-    "emailLabel": "E-Mail-Adresse",
-    "roleLabel": "Rolle zuweisen",
-    "sendButton": "Einladung senden",
-    "existingUsersTitle": "Bestehende Benutzer",
-    "existingUsersPlaceholder": "(Benutzerliste und Verwaltungsfunktionen werden hier angezeigt.)",
+    "email": "E-Mail-Adresse",
+    "role": "Rolle zuweisen",
+    "sendInvitation": "Einladung senden",
+    "userList": "Benutzerliste",
+    "filterByRole": "Nach Rolle filtern",
+    "allRoles": "Alle Rollen",
+    "search": "Suchen",
+    "editUserTitle": "Benutzer bearbeiten",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "deleteUserTitle": "Benutzer löschen",
+    "deleteUserMessage": "Sind Sie sicher, dass Sie diesen Benutzer löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+    "userDeleteSuccess": "Benutzer erfolgreich gelöscht.",
+    "userDeleteFailure": "Benutzer konnte nicht gelöscht werden.",
     "invitationSuccess": "Einladung erfolgreich an {{email}} gesendet.",
-    "invitationFailure": "Einladung konnte nicht gesendet werden."
+    "invitationFailure": "Einladung konnte nicht gesendet werden.",
+    "userUpdateSuccess": "Benutzer erfolgreich aktualisiert.",
+    "userUpdateFailure": "Benutzer konnte nicht aktualisiert werden."
+  },
+  "user": {
+    "firstname": "Vorname",
+    "lastname": "Nachname",
+    "email": "E-Mail",
+    "role": "Rolle"
+  },
+  "userRole": {
+    "ADMIN": "Admin",
+    "LECTURER": "Dozent",
+    "STUDENT": "Student"
+  },
+  "confirmationDialog": {
+    "confirm": "Bestätigen",
+    "cancel": "Abbrechen"
   },
   "completeRegistration": {
     "title": "Registrierung abschließen",
@@ -109,6 +135,20 @@
     "resetButton": "Passwort zurücksetzen",
     "successMessage": "Das Passwort wurde erfolgreich zurückgesetzt! Sie werden zum Login weitergeleitet...",
     "failureMessage": "Das Passwort konnte nicht zurückgesetzt werden."
+  },
+  "error": {
+    "invitation": {
+      "invalidToken": "Der Einladungs-Token ist ungültig.",
+      "alreadyCompleted": "Diese Einladung wurde bereits abgeschlossen."
+    },
+    "user": {
+      "notFound": "Der Benutzer wurde nicht gefunden."
+    },
+    "password": {
+      "invalidOld": "Das von Ihnen eingegebene alte Passwort ist falsch."
+    },
+    "verification": {
+      "invalidToken": "Der Bestätigungs-Token ist ungültig."
+    }
   }
 }
-

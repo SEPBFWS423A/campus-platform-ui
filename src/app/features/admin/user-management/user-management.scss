@@ -15,15 +15,38 @@ form {
   gap: 1rem;
 }
 
-.message {
-  margin-top: 1rem;
-  padding: 1rem;
-  border-radius: 4px;
-  text-align: center;
-  background-color: var(--mat-sys-secondary-container);
-  color: var(--mat-sys-on-secondary-container);
-}
-
 .divider {
   display: none; // Replaced by card separation
+}
+
+.filter-form {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-direction: row;
+}
+
+.user-list-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.mat-elevation-z8 {
+  width: 100%;
+}
+
+td.mat-cell {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.inline-edit-field {
+  width: 90%;
+  .mdc-text-field--outlined {
+    --mdc-outlined-text-field-container-shape: 4px;
+  }
+  .mat-mdc-form-field-subscript-wrapper {
+    display: none; // Hide error messages to keep row height consistent
+  }
 }

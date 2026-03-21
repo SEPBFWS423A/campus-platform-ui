@@ -66,3 +66,15 @@ body {
 *::after {
   box-sizing: border-box;
 }
+
+.error-snackbar {
+  --mdc-snackbar-container-color: var(--mat-sys-error-container);
+  --mat-mdc-snack-bar-button-color: var(--mat-sys-on-error-container);
+  --mdc-snackbar-supporting-text-color: var(--mat-sys-on-error-container);
+}
+
+.success-snackbar {
+  --mdc-snackbar-container-color: var(--mat-sys-tertiary-container);
+  --mat-mdc-snack-bar-button-color: var(--mat-sys-on-tertiary-container);
+  --mdc-snackbar-supporting-text-color: var(--mat-sys-on-tertiary-container);
+}

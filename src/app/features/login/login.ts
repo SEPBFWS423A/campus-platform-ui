@@ -1,4 +1,4 @@
-import {Component, inject, signal} from '@angular/core';
+import {Component, inject, OnInit, signal} from '@angular/core';
 import {TranslatePipe} from '@ngx-translate/core';
 import {MatIconModule} from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
@@ -7,7 +7,7 @@ import {DatePipe} from '@angular/common';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {Auth} from '../../core/auth/auth';
 import {FormsModule} from '@angular/forms';
-import {RouterLink} from '@angular/router';
+import {ActivatedRoute, RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -25,8 +25,9 @@ import {RouterLink} from '@angular/router';
   styleUrl: './login.scss',
   standalone: true
 })
-export class Login {
+export class Login implements OnInit {
   private auth = inject(Auth);
+  private route = inject(ActivatedRoute);
 
   currentDate = new Date();
 
@@ -36,6 +37,12 @@ export class Login {
   loginError = signal(false);
   isLoading = signal(false);
 
+  private returnUrl: string | null = null;
+
+  ngOnInit() {
+    this.returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+  }
+
   onLogin() {
     this.loginError.set(false);
     if (!this.email()) {
@@ -43,7 +50,7 @@ export class Login {
     }
 
     this.isLoading.set(true);
-    this.auth.login(this.email(), this.password()).subscribe({
+    this.auth.login(this.email(), this.password(), this.returnUrl).subscribe({
       next: () => {
         this.isLoading.set(false);
       },
