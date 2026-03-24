@@ -1,1 +1,236 @@
-<p>room-management works!</p>
+
+<header class="section-header">
+  <div class="header-content">
+    <h1>Raumverwaltung</h1>
+    <p>Räume, Belegungsplan und Auslastung</p>
+  </div>
+</header>
+
+<div class="admin-rooms-content">
+  <div class="grid-container stats-row room-stats-row">
+    <mat-card class="card stat-card">
+      <div class="stat-icon primary-bg">
+        <mat-icon>meeting_room</mat-icon>
+      </div>
+      <div class="stat-info">
+        <span class="stat-label">Räume gesamt</span>
+        <span class="stat-value">{{ totalRooms }}</span>
+      </div>
+    </mat-card>
+
+    <mat-card class="card stat-card">
+      <div class="stat-icon success-bg">
+        <mat-icon>event_seat</mat-icon>
+      </div>
+      <div class="stat-info">
+        <span class="stat-label">Sitzplätze gesamt</span>
+        <span class="stat-value">{{ totalSeats }}</span>
+      </div>
+    </mat-card>
+
+    <mat-card class="card stat-card">
+      <div class="stat-icon warning-bg">
+        <mat-icon>speed</mat-icon>
+      </div>
+      <div class="stat-info">
+        <span class="stat-label">Gesamtauslastung</span>
+        <span class="stat-value">{{ totalUtilization }}</span>
+      </div>
+    </mat-card>
+  </div>
+
+  <mat-tab-group class="management-tabs" animationDuration="150ms">
+
+    <!-- Tab: Raumliste -->
+    <mat-tab>
+      <ng-template matTabLabel>
+        <mat-icon>list</mat-icon> Raumliste
+      </ng-template>
+
+      <div class="management-tab-content">
+        <mat-card class="card">
+          <div class="card-header room-card-header">
+            <h3>Neuen Raum anlegen</h3>
+          </div>
+          <form class="inline-create-form" [formGroup]="createForm" (ngSubmit)="onCreateRoom()" autocomplete="off">
+            <mat-form-field class="form-group">
+              <mat-label>Raumname</mat-label>
+              <input matInput formControlName="name" placeholder="z.B. Hörsaal 3">
+            </mat-form-field>
+            <mat-form-field class="form-group">
+              <mat-label>Plätze</mat-label>
+              <input matInput type="number" formControlName="seats" min="0" placeholder="0">
+            </mat-form-field>
+            <mat-form-field class="form-group">
+              <mat-label>Klausurplätze</mat-label>
+              <input matInput type="number" formControlName="examSeats" min="0" placeholder="0">
+            </mat-form-field>
+            <button mat-raised-button class="btn btn-sm btn-primary" type="submit" [disabled]="createForm.invalid">
+              <mat-icon>add</mat-icon> Anlegen
+            </button>
+          </form>
+          @if (createError()) {
+            <div id="room-create-error" class="management-alert error">{{ createError() }}</div>
+          }
+        </mat-card>
+
+        <mat-card class="card room-card-spacing">
+          <div class="card-header room-card-header">
+            <h3>Alle Räume</h3>
+          </div>
+          <div class="room-table-wrapper">
+            <table mat-table [dataSource]="rooms" class="management-table" id="rooms-table">
+              <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef>Name</th>
+                <td mat-cell *matCellDef="let room" class="room-name-cell">{{ room.name }}</td>
+              </ng-container>
+              <ng-container matColumnDef="seats">
+                <th mat-header-cell *matHeaderCellDef>Plätze</th>
+                <td mat-cell *matCellDef="let room">{{ room.seats }}</td>
+              </ng-container>
+              <ng-container matColumnDef="examSeats">
+                <th mat-header-cell *matHeaderCellDef>Klausurplätze</th>
+                <td mat-cell *matCellDef="let room">{{ room.examSeats }}</td>
+              </ng-container>
+              <ng-container matColumnDef="bookings">
+                <th mat-header-cell *matHeaderCellDef>Belegungen</th>
+                <td mat-cell *matCellDef="let room">{{ room.bookings }}</td>
+              </ng-container>
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>Aktionen</th>
+                <td mat-cell *matCellDef="let room">
+                  <div class="actions-cell">
+                    <button mat-icon-button class="btn-icon-only edit-room-btn" title="Bearbeiten" (click)="onEditRoom(room.id)">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button mat-icon-button class="btn-icon-only danger delete-room-btn" title="Löschen" (click)="onDeleteRoom(room.id)">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                </td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns" [attr.data-room-id]="row.id"></tr>
+            </table>
+          </div>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <!-- Tab: Belegungsplan -->
+    <mat-tab>
+      <ng-template matTabLabel>
+        <mat-icon>calendar_month</mat-icon> Belegungsplan
+      </ng-template>
+
+      <div class="management-tab-content">
+        <mat-card class="card">
+          <div class="card-header room-card-header">
+            <h3>Belegungsplan</h3>
+          </div>
+          <div class="room-schedule-controls">
+            <mat-form-field>
+              <mat-select id="schedule-room-select" [value]="selectedRoomId()" (selectionChange)="selectedRoomId.set($event.value)">
+                @for (room of rooms; track room.id) {
+                  <mat-option [value]="room.id">{{ room.name }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <div class="room-schedule-nav">
+              <button mat-stroked-button class="btn btn-outline btn-sm" id="schedule-prev-week" (click)="onPrevWeek()">
+                <mat-icon>chevron_left</mat-icon> Vorige Woche
+              </button>
+              <span id="schedule-week-label" class="room-schedule-week-label">{{ scheduleWeekLabel }}</span>
+              <button mat-stroked-button class="btn btn-outline btn-sm" id="schedule-next-week" (click)="onNextWeek()">
+                Nächste Woche <mat-icon>chevron_right</mat-icon>
+              </button>
+            </div>
+          </div>
+          <div id="schedule-calendar-container" class="room-calendar-scroll-wrapper">
+            <div class="room-calendar">
+              <div class="room-calendar-time-col">
+                <div class="room-calendar-time-header"></div>
+                @for (hour of scheduleHours; track hour) {
+                  <div class="room-calendar-hour-cell room-calendar-time-label">{{ hour }}</div>
+                }
+              </div>
+              @for (day of scheduleDays; track day.label) {
+                <div class="room-calendar-day-col">
+                  <div class="room-calendar-day-header">{{ day.label }}</div>
+                  <div class="room-calendar-day-body">
+                    @for (hour of scheduleHours; track hour) {
+                      <div class="room-calendar-hour-cell"></div>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <!-- Tab: Auslastung -->
+    <mat-tab>
+      <ng-template matTabLabel>
+        <mat-icon>bar_chart</mat-icon> Auslastung
+      </ng-template>
+
+      <div class="management-tab-content">
+        <mat-card class="card">
+          <div class="card-header room-card-header">
+            <h3>Raumauslastung</h3>
+          </div>
+          <form class="inline-create-form room-utilization-controls" [formGroup]="utilForm">
+            <mat-form-field class="form-group">
+              <mat-label>Startdatum</mat-label>
+              <input matInput type="date" formControlName="startDate">
+            </mat-form-field>
+            <mat-form-field class="form-group">
+              <mat-label>Enddatum</mat-label>
+              <input matInput type="date" formControlName="endDate">
+            </mat-form-field>
+            <button mat-raised-button class="btn btn-sm btn-primary" id="util-show-btn" type="button" (click)="onLoadUtilization()">
+              <mat-icon>search</mat-icon> Anzeigen
+            </button>
+          </form>
+          <div class="room-utilization-legend">
+            <span class="room-utilization-legend-title">Legende:</span>
+            <span class="room-utilization-legend-item">
+              <span class="room-utilization-legend-swatch room-utilization-legend-low"></span> Niedrig (0–40%)
+            </span>
+            <span class="room-utilization-legend-item">
+              <span class="room-utilization-legend-swatch room-utilization-legend-medium"></span> Mittel (41–70%)
+            </span>
+            <span class="room-utilization-legend-item">
+              <span class="room-utilization-legend-swatch room-utilization-legend-high"></span> Hoch (71–100%)
+            </span>
+          </div>
+          <div id="utilization-results">
+            <div class="utilization-list">
+              @for (item of utilization; track item.roomName) {
+                <div class="utilization-item">
+                  <span class="utilization-name">{{ item.roomName }}</span>
+                  <div class="utilization-bar-wrapper">
+                    <div class="utilization-bar-track">
+                      <div
+                        class="utilization-bar-fill"
+                        [class.low]="item.percent <= 40"
+                        [class.medium]="item.percent > 40 && item.percent <= 70"
+                        [class.high]="item.percent > 70"
+                        [style.width.%]="item.percent">
+                      </div>
+                    </div>
+                    <span class="utilization-percent">{{ item.percent | number:'1.1-1' }}%</span>
+                    <span class="utilization-hours">{{ item.hours | number:'1.1-1' }} h</span>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+  </mat-tab-group>
+</div>
