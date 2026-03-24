@@ -9,6 +9,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCardModule } from '@angular/material/card';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { NotificationService } from '../../core/services/notification.service';
 
 @Component({
   selector: 'app-complete-registration',
@@ -32,6 +33,7 @@ export class CompleteRegistration implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private translate = inject(TranslateService);
+  private notificationService = inject(NotificationService);
 
   token: string | null = null;
   email: string | null = null;
@@ -40,8 +42,8 @@ export class CompleteRegistration implements OnInit {
   message = signal<string | null>(null);
 
   form = this.fb.group({
-    firstname: ['', Validators.required],
-    lastname: ['', Validators.required],
+    firstName: ['', Validators.required],
+    lastName: ['', Validators.required],
     password: ['', [Validators.required, Validators.minLength(6)]],
     confirmPassword: ['', Validators.required],
   }, { validators: this.passwordMatchValidator });
@@ -69,22 +71,17 @@ export class CompleteRegistration implements OnInit {
 
     this.isLoading.set(true);
     this.message.set(null);
-    const { firstname, lastname, password } = this.form.getRawValue();
-
-    this.auth.completeRegistration(this.token, firstname!, lastname!, password!).subscribe({
+    const { firstName, lastName, password } = this.form.getRawValue();
+    
+    this.auth.completeRegistration(this.token, firstName!, lastName!, password!).subscribe({
       next: () => {
         this.isLoading.set(false);
         this.isRedirecting.set(true);
-        this.translate.get('completeRegistration.successMessage').subscribe((res: string) => {
-          this.message.set(res);
-        });
+        this.notificationService.showSuccess('completeRegistration.successMessage');
         setTimeout(() => this.router.navigate(['/login']), 3000);
       },
       error: (err) => {
         this.isLoading.set(false);
-        this.translate.get('completeRegistration.failureMessage').subscribe((res: string) => {
-          this.message.set(err.error?.message || res);
-        });
       },
     });
   }

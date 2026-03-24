@@ -1,33 +1,43 @@
-import { inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Observable, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { Observable } from 'rxjs';
 
-export enum UserRole {
-  Admin = 'ADMIN',
-  Lecturer = 'LECTURER',
-  Student = 'STUDENT'
-}
-
-export enum UserStatus {
-  Active = 'Active',
-  Inactive = 'Inactive',
-  Pending = 'Pending'
-}
+export { UserRole } from '../../core/models/user-role';
+import { UserRole } from '../../core/models/user-role';
 
 export interface User {
   id: string;
+  salutation?: string; // e.g. "Mr.", "Ms.", "Mx." 
+  title?: string;      // e.g. "Dr.", "Prof."
   firstName: string;
   lastName: string;
   email: string;
   role: UserRole;
-  status: UserStatus;
-  
+  enabled: boolean;
+
   // Student Specific Fields
   studentNumber?: string;
   courseOfStudy?: string;
+  courseOfStudyName?: string;
+  specializationId?: string;
+  specializationName?: string;
   startYear?: number;
-  focus?: string;
+}
+
+export interface GroupMember {
+  id: string;
+  studentNumber: string;
+  title?: string;
+  firstName: string;
+  lastName: string;
+}
+
+export interface ModuleLecturer {
+  id: string;
+  title?: string;
+  firstName: string;
+  lastName: string;
 }
 
 export interface InvitationPayload {
@@ -35,118 +45,180 @@ export interface InvitationPayload {
   role: UserRole;
   studentNumber?: string;
   courseOfStudy?: string;
-  focus?: string;
-}
-
-export interface BulkInvitationPayload {
-  invitations: InvitationPayload[];
+  specialization?: string;
 }
 
 export interface StudyGroup {
   id: string;
   name: string;
-  focus: string;
   courseOfStudy: string;
+  specialization: string;
   memberCount: number;
-  memberIds: string[];
+  members: GroupMember[];
 }
 
-export interface UserStats {
-  total: number;
-  staff: number;
-  students: number;
+export enum DegreeType {
+  Bachelor = 'BACHELOR',
+  Master = 'MASTER'
 }
 
-// --- Academic Structure ---
 export interface CourseOfStudy {
   id: string;
   name: string;
+  degreeType: DegreeType;
 }
 
-export interface Focus {
+export interface Specialization {
   id: string;
   name: string;
   courseId: string;
 }
 
+export interface ModuleExam {
+  id: string;
+  type: string;
+  nameDe: string;
+  nameEn: string;
+  shortDe: string;
+  shortEn: string;
+}
+
+export interface Module {
+  id: string;
+  name: string;
+  semester: number;
+  requiredTotalHours: number;
+  possibleExamTypes: ModuleExam[];
+  lecturers: ModuleLecturer[];
+  courseOfStudyId: string;
+  specializationId?: string;
+  preferredExamTypeId?: string;
+}
+
+export interface InstitutionInfo {
+  universityName: string;
+  city: string;
+  sekretariatEmail: string;
+  sekretariatPhone: string;
+  sekretariatOpeningTimes: string;
+  websiteEmail: string;
+  bibliothekUrl: string;
+  mensaUrl: string;
+  impressum: string;
+}
+
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class AdminService {
-  private http = inject(HttpClient);
-  private adminApiUrl = environment.apiUrl + '/admin';
+  private apiUrl = `${environment.apiUrl}/admin`;
 
+  constructor(private http: HttpClient) {}
+
+  // --- User Management ---
   getUsers(): Observable<User[]> {
-    return this.http.get<User[]>(`${this.adminApiUrl}/users`);
+    return this.http.get<User[]>(`${this.apiUrl}/users`);
   }
 
-  getUserStats(): Observable<UserStats> {
-    return this.http.get<UserStats>(`${this.adminApiUrl}/users/stats`);
+  inviteUser(payload: InvitationPayload): Observable<any> {
+    return this.http.post(`${this.apiUrl}/invitations`, payload);
   }
 
-  inviteUser(invitation: InvitationPayload): Observable<void> {
-    return this.http.post<void>(`${this.adminApiUrl}/invite`, invitation);
-  }
-
-  bulkInvite(invitations: InvitationPayload[]): Observable<void> {
-    return this.http.post<void>(`${this.adminApiUrl}/invite/bulk`, { invitations });
+  bulkInvite(invitations: InvitationPayload[]): Observable<any> {
+    return this.http.post(`${this.apiUrl}/invitations/bulk`, { invitations });
   }
 
   updateUser(id: string, user: Partial<User>): Observable<User> {
-    return this.http.put<User>(`${this.adminApiUrl}/users/${id}`, user);
+    return this.http.put<User>(`${this.apiUrl}/users/${id}`, user);
   }
 
   deleteUser(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.adminApiUrl}/users/${id}`);
+    return this.http.delete<void>(`${this.apiUrl}/users/${id}`);
   }
 
-  // --- Student Group Management ---
+  // --- Study Groups ---
   getGroups(): Observable<StudyGroup[]> {
-    return this.http.get<StudyGroup[]>(`${this.adminApiUrl}/groups`);
+    return this.http.get<StudyGroup[]>(`${this.apiUrl}/groups`);
   }
 
   createGroup(group: Partial<StudyGroup>): Observable<StudyGroup> {
-    return this.http.post<StudyGroup>(`${this.adminApiUrl}/groups`, group);
+    return this.http.post<StudyGroup>(`${this.apiUrl}/groups`, group);
   }
 
   addGroupMember(groupId: string, userId: string): Observable<void> {
-    return this.http.post<void>(`${this.adminApiUrl}/groups/${groupId}/members/${userId}`, {});
+    return this.http.post<void>(`${this.apiUrl}/groups/${groupId}/members/${userId}`, {});
   }
 
   removeGroupMember(groupId: string, userId: string): Observable<void> {
-    return this.http.delete<void>(`${this.adminApiUrl}/groups/${groupId}/members/${userId}`);
+    return this.http.delete<void>(`${this.apiUrl}/groups/${groupId}/members/${userId}`);
   }
 
-  // --- Academic Structure Management ---
+  // --- Course of Study ---
   getCourses(): Observable<CourseOfStudy[]> {
-    return this.http.get<CourseOfStudy[]>(`${this.adminApiUrl}/courses`);
+    return this.http.get<CourseOfStudy[]>(`${this.apiUrl}/courses`);
   }
 
   createCourse(course: Partial<CourseOfStudy>): Observable<CourseOfStudy> {
-    return this.http.post<CourseOfStudy>(`${this.adminApiUrl}/courses`, course);
-  }
-
-  updateCourse(id: string, course: Partial<CourseOfStudy>): Observable<CourseOfStudy> {
-    return this.http.put<CourseOfStudy>(`${this.adminApiUrl}/courses/${id}`, course);
+    return this.http.post<CourseOfStudy>(`${this.apiUrl}/courses`, course);
   }
 
   deleteCourse(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.adminApiUrl}/courses/${id}`);
+    return this.http.delete<void>(`${this.apiUrl}/courses/${id}`);
   }
 
-  getFocuses(): Observable<Focus[]> {
-    return this.http.get<Focus[]>(`${this.adminApiUrl}/focuses`);
+  // --- Specialization Areas ---
+  getSpecializations(): Observable<Specialization[]> {
+    return this.http.get<Specialization[]>(`${this.apiUrl}/specializations`);
   }
 
-  createFocus(focus: Partial<Focus>): Observable<Focus> {
-    return this.http.post<Focus>(`${this.adminApiUrl}/focuses`, focus);
+  createSpecialization(specialization: Partial<Specialization>): Observable<Specialization> {
+    return this.http.post<Specialization>(`${this.apiUrl}/specializations`, specialization);
   }
 
-  updateFocus(id: string, focus: Partial<Focus>): Observable<Focus> {
-    return this.http.put<Focus>(`${this.adminApiUrl}/focuses/${id}`, focus);
+  deleteSpecialization(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/specializations/${id}`);
   }
 
-  deleteFocus(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.adminApiUrl}/focuses/${id}`);
+  // --- Module Management ---
+  getModules(): Observable<Module[]> {
+    return this.http.get<Module[]>(`${this.apiUrl}/modules`);
+  }
+
+  createModule(module: Partial<Module>): Observable<Module> {
+    return this.http.post<Module>(`${this.apiUrl}/modules`, module);
+  }
+
+  updateModule(id: string, module: Partial<Module>): Observable<Module> {
+    return this.http.put<Module>(`${this.apiUrl}/modules/${id}`, module);
+  }
+
+  deleteModule(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/modules/${id}`);
+  }
+
+  // --- Institution Information ---
+  getInstitutionInfo(): Observable<InstitutionInfo> {
+    return this.http.get<InstitutionInfo>(`${this.apiUrl}/institution`);
+  }
+
+  updateInstitutionInfo(info: InstitutionInfo): Observable<InstitutionInfo> {
+    return this.http.put<InstitutionInfo>(`${this.apiUrl}/institution`, info);
+  }
+
+  // --- Exam Types ---
+  getExamTypes(): Observable<ModuleExam[]> {
+    return this.http.get<ModuleExam[]>(`${this.apiUrl}/exam-types`);
+  }
+
+  createExamType(examType: Partial<ModuleExam>): Observable<ModuleExam> {
+    return this.http.post<ModuleExam>(`${this.apiUrl}/exam-types`, examType);
+  }
+
+  updateExamType(id: string, examType: Partial<ModuleExam>): Observable<ModuleExam> {
+    return this.http.put<ModuleExam>(`${this.apiUrl}/exam-types/${id}`, examType);
+  }
+
+  deleteExamType(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/exam-types/${id}`);
   }
 }

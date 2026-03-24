@@ -7,8 +7,8 @@ import {UserRole} from '../models/user-role';
 export interface UserProfile {
   id: string;
   email: string;
-  firstname: string;
-  lastname: string;
+  firstName: string;
+  lastName: string;
   role: UserRole;
   theme: string;
   brightness: string;

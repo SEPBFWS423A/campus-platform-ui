@@ -3,12 +3,14 @@ import { DOCUMENT } from '@angular/common';
 import { ThemeBrightness, ThemeColorPalette } from './theme-options';
 import { Auth } from '../auth/auth';
 import { UserService } from '../user/user.service';
+import { NotificationService } from '../services/notification.service';
 
 @Injectable({ providedIn: 'root' })
 export class ThemeController {
   private document = inject(DOCUMENT);
   private auth = inject(Auth);
   private userService = inject(UserService);
+  private notificationService = inject(NotificationService);
   private htmlElement = this.document.documentElement;
 
   private userTheme = computed(() => this.userService.profile()?.theme as ThemeColorPalette | undefined);
@@ -44,7 +46,7 @@ export class ThemeController {
 
   private saveSettings() {
     this.userService.updateThemeSettings(this.activeTheme(), this.activeBrightness()).subscribe({
-      error: (err) => console.error('Failed to save theme settings:', err)
+      next: () => this.notificationService.showSuccess('common.success')
     });
   }
 }

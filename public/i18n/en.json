@@ -18,6 +18,7 @@
     "admin": {
       "home": "Home",
       "userManagement": "User Management",
+      "academicStructure": "Academic Structure",
       "roomManagement": "Room Management",
       "eventManagement": "Event Management",
       "examManagement": "Exam Management"
@@ -91,6 +92,20 @@
     "userUpdateSuccess": "User updated successfully.",
     "userUpdateFailure": "Failed to update user."
   },
+  "academicStructure": {
+    "deleteCourseTitle": "Delete Course",
+    "deleteCourseMessage": "Are you sure you want to delete this course? This will also affect associated modules and specializations.",
+    "deleteSpecializationTitle": "Delete Specialization",
+    "deleteSpecializationMessage": "Are you sure you want to delete this specialization?",
+    "deleteModuleTitle": "Delete Module",
+    "deleteModuleMessage": "Are you sure you want to delete this module?",
+    "deleteModuleSuccess": "Module deleted successfully.",
+    "deleteCourseSuccess": "Course deleted successfully.",
+    "deleteSpecializationSuccess": "Specialization deleted successfully.",
+    "removeUserFromGroupTitle": "Exclude from Group",
+    "removeUserFromGroupMessage": "Are you sure you want to remove this user from the group?",
+    "removeUserFromGroupSuccess": "User removed from group successfully."
+  },
   "user": {
     "firstname": "First Name",
     "lastname": "Last Name",
@@ -149,6 +164,15 @@
     },
     "verification": {
       "invalidToken": "The verification token is invalid."
-    }
+    },
+    "generic": "Something went wrong. Please try again later.",
+    "no_connection": "Cannot connect to server. Please check your internet connection.",
+    "unauthorized": "You are not authorized to perform this operation.",
+    "forbidden": "Access denied.",
+    "server_error": "Internal server error."
+  },
+  "common": {
+    "success": "Action successful",
+    "close": "Close"
   }
 }

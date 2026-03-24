@@ -25,6 +25,7 @@ const NAVIGATION_CONFIG: Record<string, NavLink[]> = {
   [UserRole.Admin]: [
     { path: '/admin', label: 'navigation.admin.home', icon: 'home', exact: true },
     { path: '/admin/user-management', label: 'navigation.admin.userManagement', icon: 'manage_accounts', exact: false },
+    { path: '/admin/academic-structure', label: 'navigation.admin.academicStructure', icon: 'school', exact: false },
     { path: '/admin/room-management', label: 'navigation.admin.roomManagement', icon: 'room_preferences', exact: false },
     { path: '/admin/event-management', label: 'navigation.admin.eventManagement', icon: 'event', exact: false },
     { path: '/admin/exam-management', label: 'navigation.admin.examManagement', icon: 'insert_chart', exact: false }

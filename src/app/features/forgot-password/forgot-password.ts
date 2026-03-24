@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCardModule } from '@angular/material/card';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { NotificationService } from '../../core/services/notification.service';
 
 @Component({
   selector: 'app-forgot-password',
@@ -29,6 +30,7 @@ export class ForgotPassword {
   private fb = inject(FormBuilder);
   private auth = inject(Auth);
   private translate = inject(TranslateService);
+  private notificationService = inject(NotificationService);
 
   isLoading = signal(false);
   linkSent = signal(false);
@@ -50,15 +52,10 @@ export class ForgotPassword {
       next: () => {
         this.isLoading.set(false);
         this.linkSent.set(true);
-        this.translate.get('forgotPassword.successMessage').subscribe((res: string) => {
-          this.message.set(res);
-        });
+        this.notificationService.showSuccess('forgotPassword.successMessage');
       },
       error: (err) => {
         this.isLoading.set(false);
-        this.translate.get('forgotPassword.failureMessage').subscribe((res: string) => {
-          this.message.set(err.error?.message || res);
-        });
         console.error('Forgot password failed:', err);
       }
     });

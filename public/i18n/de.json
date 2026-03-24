@@ -18,6 +18,7 @@
     "admin": {
       "home": "Home",
       "userManagement": "Benutzerverwaltung",
+      "academicStructure": "Akademische Struktur",
       "roomManagement": "Raumverwaltung",
       "eventManagement": "Veranstaltungen",
       "examManagement": "Prüfungsamt"
@@ -91,6 +92,20 @@
     "userUpdateSuccess": "Benutzer erfolgreich aktualisiert.",
     "userUpdateFailure": "Benutzer konnte nicht aktualisiert werden."
   },
+  "academicStructure": {
+    "deleteCourseTitle": "Studiengang löschen",
+    "deleteCourseMessage": "Sind Sie sicher, dass Sie diesen Studiengang löschen möchten? Dies wirkt sich auch auf zugehörige Module und Vertiefungen aus.",
+    "deleteSpecializationTitle": "Vertiefung löschen",
+    "deleteSpecializationMessage": "Sind Sie sicher, dass Sie diese Vertiefung löschen möchten?",
+    "deleteModuleTitle": "Modul löschen",
+    "deleteModuleMessage": "Sind Sie sicher, dass Sie dieses Modul löschen möchten?",
+    "deleteModuleSuccess": "Modul erfolgreich gelöscht.",
+    "deleteCourseSuccess": "Studiengang erfolgreich gelöscht.",
+    "deleteSpecializationSuccess": "Vertiefung erfolgreich gelöscht.",
+    "removeUserFromGroupTitle": "Aus Gruppe entfernen",
+    "removeUserFromGroupMessage": "Sind Sie sicher, dass Sie diesen Benutzer aus der Gruppe entfernen möchten?",
+    "removeUserFromGroupSuccess": "Benutzer erfolgreich aus der Gruppe entfernt."
+  },
   "user": {
     "firstname": "Vorname",
     "lastname": "Nachname",
@@ -149,6 +164,15 @@
     },
     "verification": {
       "invalidToken": "Der Bestätigungs-Token ist ungültig."
-    }
+    },
+    "generic": "Etwas ist schiefgelaufen. Bitte versuchen Sie es später erneut.",
+    "no_connection": "Keine Verbindung zum Server. Bitte prüfen Sie Ihre Internetverbindung.",
+    "unauthorized": "Nicht autorisiert für diese Aktion.",
+    "forbidden": "Zugriff verweigert.",
+    "server_error": "Interner Serverfehler."
+  },
+  "common": {
+    "success": "Aktion erfolgreich",
+    "close": "Schließen"
   }
 }

@@ -7,7 +7,7 @@
       <p style="margin: 0; color: var(--mat-sys-on-surface); font-size: 1.25em;">
         <strong>{{ 'navigation.profileAndSettings.loggedInAs' | translate }}</strong> <span style="font-weight: 500;">
           @if (userService.profile(); as profile) {
-            {{ profile.firstname }} {{ profile.lastname }}
+            {{ profile.firstName }} {{ profile.lastName }}
           } @else {
             Unknown User
           }

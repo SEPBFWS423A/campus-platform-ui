@@ -6,12 +6,13 @@ import {provideTranslateHttpLoader} from '@ngx-translate/http-loader';
 
 import { routes } from './app.routes';
 import { authInterceptor } from './core/auth/auth.interceptor';
+import { notificationInterceptor } from './core/interceptors/notification.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
-    provideHttpClient(withInterceptors([authInterceptor])),
+    provideHttpClient(withInterceptors([authInterceptor, notificationInterceptor])),
     provideTranslateService({
       lang: navigator.language.split('-')[0],
       fallbackLang: 'en',

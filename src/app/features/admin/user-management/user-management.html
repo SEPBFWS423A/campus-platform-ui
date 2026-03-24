@@ -11,10 +11,6 @@
           <mat-icon matListItemIcon>hub</mat-icon>
           <div matListItemTitle>Student Groups</div>
         </a>
-        <a mat-list-item [class.active-link]="activeView() === 'academic'" (click)="switchView('academic')">
-          <mat-icon matListItemIcon>school</mat-icon>
-          <div matListItemTitle>Academic Structures</div>
-        </a>
       </div>
 
       <div class="nav-section">
@@ -65,7 +61,7 @@
                <div mat-card-avatar class="profile-avatar large">
                  <mat-icon>account_circle</mat-icon>
                </div>
-               <mat-card-title>{{ user.firstName }} {{ user.lastName }}</mat-card-title>
+               <mat-card-title>{{ getProfileDisplayName(user) }}</mat-card-title>
                <mat-card-subtitle>{{ user.email }}</mat-card-subtitle>
              </mat-card-header>
              
@@ -73,15 +69,24 @@
                <div class="profile-details">
                  <div class="status-chips">
                    <mat-chip [color]="getRoleColor(user.role)" selected>{{ user.role }}</mat-chip>
-                   <mat-chip [color]="getStatusColor(user.status)" selected>{{ user.status }}</mat-chip>
+                   <mat-chip [color]="getEnabledColor(user.enabled)" selected>{{ user.enabled ? 'Enabled' : 'Disabled' }}</mat-chip>
                  </div>
-   
-                 <div class="info-grid-modern">
-                   <div class="info-tile"><span class="label">ID</span><span class="value">{{ user.studentNumber || '-' }}</span></div>
-                   <div class="info-tile"><span class="label">Course</span><span class="value">{{ user.courseOfStudy || '-' }}</span></div>
-                   <div class="info-tile"><span class="label">Focus</span><span class="value">{{ user.focus || '-' }}</span></div>
-                   <div class="info-tile"><span class="label">Started</span><span class="value">{{ user.startYear || '-' }}</span></div>
-                 </div>
+                    <div class="info-grid-modern">
+                    @if (user.salutation) {
+                    <div class="info-tile"><span class="label">Salutation</span><span class="value">{{ user.salutation }}</span></div>
+                    }
+                    @if (user.title) {
+                    <div class="info-tile"><span class="label">Title</span><span class="value">{{ user.title }}</span></div>
+                    }
+                    @if (user.role === 'STUDENT') {
+                    <div class="info-tile"><span class="label">ID</span><span class="value">{{ user.studentNumber || '-' }}</span></div>
+                    <div class="info-tile"><span class="label">Course</span><span class="value">{{ user.courseOfStudyName || '-' }}</span>
+                    </div>
+                    <div class="info-tile"><span class="label">Specialization</span><span class="value">{{ user.specializationName ||
+                        '-' }}</span></div>
+                    <div class="info-tile"><span class="label">Started</span><span class="value">{{ user.startYear || '-' }}</span></div>
+                    }
+                  </div>
    
                  @if (user.role === 'STUDENT') {
                    <div class="groups-section-modern">
@@ -110,6 +115,22 @@
                 <form [formGroup]="userEditForm" class="edit-form-stack">
                    <div class="form-row">
                       <mat-form-field appearance="outline">
+                         <mat-label>Salutation</mat-label>
+                         <mat-select formControlName="salutation">
+                            <mat-option [value]="undefined">- None -</mat-option>
+                            @for (s of salutations; track s) { <mat-option [value]="s">{{ s }}</mat-option> }
+                         </mat-select>
+                      </mat-form-field>
+                      <mat-form-field appearance="outline">
+                         <mat-label>Title</mat-label>
+                         <mat-select formControlName="title">
+                            <mat-option [value]="undefined">- None -</mat-option>
+                            @for (t of academicTitles; track t) { <mat-option [value]="t">{{ t }}</mat-option> }
+                         </mat-select>
+                      </mat-form-field>
+                   </div>
+                   <div class="form-row">
+                      <mat-form-field appearance="outline">
                          <mat-label>First Name</mat-label>
                          <input matInput formControlName="firstName">
                       </mat-form-field>
@@ -131,14 +152,16 @@
                          </mat-select>
                       </mat-form-field>
                       <mat-form-field appearance="outline">
-                         <mat-label>Status</mat-label>
-                         <mat-select formControlName="status">
-                            @for (s of selectableStatuses(); track s) { <mat-option [value]="s">{{ s }}</mat-option> }
+                         <mat-label>Account Status</mat-label>
+                         <mat-select formControlName="enabled">
+                            <mat-option [value]="true">Enabled</mat-option>
+                            <mat-option [value]="false">Disabled</mat-option>
                          </mat-select>
                       </mat-form-field>
                    </div>
 
-                   <div class="divider">Academic Information</div>
+                    @if (userEditForm.get('role')?.value === 'STUDENT') {
+                       <div class="divider">Academic Information</div>
 
                    <div class="form-row">
                       <mat-form-field appearance="outline">
@@ -147,20 +170,29 @@
                       </mat-form-field>
                       <mat-form-field appearance="outline">
                          <mat-label>Course of Study</mat-label>
-                         <input matInput formControlName="courseOfStudy">
+                         <mat-select formControlName="courseOfStudy">
+                           @for(c of allCoursesData(); track c.id) {
+                            <mat-option [value]="c.name">{{ c.name }}</mat-option>
+                           }
+                         </mat-select>
                       </mat-form-field>
                    </div>
                    <div class="form-row">
                       <mat-form-field appearance="outline">
-                         <mat-label>Focus Area</mat-label>
-                         <input matInput formControlName="focus">
+                         <mat-label>Specialization</mat-label>
+                         <mat-select formControlName="specializationId">
+                           @for(s of allSpecializationsData(); track s.id) {
+                            <mat-option [value]="s.id">{{ s.name }}</mat-option>
+                           }
+                         </mat-select>
                       </mat-form-field>
                       <mat-form-field appearance="outline">
                          <mat-label>Start Year</mat-label>
                          <input matInput type="number" formControlName="startYear">
                       </mat-form-field>
-                   </div>
-                </form>
+                    </div>
+                    }
+                 </form>
              </mat-card-content>
              <mat-card-actions align="end" class="edit-actions">
                 <button mat-button (click)="cancelEditing()">Cancel</button>
@@ -174,7 +206,7 @@
 
   <mat-sidenav-content class="main-content">
     <!-- Context-aware Header -->
-    @if (activeView() !== 'onboarding' && activeView() !== 'academic') {
+    @if (activeView() !== 'onboarding') {
       <header class="dashboard-header">
         <div class="search-and-actions">
           <mat-form-field appearance="outline" class="mega-search">
@@ -200,10 +232,10 @@
             </mat-select>
           </mat-form-field>
           <mat-form-field appearance="outline" dense>
-            <mat-label>Focus</mat-label>
-            <mat-select [value]="focusFilter()" (selectionChange)="focusFilter.set($event.value)">
-              <mat-option value="">All Focuses</mat-option>
-              @for (f of focuses(); track f) { <mat-option [value]="f">{{ f }}</mat-option> }
+            <mat-label>Specialization</mat-label>
+            <mat-select [value]="specializationFilter()" (selectionChange)="specializationFilter.set($event.value)">
+              <mat-option value="">All Specializations</mat-option>
+              @for (s of specializationsByCourse(); track s) { <mat-option [value]="s">{{ s }}</mat-option> }
             </mat-select>
           </mat-form-field>
           @if (activeView() === 'directory') {
@@ -224,13 +256,14 @@
       @if (activeView() === 'directory') {
         <mat-card class="data-view-card">
           <mat-table [dataSource]="filteredUsers()" class="modern-table">
+
             <ng-container matColumnDef="firstName">
               <th mat-header-cell *matHeaderCellDef>First Name</th>
-              <td mat-cell *matCellDef="let element" class="bold-text">{{ element.firstName || '-' }}</td>
+              <td mat-cell *matCellDef="let element" class="bold-text">{{ element.firstName }}</td>
             </ng-container>
             <ng-container matColumnDef="lastName">
               <th mat-header-cell *matHeaderCellDef>Last Name</th>
-              <td mat-cell *matCellDef="let element" class="bold-text">{{ element.lastName || '-' }}</td>
+              <td mat-cell *matCellDef="let element" class="bold-text">{{ element.lastName }}</td>
             </ng-container>
             <ng-container matColumnDef="id">
               <th mat-header-cell *matHeaderCellDef>User ID</th>
@@ -246,22 +279,13 @@
                 <mat-chip [color]="getRoleColor(element.role)" selected>{{ element.role }}</mat-chip>
               </td>
             </ng-container>
-            <ng-container matColumnDef="courseOfStudy">
-              <th mat-header-cell *matHeaderCellDef>Course</th>
-              <td mat-cell *matCellDef="let element">{{ element.courseOfStudy || '-' }}</td>
-            </ng-container>
-            <ng-container matColumnDef="focus">
-              <th mat-header-cell *matHeaderCellDef>Focus</th>
-              <td mat-cell *matCellDef="let element">{{ element.focus || '-' }}</td>
-            </ng-container>
-            <ng-container matColumnDef="startYear">
-              <th mat-header-cell *matHeaderCellDef>Year</th>
-              <td mat-cell *matCellDef="let element">{{ element.startYear || '-' }}</td>
-            </ng-container>
-            <ng-container matColumnDef="status">
+
+            <ng-container matColumnDef="enabled">
               <th mat-header-cell *matHeaderCellDef>Status</th>
               <td mat-cell *matCellDef="let element">
-                <span class="status-indicator" [class]="element.status">{{ element.status }}</span>
+                <span class="status-indicator" [class.enabled]="element.enabled" [class.disabled]="!element.enabled">
+                  {{ element.enabled ? 'Enabled' : 'Disabled' }}
+                </span>
               </td>
             </ng-container>
             <ng-container matColumnDef="actions">
@@ -275,85 +299,10 @@
                 </mat-menu>
               </td>
             </ng-container>
-            <tr mat-header-row *matHeaderRowDef="['firstName', 'lastName', 'id', 'email', 'role', 'courseOfStudy', 'focus', 'startYear', 'status', 'actions']"></tr>
-            <tr mat-row *matRowDef="let element; columns: ['firstName', 'lastName', 'id', 'email', 'role', 'courseOfStudy', 'focus', 'startYear', 'status', 'actions']" (click)="selectUser(element)" class="clickable-row"></tr>
+            <tr mat-header-row *matHeaderRowDef="['firstName', 'lastName', 'id', 'email', 'role', 'enabled', 'actions']"></tr>
+            <tr mat-row *matRowDef="let element; columns: ['firstName', 'lastName', 'id', 'email', 'role', 'enabled', 'actions']" (click)="selectUser(element)" class="clickable-row"></tr>
           </mat-table>
         </mat-card>
-      }
-
-      <!-- ACADEMIC STRUCTURES VIEW -->
-      @if (activeView() === 'academic') {
-        <div class="academic-view-container animate-fade-in">
-           <div class="academic-header">
-              <div class="title-block">
-                <h1>Academic Structure</h1>
-                <p>Configure the foundational courses and specialization areas.</p>
-              </div>
-              <button mat-flat-button color="primary" (click)="showAddCourseForm.set(!showAddCourseForm())">
-                <mat-icon>add</mat-icon> {{ showAddCourseForm() ? 'Close' : 'Add Course' }}
-              </button>
-           </div>
-
-           @if (showAddCourseForm()) {
-              <mat-card class="creation-overlay-card">
-                 <mat-card-header><mat-card-title>Create New Course of Study</mat-card-title></mat-card-header>
-                 <mat-card-content>
-                    <mat-form-field appearance="outline" class="full-width">
-                       <mat-label>Course Name</mat-label>
-                       <input matInput [formControl]="courseNameControl" placeholder="e.g. Applied Psychology">
-                    </mat-form-field>
-                 </mat-card-content>
-                 <mat-card-actions align="end">
-                    <button mat-button (click)="showAddCourseForm.set(false)">Cancel</button>
-                    <button mat-flat-button color="primary" (click)="addCourse()" [disabled]="courseNameControl.invalid">Create Course</button>
-                 </mat-card-actions>
-              </mat-card>
-           }
-
-           <div class="course-grid">
-              @for (course of allCoursesData(); track course.id) {
-                <mat-card class="modern-group-card">
-                   <mat-card-header>
-                      <div mat-card-avatar class="group-icon-avatar"><mat-icon>school</mat-icon></div>
-                      <mat-card-title>{{ course.name }}</mat-card-title>
-                      <div class="header-actions">
-                         <button mat-icon-button color="warn" (click)="deleteCourse(course.id)"><mat-icon>delete</mat-icon></button>
-                      </div>
-                   </mat-card-header>
-                   <mat-card-content>
-                      <div class="focus-section-modern">
-                         <div class="section-header">
-                            <span>Specialization Focuses</span>
-                            <button mat-icon-button color="primary" (click)="focusForm.get('courseId')?.setValue(course.id); showAddFocusForm.set(!showAddFocusForm())">
-                               <mat-icon>add_circle_outline</mat-icon>
-                            </button>
-                         </div>
-
-                         @if (showAddFocusForm() && focusForm.get('courseId')?.value === course.id) {
-                            <div class="inline-add-field animate-slide-down">
-                               <mat-form-field appearance="outline" dense>
-                                  <input matInput placeholder="New Focus Area..." [formControl]="focusNameControl">
-                               </mat-form-field>
-                               <button mat-icon-button color="primary" (click)="addFocus()" [disabled]="focusNameControl.invalid"><mat-icon>check</mat-icon></button>
-                            </div>
-                         }
-
-                         <div class="focus-chip-container">
-                            @for (focus of getFocusesForCourse(course.id); track focus.id) {
-                               <mat-chip class="modern-focus-chip" (removed)="deleteFocus(focus.id)">
-                                  {{ focus.name }}
-                                  <button matChipRemove><mat-icon>close</mat-icon></button>
-                               </mat-chip>
-                            } @empty {
-                               <span class="empty-hint">Click the + icon to add focuses.</span>
-                            }
-                         </div>
-                      </div>
-                   </mat-card-content>
-                </mat-card>
-              }
-           </div>
-        </div>
       }
 
       <!-- ONBOARDING SURFACES -->
@@ -367,8 +316,23 @@
                    <h2>Single Provisioning</h2>
                    <p>Invite a student or lecturer directly to the platform.</p>
                 </div>
-                <!-- ... same as before -->
                 <form [formGroup]="inviteForm" class="modern-form-stack">
+                  <div class="form-row">
+                    <mat-form-field appearance="fill">
+                      <mat-label>Salutation</mat-label>
+                      <mat-select formControlName="salutation">
+                         <mat-option [value]="undefined">- None -</mat-option>
+                         @for (s of salutations; track s) { <mat-option [value]="s">{{ s }}</mat-option> }
+                      </mat-select>
+                    </mat-form-field>
+                    <mat-form-field appearance="fill">
+                      <mat-label>Title</mat-label>
+                      <mat-select formControlName="title">
+                         <mat-option [value]="undefined">- None -</mat-option>
+                         @for (t of academicTitles; track t) { <mat-option [value]="t">{{ t }}</mat-option> }
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
                   <div class="form-section">
                     <mat-form-field appearance="fill" class="full-width">
                       <mat-label>Email Address</mat-label>
@@ -392,18 +356,27 @@
                       <div class="form-row-2">
                         <mat-form-field appearance="fill">
                           <mat-label>Course</mat-label>
-                          <input matInput formControlName="courseOfStudy">
+                          <mat-select formControlName="courseOfStudy">
+                            @for(c of allCoursesData(); track c.id) {
+                              <mat-option [value]="c.name">{{ c.name }}</mat-option>
+                            }
+                          </mat-select>
                         </mat-form-field>
                         <mat-form-field appearance="fill">
-                          <mat-label>Focus</mat-label>
-                          <input matInput formControlName="focus">
+                          <mat-label>Specialization</mat-label>
+                          <mat-select formControlName="specializationId">
+                            @for(s of specializationsByCourse(); track s) {
+                              <mat-option [value]="s">{{ s }}</mat-option>
+                            }
+                          </mat-select>
                         </mat-form-field>
                       </div>
                     </div>
                   }
                   <div class="pane-footer">
-                     <button mat-flat-button color="primary" class="giant-button" [disabled]="inviteForm.invalid" (click)="sendInvitation()">
-                        Invite New Member
+                     <button mat-flat-button color="primary" class="giant-button" [disabled]="inviteForm.invalid || isInviting()" (click)="sendInvitation()">
+                        @if (isInviting()) { <mat-spinner diameter="24"></mat-spinner> }
+                        @else { Invite New Member }
                      </button>
                   </div>
                 </form>
@@ -422,7 +395,7 @@
                    <form [formGroup]="bulkInviteForm" class="modern-form-stack">
                      <div class="instruction-banner">
                         <mat-icon>info</mat-icon>
-                        <span>Format: <code>email ; studentId ; course ; focus</code></span>
+                        <span>Format: <code>email ; studentId ; course ; specialization</code></span>
                      </div>
                      <mat-form-field appearance="fill" class="full-width">
                        <mat-label>List Data</mat-label>
@@ -440,13 +413,14 @@
                             <input matInput formControlName="defaultCourse">
                          </mat-form-field>
                          <mat-form-field appearance="fill">
-                            <mat-label>Default Focus</mat-label>
-                            <input matInput formControlName="defaultFocus">
+                            <mat-label>Default Specialization</mat-label>
+                            <input matInput formControlName="defaultSpecialization">
                          </mat-form-field>
                      </div>
                      <div class="pane-footer">
-                        <button mat-flat-button color="accent" class="giant-button" [disabled]="bulkInviteForm.invalid" (click)="sendBulkInvitations()">
-                           Execute Batch Invitations
+                        <button mat-flat-button color="accent" class="giant-button" [disabled]="bulkInviteForm.invalid || isInviting()" (click)="sendBulkInvitations()">
+                           @if (isInviting()) { <mat-spinner diameter="24" class="white-spinner"></mat-spinner> }
+                           @else { Execute Batch Invitations }
                         </button>
                      </div>
                    </form>
@@ -480,8 +454,9 @@
                    }
 
                    <div class="pane-footer center-align">
-                      <button mat-flat-button color="primary" class="giant-button high-action" [disabled]="csvInvitations().length === 0" (click)="sendCsvInvitations()">
-                         Launch Automated Intake
+                      <button mat-flat-button color="primary" class="giant-button high-action" [disabled]="csvInvitations().length === 0 || isInviting()" (click)="sendCsvInvitations()">
+                         @if (isInviting()) { <mat-spinner diameter="24"></mat-spinner> }
+                         @else { Launch Automated Intake }
                       </button>
                    </div>
                 </div>
@@ -498,20 +473,40 @@
               <mat-card-header><mat-card-title>Create Study Group</mat-card-title></mat-card-header>
               <mat-card-content>
                 <form [formGroup]="groupForm" class="creation-form">
-                  <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>Group Name</mat-label>
-                    <input matInput formControlName="name">
-                  </mat-form-field>
                   <div class="form-row">
                     <mat-form-field appearance="outline">
                       <mat-label>Course of Study</mat-label>
-                      <input matInput formControlName="courseOfStudy">
+                      <mat-select formControlName="courseOfStudy">
+                        @for(c of allCoursesData(); track c.id) {
+                          <mat-option [value]="c.name">{{ c.name }}</mat-option>
+                        }
+                      </mat-select>
                     </mat-form-field>
                     <mat-form-field appearance="outline">
-                      <mat-label>Focus</mat-label>
-                      <input matInput formControlName="focus">
+                      <mat-label>Specialization</mat-label>
+                      <input matInput formControlName="specialization">
                     </mat-form-field>
                   </div>
+                  <div class="form-row">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Start Year</mat-label>
+                      <input matInput type="number" formControlName="startYear">
+                    </mat-form-field>
+                    <mat-form-field appearance="outline">
+                      <mat-label>Start Quartal</mat-label>
+                      <mat-select formControlName="startQuartal">
+                        <mat-option [value]="1">1. Quartal</mat-option>
+                        <mat-option [value]="2">2. Quartal</mat-option>
+                        <mat-option [value]="3">3. Quartal</mat-option>
+                        <mat-option [value]="4">4. Quartal</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Group Name</mat-label>
+                    <input matInput formControlName="name">
+                    <mat-hint>Automatically generated or manually defined.</mat-hint>
+                  </mat-form-field>
                 </form>
               </mat-card-content>
               <mat-card-actions align="end">
@@ -532,7 +527,7 @@
                 <mat-card-content>
                   <div class="group-stats">
                     <div class="stat"><span class="label">Members</span><span class="value">{{ group.memberCount }}</span></div>
-                    <div class="stat"><span class="label">Focus</span><span class="value">{{ group.focus }}</span></div>
+                    <div class="stat"><span class="label">Specialization</span><span class="value">{{ group.specialization }}</span></div>
                   </div>
                 </mat-card-content>
               </mat-card>
@@ -549,7 +544,7 @@
               <button mat-icon-button (click)="selectedGroup.set(null)"><mat-icon>arrow_back</mat-icon></button>
               <div class="title-block">
                 <h1>{{ selectedGroup()?.name }}</h1>
-                <p>{{ selectedGroup()?.courseOfStudy }} • {{ selectedGroup()?.focus }}</p>
+                <p>{{ selectedGroup()?.courseOfStudy }} • {{ selectedGroup()?.specialization }}</p>
               </div>
               <span class="member-count-badge">{{ selectedGroup()?.memberCount }} Students</span>
             </div>
@@ -562,7 +557,7 @@
                   <input matInput [formControl]="addMemberControl" [matAutocomplete]="auto">
                   <mat-autocomplete #auto="matAutocomplete" (optionSelected)="addMember($event.option.value)">
                     @for (s of filteredStudentsAutoComplete(); track s.id) {
-                      <mat-option [value]="s">{{ s.firstName }} {{ s.lastName }} ({{ s.studentNumber }})</mat-option>
+                      <mat-option [value]="s">{{ getAssociationDisplayName(s) }} ({{ s.studentNumber }})</mat-option>
                     }
                   </mat-autocomplete>
                 </mat-form-field>
@@ -572,11 +567,11 @@
                 <mat-table [dataSource]="currentGroupMembers()" class="compact-table">
                   <ng-container matColumnDef="name">
                     <th mat-header-cell *matHeaderCellDef>Student Name</th>
-                    <td mat-cell *matCellDef="let s">{{ s.firstName }} {{ s.lastName }}</td>
+                    <td mat-cell *matCellDef="let s">{{ getAssociationDisplayName(s) }}</td>
                   </ng-container>
                   <ng-container matColumnDef="id">
                     <th mat-header-cell *matHeaderCellDef>ID</th>
-                    <td mat-cell *matCellDef="let s" class="dimmed-text">{{ s.studentNumber }}</td>
+                    <td mat-cell *matCellDef="let s" class="dimmed-text">{{ s.studentProfile?.studentNumber }}</td>
                   </ng-container>
                   <ng-container matColumnDef="actions">
                     <th mat-header-cell *matHeaderCellDef></th>

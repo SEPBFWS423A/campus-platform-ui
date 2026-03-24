@@ -19,8 +19,9 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { startWith, map } from 'rxjs/operators';
-import { AdminService, User, StudyGroup, UserRole, UserStatus, InvitationPayload, CourseOfStudy, Focus } from '../admin.service';
+import { startWith, map, finalize } from 'rxjs/operators';
+import { AdminService, User, StudyGroup, InvitationPayload, CourseOfStudy, Specialization, DegreeType, InstitutionInfo, GroupMember } from '../admin.service';
+import { UserRole } from '../../../core/models/user-role';
 import { NotificationService } from '../../../core/services/notification.service';
 import { ConfirmationDialogComponent } from '../../../shared/components/confirmation-dialog/confirmation-dialog.component';
 
@@ -64,13 +65,12 @@ export class UserManagement implements OnInit {
   private usersData = signal<User[]>([]);
   private groupsData = signal<StudyGroup[]>([]);
   private coursesData = signal<CourseOfStudy[]>([]);
-  private focusesData = signal<Focus[]>([]);
+  private specializationsData = signal<Specialization[]>([]);
 
   // View state
-  activeView = signal<'directory' | 'groups' | 'onboarding' | 'academic'>('directory');
+  activeView = signal<'directory' | 'groups' | 'onboarding'>('directory');
   selectedUser = signal<User | null>(null);
   selectedGroup = signal<StudyGroup | null>(null);
-  selectedAcademicCourse = signal<CourseOfStudy | null>(null);
   isDrawerOpen = signal(false);
   isEditingUser = signal(false);
 
@@ -79,68 +79,67 @@ export class UserManagement implements OnInit {
 
   // Creation State
   showAddGroupForm = signal(false);
-  showAddCourseForm = signal(false);
-  showAddFocusForm = signal(false);
+  isInviting = signal(false);
+  institutionInfo = signal<InstitutionInfo | null>(null);
+  private isNameManuallyEdited = false;
+  
+  salutations = ['Mr.', 'Ms.', 'Mx.'];
+  academicTitles = ['Dr.', 'Prof.', 'Prof. Dr.', 'Dr. h.c.'];
   
   // Forms
   inviteForm = this.fb.group({
+    salutation: [''],
+    title: [''],
     email: ['', [Validators.required, Validators.email]],
     role: [UserRole.Student, Validators.required],
     studentNumber: [''],
     courseOfStudy: [''],
-    focus: ['']
+    specializationId: ['']
   });
 
   bulkInviteForm = this.fb.group({
     emails: ['', Validators.required],
     role: [UserRole.Student, Validators.required],
     defaultCourse: [''],
-    defaultFocus: ['']
+    defaultSpecialization: ['']
   });
 
   groupForm = this.fb.group({
-    name: ['', Validators.required],
-    focus: ['', Validators.required],
-    courseOfStudy: ['', Validators.required]
+    courseOfStudy: ['', Validators.required],
+    specialization: ['', Validators.required],
+    startYear: [new Date().getFullYear(), [Validators.required, Validators.min(2000), Validators.max(2100)]],
+    startQuartal: [4, [Validators.required, Validators.min(1), Validators.max(4)]],
+    name: ['', Validators.required]
   });
 
   userEditForm: FormGroup = this.fb.group({
+    salutation: [''],
+    title: [''],
     firstName: ['', Validators.required],
     lastName: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
     role: ['', Validators.required],
-    status: ['', Validators.required],
+    enabled: [true, Validators.required],
     studentNumber: [''],
     courseOfStudy: [''],
-    focus: [''],
+    courseOfStudyName: [''],
+    specializationId: [''],
+    specializationName: [''],
     startYear: ['']
   });
-
-  courseForm = this.fb.group({
-    name: ['', Validators.required]
-  });
-
-  get courseNameControl() { return this.courseForm.get('name') as FormControl; }
-
-  focusForm = this.fb.group({
-    name: ['', Validators.required],
-    courseId: ['', Validators.required]
-  });
-
-  get focusNameControl() { return this.focusForm.get('name') as FormControl; }
 
   // Signals
   allUsers = this.usersData.asReadonly();
   allGroups = this.groupsData.asReadonly();
   allCoursesData = this.coursesData.asReadonly();
-  allFocusesData = this.focusesData.asReadonly();
+  allSpecializationsData = this.specializationsData.asReadonly();
 
   // Filter signals
   searchFilter = signal('');
   roleFilter = signal<UserRole | ''>('');
   courseFilter = signal<string | ''>('');
   yearFilter = signal<number | ''>('');
-  focusFilter = signal<string | ''>('');
+  specializationFilter = signal<string | ''>('');
 
   // Auto-complete
   addMemberControl = new FormControl('');
@@ -156,7 +155,7 @@ export class UserManagement implements OnInit {
     const role = this.roleFilter();
     const course = this.courseFilter();
     const year = this.yearFilter();
-    const focus = this.focusFilter();
+    const specialization = this.specializationFilter();
 
     return this.allUsers().filter(u => {
       const fullName = `${u.firstName || ''} ${u.lastName || ''}`.toLowerCase();
@@ -164,10 +163,10 @@ export class UserManagement implements OnInit {
         fullName.includes(search) ||
         (u.email || '').toLowerCase().includes(search) ||
         (u.studentNumber || '').toLowerCase().includes(search) ||
-        (u.courseOfStudy || '').toLowerCase().includes(search)
+        (u.courseOfStudyName || '').toLowerCase().includes(search)
       );
 
-      return matchesSearch && (!role || u.role === role) && (!course || u.courseOfStudy === course) && (!year || u.startYear === year) && (!focus || u.focus === focus);
+      return matchesSearch && (!role || u.role === role) && (!course || u.courseOfStudyName === course) && (!year || u.startYear === year) && (!specialization || u.specializationName === specialization);
     });
   });
 
@@ -177,60 +176,81 @@ export class UserManagement implements OnInit {
     return this.allGroups().filter(g => (!search || g.name.toLowerCase().includes(search)) && (!course || g.courseOfStudy === course));
   });
 
+  getProfileDisplayName(u: any) {
+    const parts = [u.salutation, u.title, u.firstName, u.lastName].filter(p => !!p);
+    return parts.join(' ');
+  }
+
+  getAssociationDisplayName(u: any) {
+    const parts = [u.title, u.firstName, u.lastName].filter(p => !!p);
+    return parts.join(' ');
+  }
+
   currentGroupMembers = computed(() => {
     const group = this.selectedGroup();
-    if (!group) return [];
-    return this.allUsers().filter(u => group.memberIds.includes(u.id));
+    return group ? group.members : [];
   });
 
   roles = Object.values(UserRole);
-  statuses = Object.values(UserStatus);
-  selectableStatuses = computed(() => this.statuses.filter(s => s !== UserStatus.Pending));
-  courses = computed(() => Array.from(new Set(this.allUsers().map(u => u.courseOfStudy).filter(Boolean))));
+
+  courses = computed(() => Array.from(new Set(this.coursesData().map(c => c.name))));
   years = computed(() => Array.from(new Set(this.allUsers().map(u => u.startYear).filter(Boolean))).sort());
-  focuses = computed(() => Array.from(new Set(this.allUsers().map(u => u.focus).filter(Boolean))));
+  specializationsByCourse = computed(() => {
+    const courseName = this.courseFilter();
+    if (!courseName) return Array.from(new Set(this.specializationsData().map(f => f.name)));
+    const courseId = this.coursesData().find(c => c.name === courseName)?.id;
+    return this.specializationsData().filter(f => f.courseId === courseId).map(f => f.name);
+  });
 
   ngOnInit() {
     this.loadAllData();
     this.setupAutocomplete();
+    this.setupGroupNameAutoGeneration();
+  }
+
+  setupGroupNameAutoGeneration() {
+    this.groupForm.get('name')?.valueChanges.subscribe(() => {
+      if (this.groupForm.get('name')?.dirty) {
+        this.isNameManuallyEdited = true;
+      }
+    });
+
+    this.groupForm.valueChanges.subscribe(() => {
+      if (this.isNameManuallyEdited) return;
+      this.generateGroupName();
+    });
+  }
+
+  generateGroupName() {
+    const { courseOfStudy, specialization, startYear, startQuartal } = this.groupForm.value;
+    const info = this.institutionInfo();
+    
+    if (!courseOfStudy || !specialization || !startYear || !startQuartal || !info) return;
+
+    const campusLetter = (info.city || 'X')[0].toUpperCase();
+    const uniLetter = (info.universityName || 'X')[0].toUpperCase();
+    const courseLetter = (courseOfStudy || 'X')[0].toUpperCase();
+    const specLetter = (specialization || 'X')[0].toUpperCase();
+    const quartal = startQuartal;
+    const yearDigits = startYear.toString().slice(-2);
+    
+    const course = this.coursesData().find(c => c.name === courseOfStudy);
+    const degreeLetter = course?.degreeType === DegreeType.Bachelor ? 'A' : 'M';
+
+    const generatedName = `${campusLetter}${uniLetter}${courseLetter}${specLetter}${quartal}${yearDigits}${degreeLetter}`;
+    
+    this.groupForm.get('name')?.setValue(generatedName, { emitEvent: false });
   }
 
   loadAllData() {
-    this.useMockData(); // Force mock data for immediate UI review
-    
-    // Attempting to Load Real Data, fallback to UI Simulation if needed
-    this.adminService.getUsers().subscribe({
-      next: (users) => this.usersData.set(users),
-      error: () => console.log('Mock data active (API error)')
-    });
+    this.adminService.getUsers().subscribe(users => this.usersData.set(users));
     this.adminService.getGroups().subscribe(groups => this.groupsData.set(groups));
     this.adminService.getCourses().subscribe(courses => this.coursesData.set(courses));
-    this.adminService.getFocuses().subscribe(focuses => this.focusesData.set(focuses));
+    this.adminService.getSpecializations().subscribe(specializations => this.specializationsData.set(specializations));
+    this.adminService.getInstitutionInfo().subscribe(info => this.institutionInfo.set(info));
   }
 
-  // --- UI MOCK DATA (DELETE LATER) ---
-  private useMockData() {
-    this.usersData.set([
-      { id: '1', firstName: 'Julia', lastName: 'Schmidt', email: 'j.schmidt@campus.de', role: UserRole.Student, status: UserStatus.Active, studentNumber: '702155', courseOfStudy: 'Computer Science', focus: 'AI & Data Science', startYear: 2023 },
-      { id: '2', firstName: 'Marc', lastName: 'Weber', email: 'm.weber@faculty.de', role: UserRole.Lecturer, status: UserStatus.Active },
-      { id: '3', firstName: 'Lukas', lastName: 'Müller', email: 'l.mueller@campus.de', role: UserRole.Student, status: UserStatus.Pending, studentNumber: '702160', courseOfStudy: 'Business Informatics', startYear: 2024 },
-      { id: '4', firstName: 'Sarah', lastName: 'König', email: 's.koenig@admin.de', role: UserRole.Admin, status: UserStatus.Active }
-    ]);
-    this.groupsData.set([
-      { id: 'g1', name: 'AI Study Lab', courseOfStudy: 'Computer Science', focus: 'AI & Data Science', memberCount: 1, memberIds: ['1'] },
-      { id: 'g2', name: 'Business Strategy Group', courseOfStudy: 'Business Informatics', focus: 'Management', memberCount: 0, memberIds: [] }
-    ]);
-    this.coursesData.set([
-       { id: 'c1', name: 'Computer Science' },
-       { id: 'c2', name: 'Business Informatics' }
-    ]);
-    this.focusesData.set([
-       { id: 'f1', name: 'AI & Data Science', courseId: 'c1' },
-       { id: 'f2', name: 'Software Architecture', courseId: 'c1' },
-       { id: 'f3', name: 'Digital Transformation', courseId: 'c2' },
-       { id: 'f4', name: 'Management', courseId: 'c2' }
-    ]);
-  }
+
 
   setupAutocomplete() {
     this.addMemberControl.valueChanges.pipe(
@@ -239,15 +259,14 @@ export class UserManagement implements OnInit {
         const str = (typeof val === 'string' ? val : '').toLowerCase();
         const g = this.selectedGroup();
         if (!g) return [];
-        return this.allUsers().filter(u => u.role === UserRole.Student && !g.memberIds.includes(u.id) && (u.firstName.toLowerCase().includes(str) || u.lastName.toLowerCase().includes(str) || u.studentNumber?.includes(str)));
+        return this.allUsers().filter(u => u.role === UserRole.Student && !g.members.some(m => m.id === u.id) && (this.getAssociationDisplayName(u).toLowerCase().includes(str) || u.studentNumber?.includes(str)));
       })
     ).subscribe(students => this.filteredStudentsAutoComplete.set(students as User[]));
   }
 
-  switchView(view: 'directory' | 'groups' | 'onboarding' | 'academic') {
+  switchView(view: 'directory' | 'groups' | 'onboarding') {
     this.activeView.set(view);
     this.selectedGroup.set(null);
-    this.selectedAcademicCourse.set(null);
     this.isDrawerOpen.set(false);
   }
 
@@ -260,71 +279,37 @@ export class UserManagement implements OnInit {
         this.usersData.update(users => users.map(u => u.id === user.id ? updatedUser : u));
         this.selectedUser.set(updatedUser);
         this.isEditingUser.set(false);
-        this.notificationService.showSuccess('User updated successfully');
+        this.notificationService.showSuccess('userManagement.userUpdateSuccess');
       });
     }
   }
 
   selectGroup(group: StudyGroup) { this.selectedGroup.set(group); }
 
-  // --- ACADEMIC CRUD ---
-  addCourse() {
-    if (this.courseForm.invalid) return;
-    this.adminService.createCourse(this.courseForm.value as any).subscribe(c => {
-      this.coursesData.update(list => [...list, c]);
-      this.courseForm.reset();
-      this.showAddCourseForm.set(false);
-      this.notificationService.showSuccess('Course of Study created');
-    });
-  }
-
-  deleteCourse(id: string) {
-    this.adminService.deleteCourse(id).subscribe(() => {
-      this.coursesData.update(list => list.filter(c => c.id !== id));
-      this.focusesData.update(list => list.filter(f => f.courseId !== id));
-      this.notificationService.showSuccess('Course removed');
-    });
-  }
-
-  addFocus() {
-    if (this.focusForm.invalid) return;
-    this.adminService.createFocus(this.focusForm.value as any).subscribe(f => {
-      this.focusesData.update(list => [...list, f]);
-      this.focusForm.reset({ courseId: f.courseId });
-      this.showAddFocusForm.set(false);
-      this.notificationService.showSuccess('Focus Area added');
-    });
-  }
-
-  deleteFocus(id: string) {
-    this.adminService.deleteFocus(id).subscribe(() => {
-      this.focusesData.update(list => list.filter(f => f.id !== id));
-      this.notificationService.showSuccess('Focus removed');
-    });
-  }
-
-  getFocusesForCourse(courseId: string) {
-    return this.allFocusesData().filter(f => f.courseId === courseId);
-  }
-
   // Common Actions
   sendInvitation() {
-    if (this.inviteForm.invalid) return;
+    if (this.inviteForm.invalid || this.isInviting()) return;
+    this.isInviting.set(true);
     const invData = this.inviteForm.value as InvitationPayload;
-    this.adminService.inviteUser(invData).subscribe(() => {
-        this.notificationService.showSuccess('Invitation sent successfully');
+    this.adminService.inviteUser(invData).pipe(
+      finalize(() => this.isInviting.set(false))
+    ).subscribe(() => {
+        this.notificationService.showSuccess('userManagement.invitationSuccess');
         this.inviteForm.reset({ role: invData.role });
     });
   }
 
   sendBulkInvitations() {
-    if (this.bulkInviteForm.invalid) return;
+    if (this.bulkInviteForm.invalid || this.isInviting()) return;
     const { emails, role } = this.bulkInviteForm.value;
     if (emails && role) {
+      this.isInviting.set(true);
       const lines = emails.split('\n').filter(Boolean);
       const invitations = lines.map(line => ({ email: line.trim(), role: role as UserRole }));
-      this.adminService.bulkInvite(invitations).subscribe(() => {
-          this.notificationService.showSuccess('Bulk invitations sent');
+      this.adminService.bulkInvite(invitations).pipe(
+        finalize(() => this.isInviting.set(false))
+      ).subscribe(() => {
+          this.notificationService.showSuccess('userManagement.invitationSuccess');
           this.bulkInviteForm.reset({ role: UserRole.Student });
       });
     }
@@ -346,9 +331,12 @@ export class UserManagement implements OnInit {
   }
 
   sendCsvInvitations() {
-    if (this.csvInvitations().length > 0) {
-      this.adminService.bulkInvite(this.csvInvitations()).subscribe(() => {
-        this.notificationService.showSuccess('CSV Import successful');
+    if (this.csvInvitations().length > 0 && !this.isInviting()) {
+      this.isInviting.set(true);
+      this.adminService.bulkInvite(this.csvInvitations()).pipe(
+        finalize(() => this.isInviting.set(false))
+      ).subscribe(() => {
+        this.notificationService.showSuccess('userManagement.invitationSuccess');
         this.csvInvitations.set([]);
         this.csvFileName.set(null);
       });
@@ -360,16 +348,32 @@ export class UserManagement implements OnInit {
     this.adminService.createGroup(this.groupForm.value as any).subscribe(newGroup => {
       this.groupsData.update(g => [...g, newGroup]);
       this.showAddGroupForm.set(false);
-      this.groupForm.reset();
-      this.notificationService.showSuccess('Study Group created');
+      this.groupForm.reset({
+        startYear: new Date().getFullYear(),
+        startQuartal: 4
+      });
+      this.isNameManuallyEdited = false;
+      this.notificationService.showSuccess('common.success');
     });
   }
 
   removeUserFromGroup(userId: string, groupId: string) {
-    this.adminService.removeGroupMember(groupId, userId).subscribe(() => {
-      this.groupsData.update(gs => gs.map(g => g.id === groupId ? { ...g, memberIds: g.memberIds.filter(id => id !== userId), memberCount: g.memberCount - 1 } : g));
-      if (this.selectedGroup()?.id === groupId) {
-        this.selectedGroup.update(g => g ? { ...g, memberIds: g.memberIds.filter(id => id !== userId), memberCount: g.memberCount - 1 } : null);
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        title: 'academicStructure.removeUserFromGroupTitle',
+        message: 'academicStructure.removeUserFromGroupMessage'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(res => {
+      if (res) {
+        this.adminService.removeGroupMember(groupId, userId).subscribe(() => {
+          this.groupsData.update(gs => gs.map(g => g.id === groupId ? { ...g, members: g.members.filter(m => m.id !== userId), memberCount: g.memberCount - 1 } : g));
+          if (this.selectedGroup()?.id === groupId) {
+            this.selectedGroup.update(g => g ? { ...g, members: g.members.filter(m => m.id !== userId), memberCount: g.memberCount - 1 } : null);
+          }
+          this.notificationService.showSuccess('academicStructure.removeUserFromGroupSuccess');
+        });
       }
     });
   }
@@ -378,19 +382,27 @@ export class UserManagement implements OnInit {
     const g = this.selectedGroup();
     if (!g) return;
     this.adminService.addGroupMember(g.id, student.id).subscribe(() => {
-      this.groupsData.update(gs => gs.map(group => group.id === g.id ? { ...group, memberIds: [...group.memberIds, student.id], memberCount: group.memberCount + 1 } : group));
-      this.selectedGroup.update(group => group ? { ...group, memberIds: [...group.memberIds, student.id], memberCount: group.memberCount + 1 } : null);
+      const newMember: GroupMember = { id: student.id, firstName: student.firstName, lastName: student.lastName, studentNumber: student.studentNumber || '', title: student.title };
+      this.groupsData.update(gs => gs.map(group => group.id === g.id ? { ...group, members: [...group.members, newMember], memberCount: group.memberCount + 1 } : group));
+      this.selectedGroup.update(group => group ? { ...group, members: [...group.members, newMember], memberCount: group.memberCount + 1 } : null);
       this.addMemberControl.setValue('');
+      this.notificationService.showSuccess('common.success');
     });
   }
 
   deleteUser(user: User) {
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, { data: { title: 'Delete User', message: `Are you sure you want to delete ${user.firstName}?` } });
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        title: 'userManagement.deleteUserTitle',
+        message: 'userManagement.deleteUserMessage'
+      }
+    });
+
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.adminService.deleteUser(user.id).subscribe(() => {
           this.usersData.update(u => u.filter(usr => usr.id !== user.id));
-          this.notificationService.showSuccess('User deleted');
+          this.notificationService.showSuccess('userManagement.userDeleteSuccess');
           if (this.selectedUser()?.id === user.id) this.closeUserDrawer();
         });
       }
@@ -400,7 +412,7 @@ export class UserManagement implements OnInit {
   closeUserDrawer() { this.isDrawerOpen.set(false); this.selectedUser.set(null); }
   cancelEditing() { this.isEditingUser.set(false); }
   updateSearch(event: Event) { this.searchFilter.set((event.target as HTMLInputElement).value); }
-  getUserGroups(userId: string) { return this.allGroups().filter(g => g.memberIds.includes(userId)); }
-  getStatusColor(status: UserStatus) { return status === UserStatus.Active ? 'primary' : status === UserStatus.Pending ? 'accent' : 'warn'; }
+  getUserGroups(userId: string) { return this.allGroups().filter(g => g.members.some(m => m.id === userId)); }
+  getEnabledColor(enabled: boolean) { return enabled ? 'primary' : 'warn'; }
   getRoleColor(role: UserRole) { return role === UserRole.Admin ? 'accent' : role === UserRole.Lecturer ? 'primary' : ''; }
 }

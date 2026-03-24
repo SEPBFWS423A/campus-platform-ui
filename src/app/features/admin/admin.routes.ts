@@ -4,6 +4,7 @@ import {RoomManagement} from './room-management/room-management';
 import {EventManagement} from './event-management/event-management';
 import {UserManagement} from './user-management/user-management';
 import {ExamManagement} from './exam-management/exam-management';
+import {AcademicStructure} from './academic-structure/academic-structure';
 
 export const adminRoutes: Routes = [
   {
@@ -21,6 +22,10 @@ export const adminRoutes: Routes = [
   {
     path: 'user-management',
     component: UserManagement
+  },
+  {
+    path: 'academic-structure',
+    component: AcademicStructure
   },
   {
     path: 'exam-management',

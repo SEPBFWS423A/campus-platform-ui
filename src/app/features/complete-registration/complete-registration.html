@@ -11,12 +11,12 @@
         <form [formGroup]="form" (ngSubmit)="completeRegistration()">
           <mat-form-field appearance="fill">
             <mat-label>{{ 'completeRegistration.firstNameLabel' | translate }}</mat-label>
-            <input matInput formControlName="firstname">
+            <input matInput formControlName="firstName">
           </mat-form-field>
 
           <mat-form-field appearance="fill">
             <mat-label>{{ 'completeRegistration.lastNameLabel' | translate }}</mat-label>
-            <input matInput formControlName="lastname">
+            <input matInput formControlName="lastName">
           </mat-form-field>
 
           <mat-form-field appearance="fill">

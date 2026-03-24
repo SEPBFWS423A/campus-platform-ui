@@ -9,6 +9,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCardModule } from '@angular/material/card';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { NotificationService } from '../../core/services/notification.service';
 
 @Component({
   selector: 'app-reset-password',
@@ -32,6 +33,7 @@ export class ResetPassword implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private translate = inject(TranslateService);
+  private notificationService = inject(NotificationService);
 
   token: string | null = null;
   isLoading = signal(false);
@@ -59,16 +61,11 @@ export class ResetPassword implements OnInit {
       next: () => {
         this.isLoading.set(false);
         this.isRedirecting.set(true);
-        this.translate.get('resetPassword.successMessage').subscribe((res: string) => {
-          this.message.set(res);
-        });
+        this.notificationService.showSuccess('resetPassword.successMessage');
         setTimeout(() => this.router.navigate(['/login']), 3000);
       },
       error: (err) => {
         this.isLoading.set(false);
-        this.translate.get('resetPassword.failureMessage').subscribe((res: string) => {
-          this.message.set(err.error?.message || res);
-        });
         console.error('Reset password failed:', err);
       }
     });

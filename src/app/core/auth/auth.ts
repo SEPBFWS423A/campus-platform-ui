@@ -82,8 +82,8 @@ export class Auth {
     this.router.navigate(['/login']);
   }
 
-  completeRegistration(token: string, firstname: string, lastname: string, password?: string): Observable<void> {
-    const payload = { token, firstname, lastname, password };
+  completeRegistration(token: string, firstName: string, lastName: string, password?: string): Observable<void> {
+    const payload = { token, firstName, lastName, password };
     return this.http.post<void>(`${this.authApiUrl}/complete-registration`, payload);
   }
 

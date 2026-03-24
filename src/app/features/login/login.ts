@@ -8,6 +8,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {Auth} from '../../core/auth/auth';
 import {FormsModule} from '@angular/forms';
 import {ActivatedRoute, RouterLink} from '@angular/router';
+import {NotificationService} from '../../core/services/notification.service';
 
 @Component({
   selector: 'app-login',
@@ -28,6 +29,7 @@ import {ActivatedRoute, RouterLink} from '@angular/router';
 export class Login implements OnInit {
   private auth = inject(Auth);
   private route = inject(ActivatedRoute);
+  private notificationService = inject(NotificationService);
 
   currentDate = new Date();
 
@@ -53,6 +55,7 @@ export class Login implements OnInit {
     this.auth.login(this.email(), this.password(), this.returnUrl).subscribe({
       next: () => {
         this.isLoading.set(false);
+        this.notificationService.showSuccess('common.success');
       },
       error: (err) => {
         console.error('Login failed:', err);

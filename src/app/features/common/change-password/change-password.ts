@@ -7,6 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
+import { NotificationService } from '../../../core/services/notification.service';
 
 @Component({
   selector: 'app-change-password',
@@ -25,7 +26,7 @@ export class ChangePassword {
   private fb = inject(FormBuilder);
   private userService = inject(UserService);
   private router = inject(Router);
-  private snackBar = inject(MatSnackBar);
+  private notificationService = inject(NotificationService);
 
   isLoading = signal(false);
 
@@ -45,12 +46,11 @@ export class ChangePassword {
     this.userService.changePassword(oldPassword!, newPassword!).subscribe({
       next: () => {
         this.isLoading.set(false);
-        this.snackBar.open('Password changed successfully!', 'Close', { duration: 3000 });
+        this.notificationService.showSuccess('navigation.profileAndSettings.passwordChangedSuccess');
         this.router.navigate(['/']);
       },
       error: (err) => {
         this.isLoading.set(false);
-        this.snackBar.open(`Error: ${err.error?.message || 'Failed to change password'}`, 'Close', { duration: 5000 });
         console.error('Failed to change password:', err);
       }
     });
