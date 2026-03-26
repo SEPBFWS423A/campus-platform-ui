@@ -9,15 +9,27 @@ export interface InvitationPayload {
   role: UserRole;
 }
 
+export interface Room {
+  id: number;
+  name: string;
+  seats: number;
+  examSeats: number;
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class AdminService {
   private http = inject(HttpClient);
   private apiUrl = environment.apiUrl + '/admin';
+  private roomsUrl = environment.apiUrl + '/rooms';
 
   inviteUser(email: string, role: UserRole): Observable<void> {
     const payload: InvitationPayload = { email, role };
     return this.http.post<void>(`${this.apiUrl}/invite`, payload);
+  }
+
+  getRooms(): Observable<Room[]> {
+    return this.http.get<Room[]>(this.roomsUrl);
   }
 }

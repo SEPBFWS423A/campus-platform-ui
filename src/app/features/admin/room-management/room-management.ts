@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
@@ -9,14 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
-
-interface Room {
-  id: number;
-  name: string;
-  seats: number;
-  examSeats: number;
-  bookings: number;
-}
+import { AdminService, Room } from '../admin.service';
 
 interface RoomUtilization {
   roomName: string;
@@ -41,20 +34,10 @@ interface RoomUtilization {
   templateUrl: './room-management.html',
   styleUrl: './room-management.scss',
 })
-export class RoomManagement {
-  rooms: Room[] = [
-    { id: 9, name: 'Audimax', seats: 500, examSeats: 250, bookings: 0 },
-    { id: 1, name: 'Hörsaal 1', seats: 200, examSeats: 100, bookings: 1 },
-    { id: 2, name: 'Hörsaal 2', seats: 150, examSeats: 75, bookings: 1 },
-    { id: 3, name: 'M-208', seats: 23, examSeats: 7, bookings: 0 },
-    { id: 5, name: 'PC-Labor 1', seats: 25, examSeats: 25, bookings: 1 },
-    { id: 6, name: 'R 1.02', seats: 40, examSeats: 20, bookings: 1 },
-    { id: 7, name: 'R 1.04', seats: 30, examSeats: 15, bookings: 1 },
-    { id: 4, name: 'R 2.05', seats: 35, examSeats: 18, bookings: 2 },
-    { id: 8, name: 'R 2.10', seats: 45, examSeats: 22, bookings: 2 },
-  ];
+export class RoomManagement implements OnInit {
+  rooms: Room[] = [];
 
-  displayedColumns = ['name', 'seats', 'examSeats', 'bookings', 'actions'];
+  displayedColumns = ['name', 'seats', 'examSeats', 'actions'];
 
   get totalRooms(): number {
     return this.rooms.length;
@@ -65,10 +48,10 @@ export class RoomManagement {
   }
 
   get totalUtilization(): string {
-    return '5.5%';
+    return '0%';
   }
 
-  selectedRoomId = signal<number>(9);
+  selectedRoomId = signal<number | null>(null);
 
   scheduleWeekLabel = 'KW 12 (23.03 – 27.03)';
   scheduleHours = ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00'];
@@ -80,23 +63,13 @@ export class RoomManagement {
     { label: 'Fr 27.03' },
   ];
 
-  utilization: RoomUtilization[] = [
-    { roomName: 'Audimax', percent: 0.0, hours: 0.0 },
-    { roomName: 'Hörsaal 1', percent: 7.2, hours: 3.3 },
-    { roomName: 'Hörsaal 2', percent: 3.3, hours: 1.5 },
-    { roomName: 'M-208', percent: 0.0, hours: 0.0 },
-    { roomName: 'PC-Labor 1', percent: 7.2, hours: 3.3 },
-    { roomName: 'R 1.02', percent: 3.3, hours: 1.5 },
-    { roomName: 'R 1.04', percent: 7.2, hours: 3.3 },
-    { roomName: 'R 2.05', percent: 6.7, hours: 3.0 },
-    { roomName: 'R 2.10', percent: 14.4, hours: 6.5 },
-  ];
+  utilization: RoomUtilization[] = [];
 
   createError = signal<string | null>(null);
   createForm: FormGroup;
   utilForm: FormGroup;
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private adminService: AdminService) {
     this.createForm = this.fb.group({
       name: ['', Validators.required],
       seats: [null, [Validators.required, Validators.min(0)]],
@@ -105,6 +78,20 @@ export class RoomManagement {
     this.utilForm = this.fb.group({
       startDate: ['2026-03-23'],
       endDate: ['2026-03-27'],
+    });
+  }
+
+  ngOnInit(): void {
+    this.adminService.getRooms().subscribe({
+      next: (rooms) => {
+        this.rooms = rooms;
+        if (rooms.length > 0) {
+          this.selectedRoomId.set(rooms[0].id);
+        }
+      },
+      error: () => {
+        this.createError.set('Räume konnten nicht geladen werden.');
+      },
     });
   }
 
