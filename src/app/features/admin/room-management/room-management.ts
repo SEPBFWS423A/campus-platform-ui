@@ -1,8 +1,8 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { DecimalPipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -10,17 +10,12 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { AdminService, Room } from '../admin.service';
-
-interface RoomUtilization {
-  roomName: string;
-  percent: number;
-  hours: number;
-}
+import { RoomEditDialog } from './room-edit.dialog/room-edit.dialog';
+import { RoomDeleteDialog } from './room-delete.dialog/room-delete.dialog';
 
 @Component({
   selector: 'app-room-management',
   imports: [
-    DecimalPipe,
     ReactiveFormsModule,
     MatButtonModule,
     MatCardModule,
@@ -35,90 +30,78 @@ interface RoomUtilization {
   styleUrl: './room-management.scss',
 })
 export class RoomManagement implements OnInit {
-  rooms: Room[] = [];
+  private adminService = inject(AdminService);
+  private dialog = inject(MatDialog);
+  private fb = inject(FormBuilder);
 
+  rooms: Room[] = [];
   displayedColumns = ['name', 'seats', 'examSeats', 'actions'];
 
-  get totalRooms(): number {
-    return this.rooms.length;
-  }
-
-  get totalSeats(): number {
-    return this.rooms.reduce((sum, r) => sum + r.seats, 0);
-  }
-
-  get totalUtilization(): string {
-    return '0%';
-  }
-
-  selectedRoomId = signal<number | null>(null);
-
-  scheduleWeekLabel = 'KW 12 (23.03 – 27.03)';
-  scheduleHours = ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00'];
-  scheduleDays = [
-    { label: 'Mo 23.03' },
-    { label: 'Di 24.03' },
-    { label: 'Mi 25.03' },
-    { label: 'Do 26.03' },
-    { label: 'Fr 27.03' },
-  ];
-
-  utilization: RoomUtilization[] = [];
-
   createError = signal<string | null>(null);
-  createForm: FormGroup;
-  utilForm: FormGroup;
+  createForm: FormGroup = this.fb.group({
+    name: ['', Validators.required],
+    seats: [null, [Validators.required, Validators.min(0)]],
+    examSeats: [null, [Validators.required, Validators.min(0)]],
+  });
 
-  constructor(private fb: FormBuilder, private adminService: AdminService) {
-    this.createForm = this.fb.group({
-      name: ['', Validators.required],
-      seats: [null, [Validators.required, Validators.min(0)]],
-      examSeats: [null, [Validators.required, Validators.min(0)]],
-    });
-    this.utilForm = this.fb.group({
-      startDate: ['2026-03-23'],
-      endDate: ['2026-03-27'],
-    });
-  }
+  get totalRooms(): number { return this.rooms.length; }
+  get totalSeats(): number { return this.rooms.reduce((s, r) => s + r.seats, 0); }
+  get totalUtilization(): string { return '0%'; }
 
   ngOnInit(): void {
-    this.adminService.getRooms().subscribe({
-      next: (rooms) => {
-        this.rooms = rooms;
-        if (rooms.length > 0) {
-          this.selectedRoomId.set(rooms[0].id);
-        }
-      },
-      error: () => {
-        this.createError.set('Räume konnten nicht geladen werden.');
-      },
-    });
+    this.loadRooms();
   }
 
   onCreateRoom(): void {
-    if (this.createForm.valid) {
-      // TODO: call service to create room
-      this.createForm.reset();
-    }
+    if (this.createForm.invalid) return;
+    this.createError.set(null);
+    this.adminService.createRoom(this.createForm.value).subscribe({
+      next: (room) => {
+        this.rooms = [...this.rooms, room];
+        this.createForm.reset();
+      },
+      error: () => this.createError.set('Raum konnte nicht angelegt werden.'),
+    });
   }
 
-  onEditRoom(_id: number): void {
-    // TODO: open edit dialog
+  onEditRoom(id: number): void {
+    const room = this.rooms.find(r => r.id === id);
+    if (!room) return;
+
+    this.dialog.open(RoomEditDialog, { data: room, width: '560px', maxHeight: '95vh' })
+      .afterClosed()
+      .subscribe(result => {
+        if (!result) return;
+        this.adminService.updateRoom(id, result).subscribe({
+          next: (updated) => {
+            this.rooms = this.rooms.map(r => r.id === id ? updated : r);
+          },
+          error: () => this.createError.set('Raum konnte nicht aktualisiert werden.'),
+        });
+      });
   }
 
-  onDeleteRoom(_id: number): void {
-    // TODO: open confirmation dialog and delete
+  onDeleteRoom(id: number): void {
+    const room = this.rooms.find(r => r.id === id);
+    if (!room) return;
+
+    this.dialog.open(RoomDeleteDialog, { data: room, width: '400px' })
+      .afterClosed()
+      .subscribe(confirmed => {
+        if (!confirmed) return;
+        this.adminService.deleteRoom(id).subscribe({
+          next: () => {
+            this.rooms = this.rooms.filter(r => r.id !== id);
+          },
+          error: () => this.createError.set('Raum konnte nicht gelöscht werden.'),
+        });
+      });
   }
 
-  onPrevWeek(): void {
-    // TODO: navigate to previous week
-  }
-
-  onNextWeek(): void {
-    // TODO: navigate to next week
-  }
-
-  onLoadUtilization(): void {
-    // TODO: load utilization for selected date range
+  private loadRooms(): void {
+    this.adminService.getRooms().subscribe({
+      next: (rooms) => { this.rooms = rooms; },
+      error: () => this.createError.set('Räume konnten nicht geladen werden.'),
+    });
   }
 }

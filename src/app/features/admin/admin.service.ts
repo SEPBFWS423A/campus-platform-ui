@@ -32,4 +32,16 @@ export class AdminService {
   getRooms(): Observable<Room[]> {
     return this.http.get<Room[]>(this.roomsUrl);
   }
+
+  createRoom(room: Omit<Room, 'id'>): Observable<Room> {
+    return this.http.post<Room>(this.roomsUrl, room);
+  }
+
+  updateRoom(id: number, room: Omit<Room, 'id'>): Observable<Room> {
+    return this.http.put<Room>(`${this.roomsUrl}/${id}`, room);
+  }
+
+  deleteRoom(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.roomsUrl}/${id}`);
+  }
 }
