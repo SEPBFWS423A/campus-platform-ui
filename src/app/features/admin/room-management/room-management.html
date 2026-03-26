@@ -53,15 +53,15 @@
             <h3>Neuen Raum anlegen</h3>
           </div>
           <form class="inline-create-form" [formGroup]="createForm" (ngSubmit)="onCreateRoom()" autocomplete="off">
-            <mat-form-field class="form-group">
+            <mat-form-field class="form-group" subscriptSizing="dynamic">
               <mat-label>Raumname</mat-label>
               <input matInput formControlName="name" placeholder="z.B. Hörsaal 3">
             </mat-form-field>
-            <mat-form-field class="form-group">
+            <mat-form-field class="form-group" subscriptSizing="dynamic">
               <mat-label>Plätze</mat-label>
               <input matInput type="number" formControlName="seats" min="0" placeholder="0">
             </mat-form-field>
-            <mat-form-field class="form-group">
+            <mat-form-field class="form-group" subscriptSizing="dynamic">
               <mat-label>Klausurplätze</mat-label>
               <input matInput type="number" formControlName="examSeats" min="0" placeholder="0">
             </mat-form-field>

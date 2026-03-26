@@ -1,0 +1,36 @@
+<div class="dialog-header">
+  <h2 class="dialog-title">Raum bearbeiten</h2>
+  <button mat-icon-button mat-dialog-close class="close-btn">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="dialog-form">
+    <div class="field-full">
+      <label class="field-label">Raumname</label>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <input matInput formControlName="name">
+      </mat-form-field>
+    </div>
+    <div class="field-row">
+      <div class="field-group">
+        <label class="field-label">Plätze</label>
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <input matInput type="number" formControlName="seats" min="0">
+        </mat-form-field>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Klausurplätze</label>
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <input matInput type="number" formControlName="examSeats" min="0">
+        </mat-form-field>
+      </div>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-stroked-button (click)="onCancel()">Abbrechen</button>
+  <button mat-flat-button (click)="onSave()" [disabled]="form.invalid">Speichern</button>
+</mat-dialog-actions>

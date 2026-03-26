@@ -173,7 +173,7 @@ body {
 }
 
 // ── Dark Mode Variables ─────────────────────────────────────
-body.dark-mode {
+html[style*="color-scheme: dark"] {
   --primary-color:  #3B82F6;
   --primary-hover:  #5B9BF8;
   --primary-light:  rgba(59, 130, 246, 0.1);

@@ -1,0 +1,10 @@
+<h2 mat-dialog-title>Raum löschen</h2>
+
+<mat-dialog-content>
+  <p>Soll <strong>{{ data.name }}</strong> wirklich gelöscht werden? Diese Aktion kann nicht rückgängig gemacht werden.</p>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Abbrechen</button>
+  <button mat-flat-button color="warn" (click)="onConfirm()">Löschen</button>
+</mat-dialog-actions>

@@ -7,7 +7,7 @@
     font-size: var(--text-2xl);
     font-weight: 700;
     color: var(--text-primary);
-    margin: 0 0 0.25rem;
+    margin: 0 0 var(--space-1);
     letter-spacing: -0.02em;
   }
 
@@ -21,7 +21,7 @@
 .admin-rooms-content {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: var(--space-6);
 }
 
 // ── Stat Cards ───────────────────────────────────────────────
@@ -29,17 +29,17 @@
 .room-stats-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
+  gap: var(--space-4);
 }
 
-.stat-card {
-  display: flex;
-  flex-direction: column;
+mat-card.stat-card {
+  display: flex !important;
+  flex-direction: column !important;
   align-items: center;
   justify-content: center;
-  padding: 2.25rem 1.5rem;
+  padding: 2.25rem var(--space-6) !important;
   text-align: center;
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-xl) !important;
   border: 1px solid var(--border-color);
   background: var(--surface-color);
   box-shadow: var(--shadow-sm);
@@ -47,11 +47,11 @@
   .stat-icon {
     width: 52px;
     height: 52px;
-    border-radius: 50%;
+    border-radius: var(--radius-full);
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 0.75rem;
+    margin-bottom: var(--space-3);
 
     mat-icon {
       font-size: 24px;
@@ -60,18 +60,18 @@
     }
 
     &.primary-bg {
-      background: rgba(37, 99, 235, 0.1);
-      color: #2563eb;
+      background: var(--primary-light);
+      color: var(--primary-color);
     }
 
     &.success-bg {
       background: rgba(16, 185, 129, 0.1);
-      color: #10b981;
+      color: var(--success-color);
     }
 
     &.warning-bg {
       background: rgba(245, 158, 11, 0.1);
-      color: #f59e0b;
+      color: var(--warning-color);
     }
   }
 
@@ -79,7 +79,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.25rem;
+    gap: var(--space-1);
   }
 
   .stat-label {
@@ -103,7 +103,7 @@
     border-bottom: 1px solid var(--border-color);
     background: var(--surface-color);
     border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-    padding: 0 0.5rem;
+    padding: 0 var(--space-2);
   }
 
   .mat-mdc-tab {
@@ -116,7 +116,7 @@
       font-size: 18px;
       width: 18px;
       height: 18px;
-      margin-right: 6px;
+      margin-right: var(--space-2);
       vertical-align: middle;
     }
   }
@@ -129,8 +129,8 @@
 .management-tab-content {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
-  padding-top: 1.25rem;
+  gap: var(--space-5);
+  padding-top: var(--space-5);
 }
 
 // ── Cards ────────────────────────────────────────────────────
@@ -142,14 +142,13 @@
   box-shadow: var(--shadow-sm);
   padding: 0;
 
-  // Override mat-card default padding
   &.mat-mdc-card {
     padding: 0;
   }
 }
 
 .card-header {
-  padding: 1.25rem 1.5rem;
+  padding: var(--space-5) var(--space-6);
   border-bottom: 1px solid var(--border-color);
 
   h3 {
@@ -164,25 +163,21 @@
 
 .inline-create-form {
   display: flex;
-  align-items: flex-end;
-  gap: 1rem;
-  padding: 1.25rem 1.5rem;
-  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-5) var(--space-6);
 
   .form-group {
-    flex: 1;
-    min-width: 140px;
-
-    // Override mat-form-field to use label-above style
-    .mat-mdc-form-field {
-      width: 100%;
-    }
+    flex: 1 1 0;
+    min-width: 0;
+    width: 100%;
   }
 
   .btn-primary {
     height: 56px;
     white-space: nowrap;
     flex-shrink: 0;
+    align-self: center;
   }
 }
 
@@ -191,7 +186,7 @@
 .btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.375rem;
+  gap: var(--space-2);
   font-weight: 500;
   border-radius: var(--radius-md);
   cursor: pointer;
@@ -215,7 +210,7 @@
 
 .btn-sm {
   font-size: var(--text-sm);
-  padding: 0 1rem;
+  padding: 0 var(--space-4);
 }
 
 // ── Table ────────────────────────────────────────────────────
@@ -239,7 +234,7 @@
     text-transform: uppercase;
     letter-spacing: 0.06em;
     color: var(--text-secondary);
-    padding: 0.875rem 1.5rem;
+    padding: 0.875rem var(--space-6);
     border-bottom: none;
   }
 
@@ -259,7 +254,7 @@
   .mat-mdc-cell {
     font-size: var(--text-sm);
     color: var(--text-primary);
-    padding: 1rem 1.5rem;
+    padding: var(--space-4) var(--space-6);
     border-bottom: none;
   }
 
@@ -273,7 +268,7 @@
 .actions-cell {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: var(--space-1);
 }
 
 .btn-icon-only {
@@ -304,8 +299,8 @@
 // ── Alert ────────────────────────────────────────────────────
 
 .management-alert {
-  margin: 0 1.5rem 1.25rem;
-  padding: 0.75rem 1rem;
+  margin: 0 var(--space-6) var(--space-5);
+  padding: var(--space-3) var(--space-4);
   border-radius: var(--radius-md);
   font-size: var(--text-sm);
 
@@ -318,20 +313,87 @@
 
 // ── Dark Mode ────────────────────────────────────────────────
 
-body.dark-mode {
-  .stat-card,
+html[style*="color-scheme: dark"] {
+
+  .section-header h1 {
+    color: var(--text-primary);
+  }
+
+  mat-card.stat-card {
+    background: var(--surface-color) !important;
+    border-color: var(--border-color);
+
+    .stat-icon {
+      &.primary-bg {
+        background: var(--primary-light);
+        color: var(--primary-color);
+      }
+      &.success-bg {
+        background: rgba(16, 185, 129, 0.15);
+        color: var(--success-color-dark);
+      }
+      &.warning-bg {
+        background: rgba(245, 158, 11, 0.15);
+        color: var(--warning-color-dark);
+      }
+    }
+  }
+
+  .management-tabs {
+    .mat-mdc-tab-header {
+      background: var(--surface-color);
+      border-color: var(--border-color);
+    }
+  }
+
   .card {
     background: var(--surface-color);
     border-color: var(--border-color);
   }
 
+  .card-header {
+    border-color: var(--border-color);
+    h3 { color: var(--text-primary); }
+  }
+
+  .inline-create-form {
+    .mat-mdc-text-field-wrapper {
+      background: rgba(255, 255, 255, 0.04);
+    }
+  }
+
   .management-table {
     .mat-mdc-header-row {
       background: rgba(255, 255, 255, 0.03);
+      border-color: var(--border-color);
     }
+    .mat-mdc-header-cell {
+      color: var(--text-secondary);
+      border-color: var(--border-color);
+    }
+    .mat-mdc-row {
+      border-color: var(--border-color);
+      &:hover { background: rgba(255, 255, 255, 0.04); }
+    }
+    .mat-mdc-cell { color: var(--text-primary); }
+    .room-name-cell { color: var(--text-primary); }
+  }
 
-    .mat-mdc-row:hover {
-      background: rgba(255, 255, 255, 0.04);
+  .btn-icon-only {
+    color: var(--text-secondary);
+    &:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-primary);
     }
+    &.danger:hover {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--error-color-dark);
+    }
+  }
+
+  .management-alert.error {
+    background: rgba(239, 68, 68, 0.12);
+    border-color: rgba(239, 68, 68, 0.3);
+    color: var(--error-color-dark);
   }
 }
