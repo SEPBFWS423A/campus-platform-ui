@@ -13,53 +13,38 @@
       <mat-form-field>
         <mat-label>{{ "login.email" | translate }}</mat-label>
         <mat-icon matIconPrefix fontIcon="person"></mat-icon>
-        <input matInput
-               type="email"
-               [ngModel]="email()"
-               (ngModelChange)="email.set($event)"
-               name="email"
-               required>
+        <input matInput type="email" [ngModel]="email()" (ngModelChange)="email.set($event)" name="email" required>
       </mat-form-field>
 
       <mat-form-field>
         <mat-label>{{ "login.password" | translate }}</mat-label>
         <mat-icon matIconPrefix fontIcon="lock"></mat-icon>
-        <input matInput
-               type="password"
-               [ngModel]="password()"
-               (ngModelChange)="password.set($event)"
-               name="password"
-               required>
+        <input matInput type="password" [ngModel]="password()" (ngModelChange)="password.set($event)" name="password"
+          required>
       </mat-form-field>
 
       @if (loginError()) {
-        <p style="color: red; font-size: 0.8rem; margin-bottom: 1rem;">
-          {{ "login.error" | translate }}
-        </p>
+      <p style="color: red; font-size: 0.8rem; margin-bottom: 1rem;">
+        {{ "login.error" | translate }}
+      </p>
       }
 
-      <button mat-flat-button
-              color="primary"
-              class="login-button"
-              type="submit"
-              [disabled]="isLoading() || !email() || !password()">
+      <button mat-flat-button color="primary" class="login-button" type="submit"
+        [disabled]="isLoading() || !email() || !password()">
         @if (isLoading()) {
-          <mat-icon fontIcon="autorenew"></mat-icon>
+        <mat-icon fontIcon="autorenew"></mat-icon>
         }
         @else {
-          <div class="content">
-            {{ "login.button" | translate }}
-            <mat-icon fontIcon="login"></mat-icon>
-          </div>
+        <div class="content">
+          {{ "login.button" | translate }}
+          <mat-icon fontIcon="login"></mat-icon>
+        </div>
         }
       </button>
 
       <div class="actions">
         <a mat-button routerLink="/forgot-password">
           {{ "login.forgotPassword" | translate }}
-        </a>
-        <a mat-button routerLink="/register">
-          {{ "login.register" | translate }}
         </a>
       </div>
     </form>

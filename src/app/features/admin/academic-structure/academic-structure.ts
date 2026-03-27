@@ -17,7 +17,7 @@ import { MatListModule } from '@angular/material/list';
 import { AdminService, CourseOfStudy, Specialization, Module, User, UserRole, DegreeType, InstitutionInfo, ModuleExam, ModuleLecturer } from '../admin.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { ConfirmationDialogComponent } from '../../../shared/components/confirmation-dialog/confirmation-dialog.component';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-academic-structure',
@@ -38,6 +38,7 @@ import { TranslateService } from '@ngx-translate/core';
     MatButtonToggleModule,
     MatSidenavModule,
     MatListModule,
+    TranslateModule,
   ],
   templateUrl: './academic-structure.html',
   styleUrls: ['./academic-structure.scss'],
@@ -164,16 +165,16 @@ export class AcademicStructure implements OnInit {
   availableSpecializationsForFilter = computed(() => {
     const courseName = this.moduleCourseNameFilter();
     const degree = this.moduleDegreeFilter();
-    
+
     let filteredCourses = this.courses();
     if (courseName) filteredCourses = filteredCourses.filter(c => c.name === courseName);
     if (degree) filteredCourses = filteredCourses.filter(c => c.degreeType === degree);
-    
+
     const courseIds = filteredCourses.map(c => c.id);
     if (courseIds.length === 0 && (courseName || degree)) return [];
-    
+
     if (!courseName && !degree) return this.specializations();
-    
+
     return this.specializations().filter(f => courseIds.includes(f.courseId));
   });
 
@@ -375,11 +376,11 @@ export class AcademicStructure implements OnInit {
   }
 
   getExamTypeName(et: ModuleExam): string {
-    return this.translate.currentLang === 'de' ? et.nameDe : et.nameEn;
+    return this.translate.getCurrentLang() === 'de' ? et.nameDe : et.nameEn;
   }
 
   getExamTypeShort(et: ModuleExam): string {
-    return this.translate.currentLang === 'de' ? et.shortDe : et.shortEn;
+    return this.translate.getCurrentLang() === 'de' ? et.shortDe : et.shortEn;
   }
 
   updateModuleSearch(event: Event) { this.moduleSearchFilter.set((event.target as HTMLInputElement).value); }

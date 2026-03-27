@@ -12,6 +12,7 @@ export interface UserProfile {
   role: UserRole;
   theme: string;
   brightness: string;
+  language: string;
 }
 
 @Injectable({
@@ -34,15 +35,16 @@ export class UserService {
     return this.http.post<void>(`${this.apiUrl}/change-password`, { oldPassword, newPassword });
   }
 
-  updateThemeSettings(theme: string, brightness: string): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/profile/preferences`, { theme, brightness }).pipe(
+  updatePreferences(theme: string, brightness: string, language: string): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/profile/preferences`, { theme, brightness, language }).pipe(
       tap(() => {
         const currentProfile = this._profile();
         if (currentProfile) {
           this._profile.set({
             ...currentProfile,
-            theme: theme,
-            brightness: brightness
+            theme,
+            brightness,
+            language
           });
         }
       })

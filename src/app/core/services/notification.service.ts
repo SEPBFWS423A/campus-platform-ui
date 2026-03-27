@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, Injector } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -7,7 +7,11 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class NotificationService {
   private snackBar = inject(MatSnackBar);
-  private translate = inject(TranslateService);
+  private injector = inject(Injector);
+
+  private get translate(): TranslateService {
+    return this.injector.get(TranslateService);
+  }
 
   showSuccess(messageKey: string, interpolateParams?: object) {
     this.translate.get(messageKey, interpolateParams).subscribe((message: string) => {

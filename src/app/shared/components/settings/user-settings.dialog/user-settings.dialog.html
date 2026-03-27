@@ -3,15 +3,16 @@
 <mat-dialog-content>
   <div style="display: flex; flex-direction: column; gap: 24px; min-width: 300px; padding-top: 8px;">
 
-    <div style="display: flex; flex-direction: column; gap: 16px; padding-bottom: 24px; border-bottom: 1px solid var(--mat-sys-outline-variant, #e0e0e0);">
+    <div
+      style="display: flex; flex-direction: column; gap: 16px; padding-bottom: 24px; border-bottom: 1px solid var(--mat-sys-outline-variant, #e0e0e0);">
       <p style="margin: 0; color: var(--mat-sys-on-surface); font-size: 1.25em;">
         <strong>{{ 'navigation.profileAndSettings.loggedInAs' | translate }}</strong> <span style="font-weight: 500;">
           @if (userService.profile(); as profile) {
-            {{ profile.firstName }} {{ profile.lastName }}
+          {{ profile.firstName }} {{ profile.lastName }}
           } @else {
-            Unknown User
+          {{ 'navigation.profileAndSettings.unknownUser' | translate }}
           }
-      </span>
+        </span>
       </p>
 
       <div class="buttons-wrapper">
@@ -27,27 +28,40 @@
     </div>
 
     <div>
-      <h4 style="margin: 0 0 16px 0; font-size: 1.2em;">{{ 'navigation.profileAndSettings.appearance' | translate }}</h4>
+      <h4 style="margin: 0 0 16px 0; font-size: 1.2em;">{{ 'navigation.profileAndSettings.appearance' | translate }}
+      </h4>
 
       <div style="display: flex; flex-direction: column; gap: 20px;">
         <button mat-stroked-button (click)="toggleBrightness()" style="width: 100%; justify-content: flex-start;">
-          <mat-icon>{{ themeController.activeBrightness() === ThemeBrightness.light ? 'dark_mode' : 'light_mode' }}</mat-icon>
+          <mat-icon>{{ themeController.activeBrightness() === ThemeBrightness.light ? 'dark_mode' : 'light_mode'
+            }}</mat-icon>
           {{ 'navigation.profileAndSettings.toggleBrightness' | translate }}
         </button>
+
+        <div>
+          <h4 style="margin: 0 0 16px 0; font-size: 1.2em;">
+            {{ 'navigation.profileAndSettings.language' | translate }}
+          </h4>
+          <mat-radio-group style="display: flex; flex-direction: column; gap: 10px;"
+            [ngModel]="themeController.activeLanguage()" (ngModelChange)="themeController.setLanguage($event)">
+            <mat-radio-button value="de">Deutsch</mat-radio-button>
+            <mat-radio-button value="en">English</mat-radio-button>
+          </mat-radio-group>
+        </div>
 
         <div>
           <h4 style="margin: 0 0 16px 0; font-size: 1.2em;">
             {{ 'navigation.profileAndSettings.themeColor' | translate }}
           </h4>
           <mat-radio-group style="display: flex; flex-direction: column; gap: 10px;"
-            [ngModel]="themeController.activeTheme()"
-            (ngModelChange)="themeController.setColorTheme($event)">
+            [ngModel]="themeController.activeTheme()" (ngModelChange)="themeController.setColorTheme($event)">
 
             @for (theme of themeOptions; track theme) {
-              <mat-radio-button [value]="theme.value">
-                <span [style.color]="theme.colorHex" style="font-size: 1.2em; vertical-align: middle; margin-right: 8px;">●</span>
-                {{ 'themeColors.' + theme.value | translate }}
-              </mat-radio-button>
+            <mat-radio-button [value]="theme.value">
+              <span [style.color]="theme.colorHex"
+                style="font-size: 1.2em; vertical-align: middle; margin-right: 8px;">●</span>
+              {{ 'navigation.themeColors.' + theme.value | translate }}
+            </mat-radio-button>
             }
 
           </mat-radio-group>
@@ -57,6 +71,6 @@
   </div>
 </mat-dialog-content>
 
-<mat-dialog-actions align="end" style="padding-bottom: 16px; padding-right: 24px;">
+<mat-dialog-actions style="padding-bottom: 16px; padding-right: 24px;">
   <button mat-button mat-dialog-close>{{ 'navigation.profileAndSettings.close' | translate }}</button>
 </mat-dialog-actions>
