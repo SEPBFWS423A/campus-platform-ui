@@ -82,10 +82,10 @@ export class UserManagement implements OnInit {
   isInviting = signal(false);
   institutionInfo = signal<InstitutionInfo | null>(null);
   private isNameManuallyEdited = false;
-  
+
   salutations = ['Mr.', 'Ms.', 'Mx.'];
   academicTitles = ['Dr.', 'Prof.', 'Prof. Dr.', 'Dr. h.c.'];
-  
+
   // Forms
   inviteForm = this.fb.group({
     salutation: [''],
@@ -224,7 +224,7 @@ export class UserManagement implements OnInit {
   generateGroupName() {
     const { courseOfStudy, specialization, startYear, startQuartal } = this.groupForm.value;
     const info = this.institutionInfo();
-    
+
     if (!courseOfStudy || !specialization || !startYear || !startQuartal || !info) return;
 
     const campusLetter = (info.city || 'X')[0].toUpperCase();
@@ -233,12 +233,12 @@ export class UserManagement implements OnInit {
     const specLetter = (specialization || 'X')[0].toUpperCase();
     const quartal = startQuartal;
     const yearDigits = startYear.toString().slice(-2);
-    
+
     const course = this.coursesData().find(c => c.name === courseOfStudy);
     const degreeLetter = course?.degreeType === DegreeType.Bachelor ? 'A' : 'M';
 
     const generatedName = `${campusLetter}${uniLetter}${courseLetter}${specLetter}${quartal}${yearDigits}${degreeLetter}`;
-    
+
     this.groupForm.get('name')?.setValue(generatedName, { emitEvent: false });
   }
 
@@ -294,8 +294,8 @@ export class UserManagement implements OnInit {
     this.adminService.inviteUser(invData).pipe(
       finalize(() => this.isInviting.set(false))
     ).subscribe(() => {
-        this.notificationService.showSuccess('userManagement.invitationSuccess');
-        this.inviteForm.reset({ role: invData.role });
+      this.notificationService.showSuccess('userManagement.invitationSuccess');
+      this.inviteForm.reset({ role: invData.role });
     });
   }
 
@@ -309,8 +309,8 @@ export class UserManagement implements OnInit {
       this.adminService.bulkInvite(invitations).pipe(
         finalize(() => this.isInviting.set(false))
       ).subscribe(() => {
-          this.notificationService.showSuccess('userManagement.invitationSuccess');
-          this.bulkInviteForm.reset({ role: UserRole.Student });
+        this.notificationService.showSuccess('userManagement.invitationSuccess');
+        this.bulkInviteForm.reset({ role: UserRole.Student });
       });
     }
   }
@@ -353,7 +353,7 @@ export class UserManagement implements OnInit {
         startQuartal: 4
       });
       this.isNameManuallyEdited = false;
-      this.notificationService.showSuccess('common.success');
+      this.notificationService.showSuccess('userManagement.addGroupSuccess');
     });
   }
 
@@ -386,7 +386,7 @@ export class UserManagement implements OnInit {
       this.groupsData.update(gs => gs.map(group => group.id === g.id ? { ...group, members: [...group.members, newMember], memberCount: group.memberCount + 1 } : group));
       this.selectedGroup.update(group => group ? { ...group, members: [...group.members, newMember], memberCount: group.memberCount + 1 } : null);
       this.addMemberControl.setValue('');
-      this.notificationService.showSuccess('common.success');
+      this.notificationService.showSuccess('userManagement.addMemberSuccess');
     });
   }
 

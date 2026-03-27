@@ -15,7 +15,7 @@
   "navigation": {
     "common": {
       "downloads": "Downloads",
-      "infoCenter": "Info-Center"
+      "infoCenter": "Info"
     },
     "admin": {
       "home": "Home",
@@ -108,6 +108,8 @@
     "invitationFailure": "Failed to send invitation.",
     "userUpdateSuccess": "User updated successfully.",
     "userUpdateFailure": "Failed to update user.",
+    "addGroupSuccess": "Study group created successfully.",
+    "addMemberSuccess": "Member added successfully.",
     "userDirectory": "User Directory",
     "studentGroups": "Student Groups",
     "campusOnboarding": "Campus Onboarding",
@@ -176,7 +178,9 @@
     "students": "Students",
     "addStudentToGroup": "Add student to this group...",
     "studentName": "Student Name",
-    "exclude": "Exclude"
+    "exclude": "Exclude",
+    "filters": "Filters",
+    "cancelGroupCreation": "Cancel Creation"
   },
   "academicStructure": {
     "title": "Academic Structure",
@@ -256,11 +260,24 @@
     "deleteModuleSuccess": "Module deleted successfully.",
     "deleteCourseSuccess": "Course deleted successfully.",
     "deleteSpecializationSuccess": "Specialization deleted successfully.",
+    "addModuleSuccess": "Module created successfully.",
+    "addCourseSuccess": "Course created successfully.",
+    "addSpecializationSuccess": "Specialization created successfully.",
     "removeUserFromGroupTitle": "Exclude from Group",
     "removeUserFromGroupMessage": "Are you sure you want to remove this user from the group?",
     "removeUserFromGroupSuccess": "User removed from group successfully.",
     "deleteExamTypeTitle": "Delete Exam Type",
-    "deleteExamTypeMessage": "Are you sure you want to delete this exam type?"
+    "deleteExamTypeMessage": "Are you sure you want to delete this exam type?",
+    "addExamTypeSuccess": "Exam type created successfully.",
+    "deleteExamTypeSuccess": "Exam type deleted successfully.",
+    "updateUniversityInfoSuccess": "University info updated successfully.",
+    "addNewExamType": "Add New Exam Type",
+    "internalCode": "Internal Code",
+    "examTypeNameDe": "Name (DE)",
+    "examTypeNameEn": "Name (EN)",
+    "examTypeShortDe": "Short (DE)",
+    "examTypeShortEn": "Short (EN)",
+    "addType": "Add Type"
   },
   "user": {
     "firstname": "First Name",

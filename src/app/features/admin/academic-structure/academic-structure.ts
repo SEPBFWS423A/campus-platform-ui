@@ -79,6 +79,9 @@ export class AcademicStructure implements OnInit {
   // Degree Types
   degreeTypes = Object.values(DegreeType);
 
+  // Form Value Signals (to bridge Reactive Forms with Computed Signals)
+  selectedCourseIdForModule = signal<string>('');
+
   // Forms
   courseForm = this.fb.group({
     name: ['', Validators.required],
@@ -100,7 +103,7 @@ export class AcademicStructure implements OnInit {
     requiredTotalHours: [0, [Validators.required, Validators.min(0)]],
     possibleExamTypes: [[] as ModuleExam[], Validators.required],
     preferredExamTypeId: [undefined as string | undefined],
-    lecturers: [[] as ModuleLecturer[]],
+    lecturers: [[] as ModuleLecturer[], Validators.required],
     courseOfStudyId: ['', Validators.required],
     specializationId: ['']
   });
@@ -157,7 +160,7 @@ export class AcademicStructure implements OnInit {
   });
 
   availableSpecializationsForModuleForm = computed(() => {
-    const courseId = this.moduleForm.get('courseOfStudyId')?.value;
+    const courseId = this.selectedCourseIdForModule();
     if (!courseId) return [];
     return this.specializations().filter(f => f.courseId === courseId);
   });
@@ -190,6 +193,11 @@ export class AcademicStructure implements OnInit {
         this.moduleForm.get('preferredExamTypeId')?.setValue(undefined);
       }
     });
+
+    this.moduleForm.get('courseOfStudyId')?.valueChanges.subscribe(id => {
+      this.selectedCourseIdForModule.set(id || '');
+      this.moduleForm.get('specializationId')?.setValue('');
+    });
   }
 
   loadData() {
@@ -219,7 +227,7 @@ export class AcademicStructure implements OnInit {
     const info = this.universityForm.value as InstitutionInfo;
     this.adminService.updateInstitutionInfo(info).subscribe(res => {
       this.universityInfo.set(res);
-      this.notificationService.showSuccess('common.success');
+      this.notificationService.showSuccess('academicStructure.updateUniversityInfoSuccess');
     });
   }
 
@@ -230,7 +238,7 @@ export class AcademicStructure implements OnInit {
       this.courses.update(list => [...list, c]);
       this.courseForm.reset({ degreeType: DegreeType.Bachelor });
       this.showAddCourseForm.set(false);
-      this.notificationService.showSuccess('academicStructure.deleteCourseSuccess'); // or addCourseSuccess
+      this.notificationService.showSuccess('academicStructure.addCourseSuccess');
     });
   }
 
@@ -260,7 +268,7 @@ export class AcademicStructure implements OnInit {
       this.specializations.update(list => [...list, s]);
       this.specializationForm.reset({ courseId: s.courseId });
       this.showAddSpecializationForm.set(false);
-      this.notificationService.showSuccess('academicStructure.deleteSpecializationSuccess'); // or addSpecializationSuccess
+      this.notificationService.showSuccess('academicStructure.addSpecializationSuccess');
     });
   }
 
@@ -291,11 +299,15 @@ export class AcademicStructure implements OnInit {
       preferredExamTypeId: formValue.preferredExamTypeId,
       lecturerIds: formValue.lecturers?.map(l => l.id)
     };
-    this.adminService.createModule(modulePayload as any).subscribe(m => {
-      this.modules.update(list => [...list, m]);
-      this.moduleForm.reset({ semester: 1, requiredTotalHours: 0 });
-      this.showAddModuleForm.set(false);
-      this.notificationService.showSuccess('academicStructure.deleteModuleSuccess'); // or addModuleSuccess
+    this.adminService.createModule(modulePayload as any).subscribe({
+      next: () => {
+        this.adminService.getModules().subscribe(m => this.modules.set(m));
+        this.moduleForm.reset({ semester: 1, requiredTotalHours: 0 });
+        this.selectedCourseIdForModule.set('');
+        this.showAddModuleForm.set(false);
+        this.notificationService.showSuccess('academicStructure.addModuleSuccess');
+      },
+      error: () => this.notificationService.showError('common.error')
     });
   }
 
@@ -323,7 +335,7 @@ export class AcademicStructure implements OnInit {
       this.examTypes.update(list => [...list, et]);
       this.examTypeForm.reset();
       this.showAddExamTypeForm.set(false);
-      this.notificationService.showSuccess('common.success');
+      this.notificationService.showSuccess('academicStructure.addExamTypeSuccess');
     });
   }
 
@@ -338,7 +350,7 @@ export class AcademicStructure implements OnInit {
       if (res) {
         this.adminService.deleteExamType(id).subscribe(() => {
           this.examTypes.update(list => list.filter(et => et.id !== id));
-          this.notificationService.showSuccess('common.success');
+          this.notificationService.showSuccess('academicStructure.deleteExamTypeSuccess');
         });
       }
     });

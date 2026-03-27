@@ -207,46 +207,53 @@
   <mat-sidenav-content class="main-content">
     <!-- Context-aware Header -->
     @if (activeView() !== 'onboarding') {
-      <header class="dashboard-header">
+      <header class="dashboard-header animate-fade-in">
         <div class="search-and-actions">
           <mat-form-field appearance="outline" class="mega-search">
-            <mat-icon matPrefix>search</mat-icon>
-            <mat-label>{{ "userManagement.searchCampus" | translate }}</mat-label>
-            <input matInput (input)="updateSearch($event)" [value]="searchFilter()">
+             <mat-icon matPrefix>search</mat-icon>
+             <mat-label>{{ "userManagement.searchCampus" | translate }}</mat-label>
+             <input matInput (input)="updateSearch($event)" [value]="searchFilter()">
           </mat-form-field>
+          
           <div class="action-buttons">
             @if (activeView() === 'groups') {
               <button mat-flat-button color="primary" (click)="showAddGroupForm.set(!showAddGroupForm())">
-                <mat-icon>add</mat-icon>
-                <span>{{ "userManagement.createGroup" | translate }}</span>
+                <mat-icon>{{ showAddGroupForm() ? 'close' : 'add' }}</mat-icon>
+                <span>{{ (showAddGroupForm() ? 'userManagement.cancelGroupCreation' : 'userManagement.createGroup') | translate }}</span>
               </button>
             }
           </div>
         </div>
+
         <div class="quick-filters">
-          <mat-form-field appearance="outline" dense>
-            <mat-label>{{ "userManagement.course" | translate }}</mat-label>
-            <mat-select [value]="courseFilter()" (selectionChange)="courseFilter.set($event.value)">
-              <mat-option value="">{{ "userManagement.allCourses" | translate }}</mat-option>
-              @for (c of courses(); track c) { <mat-option [value]="c">{{ c }}</mat-option> }
-            </mat-select>
-          </mat-form-field>
-          <mat-form-field appearance="outline" dense>
-            <mat-label>{{ "userManagement.specialization" | translate }}</mat-label>
-            <mat-select [value]="specializationFilter()" (selectionChange)="specializationFilter.set($event.value)">
-              <mat-option value="">{{ "userManagement.allSpecializations" | translate }}</mat-option>
-              @for (s of specializationsByCourse(); track s) { <mat-option [value]="s">{{ s }}</mat-option> }
-            </mat-select>
-          </mat-form-field>
-          @if (activeView() === 'directory') {
-            <mat-form-field appearance="outline" dense>
-              <mat-label>{{ "user.role" | translate }}</mat-label>
-              <mat-select [value]="roleFilter()" (selectionChange)="roleFilter.set($event.value)">
-                <mat-option value="">{{ "userManagement.allRoles" | translate }}</mat-option>
-                @for (r of roles; track r) { <mat-option [value]="r">{{ 'userRole.' + r | translate }}</mat-option> }
-              </mat-select>
-            </mat-form-field>
-          }
+           <mat-icon class="filter-icon">tune</mat-icon>
+           <span class="filter-label">{{ "userManagement.filters" | translate }}:</span>
+
+           <mat-form-field appearance="outline" dense>
+             <mat-label>{{ "userManagement.course" | translate }}</mat-label>
+             <mat-select [value]="courseFilter()" (selectionChange)="courseFilter.set($event.value)">
+               <mat-option value="">{{ "userManagement.allCourses" | translate }}</mat-option>
+               @for (c of courses(); track c) { <mat-option [value]="c">{{ c }}</mat-option> }
+             </mat-select>
+           </mat-form-field>
+
+           <mat-form-field appearance="outline" dense>
+             <mat-label>{{ "userManagement.specialization" | translate }}</mat-label>
+             <mat-select [value]="specializationFilter()" (selectionChange)="specializationFilter.set($event.value)">
+               <mat-option value="">{{ "userManagement.allSpecializations" | translate }}</mat-option>
+               @for (s of specializationsByCourse(); track s) { <mat-option [value]="s">{{ s }}</mat-option> }
+             </mat-select>
+           </mat-form-field>
+
+           @if (activeView() === 'directory') {
+             <mat-form-field appearance="outline" dense>
+               <mat-label>{{ "user.role" | translate }}</mat-label>
+               <mat-select [value]="roleFilter()" (selectionChange)="roleFilter.set($event.value)">
+                 <mat-option value="">{{ "userManagement.allRoles" | translate }}</mat-option>
+                 @for (r of roles; track r) { <mat-option [value]="r">{{ 'userRole.' + r | translate }}</mat-option> }
+               </mat-select>
+             </mat-form-field>
+           }
         </div>
       </header>
     }
@@ -571,7 +578,7 @@
                   </ng-container>
                   <ng-container matColumnDef="id">
                     <th mat-header-cell *matHeaderCellDef>{{ "userManagement.userId" | translate }}</th>
-                    <td mat-cell *matCellDef="let s" class="dimmed-text">{{ s.studentProfile?.studentNumber }}</td>
+                    <td mat-cell *matCellDef="let s" class="dimmed-text">{{ s.studentNumber }}</td>
                   </ng-container>
                   <ng-container matColumnDef="actions">
                     <th mat-header-cell *matHeaderCellDef></th>

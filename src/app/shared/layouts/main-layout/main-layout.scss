@@ -1,0 +1,24 @@
+.layout-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+
+  .sidebar {
+    flex: 0 0 auto;
+  }
+
+  .content {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+
+    & > * {
+      display: block;
+      height: 100%;
+      flex: 1;
+      /* removed overflow: hidden here to let components manage their own scrolling */
+    }
+  }
+}

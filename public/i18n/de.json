@@ -15,7 +15,7 @@
   "navigation": {
     "common": {
       "downloads": "Downloads",
-      "infoCenter": "Info-Center"
+      "infoCenter": "Info"
     },
     "admin": {
       "home": "Home",
@@ -108,6 +108,8 @@
     "invitationFailure": "Einladung konnte nicht gesendet werden.",
     "userUpdateSuccess": "Benutzer erfolgreich aktualisiert.",
     "userUpdateFailure": "Benutzer konnte nicht aktualisiert werden.",
+    "addGroupSuccess": "Studiengruppe erfolgreich erstellt.",
+    "addMemberSuccess": "Mitglied erfolgreich hinzugefügt.",
     "userDirectory": "Benutzerverzeichnis",
     "studentGroups": "Studentische Gruppen",
     "campusOnboarding": "Campus-Onboarding",
@@ -176,7 +178,9 @@
     "students": "Studierende",
     "addStudentToGroup": "Studierende zu dieser Gruppe hinzufügen...",
     "studentName": "Studierendenname",
-    "exclude": "Ausschließen"
+    "exclude": "Ausschließen",
+    "filters": "Filter",
+    "cancelGroupCreation": "Erstellung abbrechen"
   },
   "academicStructure": {
     "title": "Akademische Struktur",
@@ -256,11 +260,24 @@
     "deleteModuleSuccess": "Modul erfolgreich gelöscht.",
     "deleteCourseSuccess": "Studiengang erfolgreich gelöscht.",
     "deleteSpecializationSuccess": "Vertiefung erfolgreich gelöscht.",
+    "addModuleSuccess": "Modul erfolgreich erstellt.",
+    "addCourseSuccess": "Studiengang erfolgreich erstellt.",
+    "addSpecializationSuccess": "Vertiefung erfolgreich erstellt.",
     "removeUserFromGroupTitle": "Aus Gruppe entfernen",
     "removeUserFromGroupMessage": "Sind Sie sicher, dass Sie diesen Benutzer aus der Gruppe entfernen möchten?",
     "removeUserFromGroupSuccess": "Benutzer erfolgreich aus der Gruppe entfernt.",
     "deleteExamTypeTitle": "Prüfungsform löschen",
-    "deleteExamTypeMessage": "Sind Sie sicher, dass Sie diese Prüfungsform löschen möchten?"
+    "deleteExamTypeMessage": "Sind Sie sicher, dass Sie diese Prüfungsform löschen möchten?",
+    "addExamTypeSuccess": "Prüfungsform erfolgreich erstellt.",
+    "deleteExamTypeSuccess": "Prüfungsform erfolgreich gelöscht.",
+    "updateUniversityInfoSuccess": "Hochschulinformationen erfolgreich aktualisiert.",
+    "addNewExamType": "Neue Prüfungsform hinzufügen",
+    "internalCode": "Interner Code",
+    "examTypeNameDe": "Name (DE)",
+    "examTypeNameEn": "Name (EN)",
+    "examTypeShortDe": "Kürzel (DE)",
+    "examTypeShortEn": "Kürzel (EN)",
+    "addType": "Form hinzufügen"
   },
   "user": {
     "firstname": "Vorname",

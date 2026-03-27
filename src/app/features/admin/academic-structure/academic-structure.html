@@ -25,7 +25,7 @@
 
    <mat-sidenav-content class="main-content">
 
-      <header class="curriculum-header">
+      <header class="curriculum-header animate-fade-in">
          <div class="header-main-row">
             <div class="title-block">
                <h1>
@@ -36,10 +36,8 @@
                </h1>
                <p>
                   @if (activeView() === 'university') { {{ "academicStructure.configureUniversityInfo" | translate }} }
-                  @else if (activeView() === 'structure') { {{ "academicStructure.configureCoursesAndSpecializations" |
-                  translate }} }
-                  @else if (activeView() === 'exam-types') { {{ "academicStructure.manageAvailableExamTypes" | translate
-                  }} }
+                  @else if (activeView() === 'structure') { {{ "academicStructure.configureCoursesAndSpecializations" | translate }} }
+                  @else if (activeView() === 'exam-types') { {{ "academicStructure.manageAvailableExamTypes" | translate }} }
                   @else { {{ "academicStructure.manageModuleRosterAndQualifications" | translate }} }
                </p>
             </div>
@@ -48,12 +46,12 @@
                @if (activeView() === 'modules') {
                <button mat-flat-button color="primary" class="high-button"
                   (click)="showAddModuleForm.set(!showAddModuleForm())">
-                  <mat-icon>add</mat-icon> {{ "academicStructure.defineModule" | translate }}
+                  <mat-icon>{{ showAddModuleForm() ? 'close' : 'add' }}</mat-icon> {{ (showAddModuleForm() ? 'academicStructure.cancel' : 'academicStructure.defineModule') | translate }}
                </button>
                } @else if (activeView() === 'structure') {
                <button mat-flat-button color="primary" class="high-button"
                   (click)="showAddCourseForm.set(!showAddCourseForm())">
-                  <mat-icon>add</mat-icon> {{ "academicStructure.createCourse" | translate }}
+                  <mat-icon>{{ showAddCourseForm() ? 'close' : 'add' }}</mat-icon> {{ (showAddCourseForm() ? 'academicStructure.cancel' : 'academicStructure.createCourse') | translate }}
                </button>
                } @else if (activeView() === 'university') {
                <button mat-flat-button color="primary" class="high-button" (click)="saveUniversityInfo()"
@@ -63,7 +61,7 @@
                } @else if (activeView() === 'exam-types') {
                <button mat-flat-button color="primary" class="high-button"
                   (click)="showAddExamTypeForm.set(!showAddExamTypeForm())">
-                  <mat-icon>add</mat-icon> {{ "academicStructure.addExamType" | translate }}
+                  <mat-icon>{{ showAddExamTypeForm() ? 'close' : 'add' }}</mat-icon> {{ (showAddExamTypeForm() ? 'academicStructure.cancel' : 'academicStructure.addExamType') | translate }}
                </button>
                }
             </div>
@@ -71,6 +69,7 @@
 
          @if (activeView() === 'modules') {
          <div class="filter-bar-row animate-slide-down">
+            <mat-icon class="filter-icon" style="color: #94a3b8; font-size: 20px; width: 22px; height: 22px;">tune</mat-icon>
             <mat-form-field appearance="outline" class="mega-search">
                <mat-icon matPrefix>search</mat-icon>
                <mat-label>{{ "academicStructure.searchModules" | translate }}</mat-label>
@@ -275,7 +274,7 @@
                            <span>{{ "academicStructure.specializationAreas" | translate }}</span>
                            <button mat-icon-button
                               (click)="specializationForm.get('courseId')?.setValue(course.id); showAddSpecializationForm.set(!showAddSpecializationForm())">
-                              <mat-icon>add_circle_outline</mat-icon>
+                              <mat-icon>{{ (showAddSpecializationForm() && specializationForm.get('courseId')?.value === course.id) ? 'close' : 'add_circle_outline' }}</mat-icon>
                            </button>
                         </div>
 
@@ -466,42 +465,41 @@
          <div class="view-section animate-fade-in">
             @if (showAddExamTypeForm()) {
             <mat-card class="creation-overlay-card animate-slide-down">
-               <mat-card-header><mat-card-title>Add New Exam Type</mat-card-title></mat-card-header>
+               <mat-card-header><mat-card-title>{{ "academicStructure.addNewExamType" | translate }}</mat-card-title></mat-card-header>
                <mat-card-content>
                   <form [formGroup]="examTypeForm" class="exam-type-creation-form"
                      style="display: flex; flex-direction: column; gap: 16px;">
                      <div style="display: flex; gap: 16px;">
                         <mat-form-field appearance="outline" style="flex: 1;">
-                           <mat-label>Internal Code</mat-label>
+                           <mat-label>{{ "academicStructure.internalCode" | translate }}</mat-label>
                            <input matInput formControlName="type" placeholder="e.g. KLAUSUR">
                         </mat-form-field>
                      </div>
                      <div style="display: flex; gap: 16px;">
                         <mat-form-field appearance="outline" style="flex: 1;">
-                           <mat-label>Name (DE)</mat-label>
+                           <mat-label>{{ "academicStructure.examTypeNameDe" | translate }}</mat-label>
                            <input matInput formControlName="nameDe" placeholder="e.g. Klausur">
                         </mat-form-field>
                         <mat-form-field appearance="outline" style="flex: 1;">
-                           <mat-label>Name (EN)</mat-label>
+                           <mat-label>{{ "academicStructure.examTypeNameEn" | translate }}</mat-label>
                            <input matInput formControlName="nameEn" placeholder="e.g. Written Exam">
                         </mat-form-field>
                      </div>
                      <div style="display: flex; gap: 16px;">
                         <mat-form-field appearance="outline" style="flex: 1;">
-                           <mat-label>Short (DE)</mat-label>
+                           <mat-label>{{ "academicStructure.examTypeShortDe" | translate }}</mat-label>
                            <input matInput formControlName="shortDe" placeholder="e.g. Kl.">
                         </mat-form-field>
                         <mat-form-field appearance="outline" style="flex: 1;">
-                           <mat-label>Short (EN)</mat-label>
+                           <mat-label>{{ "academicStructure.examTypeShortEn" | translate }}</mat-label>
                            <input matInput formControlName="shortEn" placeholder="e.g. W.E.">
                         </mat-form-field>
                      </div>
                   </form>
                </mat-card-content>
                <mat-card-actions align="end">
-                  <button mat-button (click)="showAddExamTypeForm.set(false)">Cancel</button>
-                  <button mat-flat-button color="primary" (click)="addExamType()" [disabled]="examTypeForm.invalid">Add
-                     Type</button>
+                  <button mat-button (click)="showAddExamTypeForm.set(false)">{{ "academicStructure.cancel" | translate }}</button>
+                  <button mat-flat-button color="primary" (click)="addExamType()" [disabled]="examTypeForm.invalid">{{ "academicStructure.addType" | translate }}</button>
                </mat-card-actions>
             </mat-card>
             }
