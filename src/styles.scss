@@ -1,8 +1,3 @@
-// Include theming for Angular Material with `mat.theme()`.
-// This Sass mixin will define CSS variables that are used for styling Angular Material
-// components according to the Material 3 design spec.
-// Learn more about theming and how to use it for your application's
-// custom components at https://material.angular.dev/guide/theming
 @use '@angular/material' as mat;
 
 html,
@@ -21,120 +16,29 @@ body {
     ));
 }
 
-.theme-red {
-  @include apply-theme(mat.$red-palette);
-}
+.theme-red     { @include apply-theme(mat.$red-palette); }
+.theme-green   { @include apply-theme(mat.$green-palette); }
+.theme-blue    { @include apply-theme(mat.$blue-palette); }
+.theme-yellow  { @include apply-theme(mat.$yellow-palette); }
+.theme-cyan    { @include apply-theme(mat.$cyan-palette); }
+.theme-magenta { @include apply-theme(mat.$magenta-palette); }
+.theme-orange  { @include apply-theme(mat.$orange-palette); }
+.theme-azure   { @include apply-theme(mat.$azure-palette); }
+.theme-violet  { @include apply-theme(mat.$violet-palette); }
+.theme-rose    { @include apply-theme(mat.$rose-palette); }
 
-.theme-green {
-  @include apply-theme(mat.$green-palette);
-}
-
-.theme-blue {
+.theme-campus {
   @include apply-theme(mat.$blue-palette);
-}
+  --mat-sys-primary: #2563eb;
+  --mat-sys-on-primary: #ffffff;
 
-.theme-yellow {
-  @include apply-theme(mat.$yellow-palette);
-}
+  --campus-bg: #f0f4f8;
 
-.theme-cyan {
-  @include apply-theme(mat.$cyan-palette);
-}
-
-.theme-magenta {
-  @include apply-theme(mat.$magenta-palette);
-}
-
-.theme-orange {
-  @include apply-theme(mat.$orange-palette);
-}
-
-.theme-azure {
-  @include apply-theme(mat.$azure-palette);
-}
-
-.theme-violet {
-  @include apply-theme(mat.$violet-palette);
-}
-
-.theme-rose {
-  @include apply-theme(mat.$rose-palette);
-}
-
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-
-// style.css from Mockup - may analyze and optimize later
-
-// ── CSS Custom Properties ───────────────────────────────────
-:root {
-  // Colors: Brand
-  --primary-color:  #2563EB;
-  --primary-hover:  #1D4ED8;
-  --primary-light:  rgba(37, 99, 235, 0.08);
-
-  // Colors: Surfaces
-  --bg-color:         #F0F4F8;
-  --surface-color:    #FFFFFF;
-  --surface-elevated: rgba(255, 255, 255, 0.95);
-  --surface-overlay:  rgba(255, 255, 255, 0.85);
-
-  // Colors: Text
-  --text-primary:   #1e293b;
-  --text-secondary: #64748b;
-  --text-tertiary:  #94a3b8;
-
-  // Colors: Borders
-  --border-color:        #e2e8f0;
-  --border-color-subtle: #f1f5f9;
-
-  // Colors: Semantic
-  --success-color:       #10b981;
-  --warning-color:       #f59e0b;
-  --error-color:         #ef4444;
-  --info-color:          #3b82f6;
-  --success-color-dark:  #059669;
-  --success-color-bright:#22c55e;
-  --error-color-dark:    #dc2626;
-  --warning-color-dark:  #d97706;
-  --purple-color:        #7c3aed;
-  --gray-color:          #6b7280;
-  --gray-dark:           #4B5563;
-
-  // Shadows
-  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
-  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.06), 0 1px 2px -1px rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
-
-  // Border Radius
-  --radius-sm:   0.25rem;
-  --radius-md:   0.375rem;
-  --radius-lg:   0.5rem;
-  --radius-xl:   0.625rem;
-  --radius-2xl:  0.75rem;
-  --radius-3xl:  1rem;
-  --radius-full: 999px;
-
-  // Motion
-  --transition-speed: 0.3s;
-  --transition-fast:  0.15s;
-  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
-  --ease-out:    cubic-bezier(0, 0, 0.2, 1);
-
-  // Glass (Light Mode)
   --glass-bg:     rgba(255, 255, 255, 0.72);
   --glass-border: rgba(226, 232, 240, 0.7);
   --glass-blur:   blur(12px) saturate(160%);
   --glass-shadow: 0 8px 32px rgba(37, 99, 235, 0.08);
 
-  // Background Gradient
   --bg-gradient: linear-gradient(
     135deg,
     rgba(214, 228, 255, 0.20) 0%,
@@ -142,67 +46,20 @@ body {
     rgba(232, 224, 254, 0.12) 100%
   );
 
-  // Spacing Scale
-  --space-1:  0.25rem;
-  --space-2:  0.5rem;
-  --space-3:  0.75rem;
-  --space-4:  1rem;
-  --space-5:  1.25rem;
-  --space-6:  1.5rem;
-  --space-8:  2rem;
-  --space-10: 2.5rem;
-  --space-12: 3rem;
-
-  // Typography Scale
-  --text-xs:   0.75rem;
-  --text-sm:   0.875rem;
-  --text-base: 1rem;
-  --text-lg:   1.1rem;
-  --text-xl:   1.25rem;
-  --text-2xl:  1.5rem;
-  --text-3xl:  1.75rem;
-
-  // Focus
   --focus-ring: 0 0 0 3px rgba(59, 130, 246, 0.25);
-
-  // Layout
-  --font-family:        'Inter', sans-serif;
-  --sidebar-width:      280px;
-  --navbar-height:      64px;
-  --content-max-width:  1400px;
 }
 
-// ── Dark Mode Variables ─────────────────────────────────────
-html[style*="color-scheme: dark"] {
-  --primary-color:  #3B82F6;
-  --primary-hover:  #5B9BF8;
-  --primary-light:  rgba(59, 130, 246, 0.1);
+html.theme-campus[style*="color-scheme: dark"] {
+  --campus-bg: #080e1e;
 
-  --bg-color:         #080e1e;
-  --surface-color:    rgba(15, 23, 42, 0.88);
-  --surface-elevated: rgba(20, 30, 52, 0.92);
-  --surface-overlay:  rgba(15, 23, 42, 0.82);
-
-  --text-primary:   #e8edf5;
-  --text-secondary: #8b9bc0;
-  --text-tertiary:  #5a6a8a;
-
-  --border-color:        rgba(56, 78, 122, 0.3);
-  --border-color-subtle: rgba(40, 58, 100, 0.2);
-
-  --success-color-dark:  #34d399;
-  --success-color-bright:#4ade80;
-  --error-color-dark:    #f87171;
-  --warning-color-dark:  #fbbf24;
-  --purple-color:        #a78bfa;
-  --gray-color:          #9ca3af;
-  --gray-dark:           #d1d5db;
-
-  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px -1px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -2px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+  --mat-sys-primary:               #b5c4ff;
+  --mat-sys-on-primary:            #002180;
+  --mat-sys-surface:               #0d1526;
+  --mat-sys-surface-container:     #131f36;
+  --mat-sys-surface-container-low: #0d1526;
+  --mat-sys-on-surface:            #e2e8f0;
+  --mat-sys-on-surface-variant:    #94a3b8;
+  --mat-sys-outline-variant:       rgba(100, 130, 200, 0.18);
 
   --glass-bg:     rgba(15, 23, 42, 0.78);
   --glass-border: rgba(100, 130, 200, 0.12);
@@ -217,4 +74,111 @@ html[style*="color-scheme: dark"] {
   );
 
   --focus-ring: 0 0 0 3px rgba(59, 130, 246, 0.35);
+}
+
+@media (min-width: 769px) {
+  html.theme-campus[style*="color-scheme: dark"] {
+    --glass-blur: blur(16px) saturate(180%);
+    --glass-bg:   rgba(15, 23, 42, 0.6);
+  }
+}
+
+html.theme-campus[style*="color-scheme: dark"] mat-card.stat-card {
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-color: var(--glass-border) !important;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+:root {
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.06), 0 1px 2px -1px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+
+  --radius-sm:   0.25rem;
+  --radius-md:   0.375rem;
+  --radius-lg:   0.5rem;
+  --radius-xl:   0.625rem;
+  --radius-2xl:  0.75rem;
+  --radius-3xl:  1rem;
+  --radius-full: 999px;
+
+  --transition-speed: 0.3s;
+  --transition-fast:  0.15s;
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out:    cubic-bezier(0, 0, 0.2, 1);
+
+  --space-1:  0.25rem;
+  --space-2:  0.5rem;
+  --space-3:  0.75rem;
+  --space-4:  1rem;
+  --space-5:  1.25rem;
+  --space-6:  1.5rem;
+  --space-8:  2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+
+  --text-xs:   0.75rem;
+  --text-sm:   0.875rem;
+  --text-base: 1rem;
+  --text-lg:   1.1rem;
+  --text-xl:   1.25rem;
+  --text-2xl:  1.5rem;
+  --text-3xl:  1.75rem;
+
+  --font-family:        'Inter', sans-serif;
+  --sidebar-width:      280px;
+  --navbar-height:      64px;
+  --content-max-width:  1400px;
+}
+
+html[style*="color-scheme: dark"] {
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px -1px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -2px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes dropdownAppear {
+  from { opacity: 0; transform: translateY(-2px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --transition-speed: 0.01ms;
+    --transition-fast:  0.01ms;
+    --ease-spring: linear;
+    --ease-smooth: linear;
+    --ease-out:    linear;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }

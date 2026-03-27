@@ -9,14 +9,14 @@
   margin: 0;
   font-size: 1.15rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--mat-sys-on-surface);
 }
 
 .close-btn {
-  color: var(--text-secondary);
+  color: var(--mat-sys-on-surface-variant);
 
   &:hover {
-    color: var(--text-primary);
+    color: var(--mat-sys-on-surface);
   }
 }
 
@@ -33,7 +33,7 @@
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--text-secondary);
+  color: var(--mat-sys-on-surface-variant);
   margin-bottom: 0.4rem;
 }
 

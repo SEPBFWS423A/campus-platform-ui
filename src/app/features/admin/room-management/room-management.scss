@@ -1,19 +1,17 @@
-// ── Page Layout ──────────────────────────────────────────────
-
 .section-header {
   margin-bottom: 1.75rem;
 
   h1 {
     font-size: var(--text-2xl);
     font-weight: 700;
-    color: var(--text-primary);
+    color: var(--mat-sys-on-surface);
     margin: 0 0 var(--space-1);
     letter-spacing: -0.02em;
   }
 
   p {
     font-size: var(--text-sm);
-    color: var(--text-secondary);
+    color: var(--mat-sys-on-surface-variant);
     margin: 0;
   }
 }
@@ -23,8 +21,6 @@
   flex-direction: column;
   gap: var(--space-6);
 }
-
-// ── Stat Cards ───────────────────────────────────────────────
 
 .room-stats-row {
   display: grid;
@@ -40,8 +36,8 @@ mat-card.stat-card {
   padding: 2.25rem var(--space-6) !important;
   text-align: center;
   border-radius: var(--radius-xl) !important;
-  border: 1px solid var(--border-color);
-  background: var(--surface-color);
+  border: 1px solid var(--mat-sys-outline-variant);
+  background: var(--mat-sys-surface) !important;
   box-shadow: var(--shadow-sm);
 
   .stat-icon {
@@ -60,18 +56,18 @@ mat-card.stat-card {
     }
 
     &.primary-bg {
-      background: var(--primary-light);
-      color: var(--primary-color);
+      background: color-mix(in srgb, var(--mat-sys-primary) 12%, transparent);
+      color: var(--mat-sys-primary);
     }
 
     &.success-bg {
       background: rgba(16, 185, 129, 0.1);
-      color: var(--success-color);
+      color: #10b981;
     }
 
     &.warning-bg {
       background: rgba(245, 158, 11, 0.1);
-      color: var(--warning-color);
+      color: #f59e0b;
     }
   }
 
@@ -84,33 +80,35 @@ mat-card.stat-card {
 
   .stat-label {
     font-size: var(--text-sm);
-    color: var(--text-secondary);
+    color: var(--mat-sys-on-surface-variant);
     font-weight: 400;
   }
 
   .stat-value {
     font-size: var(--text-3xl);
     font-weight: 700;
-    color: var(--text-primary);
+    color: var(--mat-sys-on-surface);
     line-height: 1.1;
   }
 }
 
-// ── Tab Group ────────────────────────────────────────────────
-
 .management-tabs {
-  .mat-mdc-tab-header {
-    border-bottom: 1px solid var(--border-color);
-    background: var(--surface-color);
+  --mat-tab-divider-color:                  var(--mat-sys-outline-variant);
+  --mat-tab-inactive-label-text-color:      var(--mat-sys-on-surface-variant);
+  --mat-tab-active-label-text-color:        var(--mat-sys-primary);
+  --mat-tab-active-hover-label-text-color:  var(--mat-sys-primary);
+  --mat-tab-active-focus-label-text-color:  var(--mat-sys-primary);
+
+  ::ng-deep .mat-mdc-tab-header {
+    background: var(--mat-sys-surface);
     border-radius: var(--radius-xl) var(--radius-xl) 0 0;
     padding: 0 var(--space-2);
   }
 
-  .mat-mdc-tab {
+  ::ng-deep .mat-mdc-tab {
     min-width: 140px;
     font-size: var(--text-sm);
     font-weight: 500;
-    color: var(--text-secondary);
 
     mat-icon {
       font-size: 18px;
@@ -119,10 +117,6 @@ mat-card.stat-card {
       margin-right: var(--space-2);
       vertical-align: middle;
     }
-  }
-
-  .mat-mdc-tab.mdc-tab--active {
-    color: var(--primary-color);
   }
 }
 
@@ -133,12 +127,10 @@ mat-card.stat-card {
   padding-top: var(--space-5);
 }
 
-// ── Cards ────────────────────────────────────────────────────
-
 .card {
-  background: var(--surface-color);
+  background: var(--mat-sys-surface);
   border-radius: var(--radius-xl);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--mat-sys-outline-variant);
   box-shadow: var(--shadow-sm);
   padding: 0;
 
@@ -149,17 +141,15 @@ mat-card.stat-card {
 
 .card-header {
   padding: var(--space-5) var(--space-6);
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
 
   h3 {
     margin: 0;
     font-size: var(--text-base);
     font-weight: 600;
-    color: var(--text-primary);
+    color: var(--mat-sys-on-surface);
   }
 }
-
-// ── Create Form ──────────────────────────────────────────────
 
 .inline-create-form {
   display: flex;
@@ -181,8 +171,6 @@ mat-card.stat-card {
   }
 }
 
-// ── Button ───────────────────────────────────────────────────
-
 .btn {
   display: inline-flex;
   align-items: center;
@@ -195,11 +183,11 @@ mat-card.stat-card {
 }
 
 .btn-primary {
-  background: var(--primary-color);
-  color: #fff;
+  background: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary);
 
   &:not(:disabled):hover {
-    background: var(--primary-hover);
+    background: color-mix(in srgb, var(--mat-sys-primary) 85%, #000);
   }
 
   &:disabled {
@@ -213,8 +201,6 @@ mat-card.stat-card {
   padding: 0 var(--space-4);
 }
 
-// ── Table ────────────────────────────────────────────────────
-
 .room-table-wrapper {
   overflow-x: auto;
 }
@@ -224,8 +210,8 @@ mat-card.stat-card {
   border-collapse: collapse;
 
   .mat-mdc-header-row {
-    background: var(--border-color-subtle);
-    border-bottom: 1px solid var(--border-color);
+    background: var(--mat-sys-surface-container-low);
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
   }
 
   .mat-mdc-header-cell {
@@ -233,13 +219,13 @@ mat-card.stat-card {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: var(--text-secondary);
+    color: var(--mat-sys-on-surface-variant);
     padding: 0.875rem var(--space-6);
     border-bottom: none;
   }
 
   .mat-mdc-row {
-    border-bottom: 1px solid var(--border-color-subtle);
+    border-bottom: 1px solid var(--mat-sys-surface-container-low);
     transition: background var(--transition-fast);
 
     &:last-child {
@@ -247,13 +233,13 @@ mat-card.stat-card {
     }
 
     &:hover {
-      background: var(--border-color-subtle);
+      background: var(--mat-sys-surface-container-low);
     }
   }
 
   .mat-mdc-cell {
     font-size: var(--text-sm);
-    color: var(--text-primary);
+    color: var(--mat-sys-on-surface);
     padding: var(--space-4) var(--space-6);
     border-bottom: none;
   }
@@ -262,8 +248,6 @@ mat-card.stat-card {
     font-weight: 500;
   }
 }
-
-// ── Action Buttons ───────────────────────────────────────────
 
 .actions-cell {
   display: flex;
@@ -275,7 +259,7 @@ mat-card.stat-card {
   width: 32px;
   height: 32px;
   padding: 0;
-  color: var(--text-secondary);
+  color: var(--mat-sys-on-surface-variant);
   border-radius: var(--radius-md);
   transition: background var(--transition-fast), color var(--transition-fast);
 
@@ -286,17 +270,15 @@ mat-card.stat-card {
   }
 
   &:hover {
-    background: var(--border-color);
-    color: var(--text-primary);
+    background: var(--mat-sys-outline-variant);
+    color: var(--mat-sys-on-surface);
   }
 
   &.danger:hover {
     background: rgba(239, 68, 68, 0.1);
-    color: var(--error-color);
+    color: var(--mat-sys-error);
   }
 }
-
-// ── Alert ────────────────────────────────────────────────────
 
 .management-alert {
   margin: 0 var(--space-6) var(--space-5);
@@ -306,94 +288,7 @@ mat-card.stat-card {
 
   &.error {
     background: rgba(239, 68, 68, 0.08);
-    color: var(--error-color-dark);
+    color: var(--mat-sys-error);
     border: 1px solid rgba(239, 68, 68, 0.2);
-  }
-}
-
-// ── Dark Mode ────────────────────────────────────────────────
-
-html[style*="color-scheme: dark"] {
-
-  .section-header h1 {
-    color: var(--text-primary);
-  }
-
-  mat-card.stat-card {
-    background: var(--surface-color) !important;
-    border-color: var(--border-color);
-
-    .stat-icon {
-      &.primary-bg {
-        background: var(--primary-light);
-        color: var(--primary-color);
-      }
-      &.success-bg {
-        background: rgba(16, 185, 129, 0.15);
-        color: var(--success-color-dark);
-      }
-      &.warning-bg {
-        background: rgba(245, 158, 11, 0.15);
-        color: var(--warning-color-dark);
-      }
-    }
-  }
-
-  .management-tabs {
-    .mat-mdc-tab-header {
-      background: var(--surface-color);
-      border-color: var(--border-color);
-    }
-  }
-
-  .card {
-    background: var(--surface-color);
-    border-color: var(--border-color);
-  }
-
-  .card-header {
-    border-color: var(--border-color);
-    h3 { color: var(--text-primary); }
-  }
-
-  .inline-create-form {
-    .mat-mdc-text-field-wrapper {
-      background: rgba(255, 255, 255, 0.04);
-    }
-  }
-
-  .management-table {
-    .mat-mdc-header-row {
-      background: rgba(255, 255, 255, 0.03);
-      border-color: var(--border-color);
-    }
-    .mat-mdc-header-cell {
-      color: var(--text-secondary);
-      border-color: var(--border-color);
-    }
-    .mat-mdc-row {
-      border-color: var(--border-color);
-      &:hover { background: rgba(255, 255, 255, 0.04); }
-    }
-    .mat-mdc-cell { color: var(--text-primary); }
-    .room-name-cell { color: var(--text-primary); }
-  }
-
-  .btn-icon-only {
-    color: var(--text-secondary);
-    &:hover {
-      background: rgba(255, 255, 255, 0.08);
-      color: var(--text-primary);
-    }
-    &.danger:hover {
-      background: rgba(239, 68, 68, 0.15);
-      color: var(--error-color-dark);
-    }
-  }
-
-  .management-alert.error {
-    background: rgba(239, 68, 68, 0.12);
-    border-color: rgba(239, 68, 68, 0.3);
-    color: var(--error-color-dark);
   }
 }
