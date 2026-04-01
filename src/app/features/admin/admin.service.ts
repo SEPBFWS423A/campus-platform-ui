@@ -120,7 +120,7 @@ export interface Room {
 export class AdminService {
   private apiUrl = `${environment.apiUrl}/admin`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   // --- User Management ---
   getUsers(): Observable<User[]> {
@@ -235,18 +235,18 @@ export class AdminService {
   }
 
   getRooms(): Observable<Room[]> {
-    return this.http.get<Room[]>(this.roomsUrl);
+    return this.http.get<Room[]>(`${this.apiUrl}/rooms`);
   }
 
   createRoom(room: Omit<Room, 'id'>): Observable<Room> {
-    return this.http.post<Room>(this.roomsUrl, room);
+    return this.http.post<Room>(`${this.apiUrl}/rooms`, room);
   }
 
   updateRoom(id: number, room: Omit<Room, 'id'>): Observable<Room> {
-    return this.http.put<Room>(`${this.roomsUrl}/${id}`, room);
+    return this.http.put<Room>(`${this.apiUrl}/rooms/${id}`, room);
   }
 
   deleteRoom(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.roomsUrl}/${id}`);
+    return this.http.delete<void>(`${this.apiUrl}/rooms/${id}`);
   }
 }
