@@ -1,10 +1,10 @@
-import {Component, computed, inject, OnInit, signal} from '@angular/core';
-import {Auth} from '../../../core/auth/auth';
-import {MatIconModule} from '@angular/material/icon';
-import {RouterLink, RouterLinkActive} from '@angular/router';
-import {UserRole} from '../../../core/models/user-role';
-import {TranslatePipe} from '@ngx-translate/core';
-import {MatButton} from '@angular/material/button';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Auth } from '../../../core/auth/auth';
+import { MatIconModule } from '@angular/material/icon';
+import { RouterLink, RouterLinkActive } from '@angular/router';
+import { UserRole } from '../../../core/models/user-role';
+import { TranslatePipe } from '@ngx-translate/core';
+import { MatButton } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { UserSettingsDialog } from '../settings/user-settings.dialog/user-settings.dialog';
 import { AdminService, InstitutionInfo } from '../../../features/admin/admin.service';
@@ -65,7 +65,7 @@ export class Navigation implements OnInit {
   universityName = signal<string>('');
 
   ngOnInit() {
-    this.adminService.getPublicInstitutionInfo().subscribe((info: InstitutionInfo) => {
+    this.adminService.getInstitutionInfo().subscribe((info: InstitutionInfo) => {
       this.universityName.set(info.universityName);
     });
   }
