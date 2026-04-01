@@ -107,11 +107,11 @@
 }
 
 /* Responsiveness for high information density */
-@media (max-width: 1550px) {
+@media (max-width: 1300px) {
   .nav-wrapper { padding: 0 16px; }
   .nav-list { gap: 4px; }
   .nav-list a { padding: 6px 10px; font-size: 0.8rem; }
-  .platform-name { display: none; } /* Hide name on smaller screens to keep icon */
+  .platform-name { display: none; } /* Hide name on tablets/small screens */
 }
 
 @media (max-width: 1250px) {

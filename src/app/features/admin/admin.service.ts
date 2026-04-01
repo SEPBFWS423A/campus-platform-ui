@@ -201,6 +201,11 @@ export class AdminService {
     return this.http.get<InstitutionInfo>(`${this.apiUrl}/institution`);
   }
 
+  getPublicInstitutionInfo(): Observable<InstitutionInfo> {
+    const publicUrl = `${environment.apiUrl}/public`;
+    return this.http.get<InstitutionInfo>(`${publicUrl}/institution`);
+  }
+
   updateInstitutionInfo(info: InstitutionInfo): Observable<InstitutionInfo> {
     return this.http.put<InstitutionInfo>(`${this.apiUrl}/institution`, info);
   }

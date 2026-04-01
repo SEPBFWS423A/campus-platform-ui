@@ -149,13 +149,15 @@
     "singleProvisioning": "Single Provisioning",
     "singleProvisioningDesc": "Invite a student or lecturer directly to the platform.",
     "studentData": "Student Data",
-    "matrikelnummer": "Matrikelnummer (User-ID)",
+    "studentDetails": "Student Details",
+    "matrikelnummer": "Student Number (optional)",
     "inviteNewMember": "Invite New Member",
     "batchEntry": "Batch Entry",
     "batchEntryDesc": "Paste dozens of records at once for high-efficiency provisioning.",
     "batchFormat": "Format:",
     "batchFormatValue": "email ; studentId ; course ; specialization",
     "listData": "List Data",
+    "defaultValues": "Default Values",
     "defaultCourse": "Default Course",
     "defaultSpecialization": "Default Specialization",
     "executeBatchInvitations": "Execute Batch Invitations",
@@ -166,6 +168,7 @@
     "studentsDetected": "Students Detected",
     "launchAutomatedIntake": "Launch Automated Intake",
     "createStudyGroup": "Create Study Group",
+    "createStudyGroupDesc": "Initialize new academic cohorts with intelligent naming patterns.",
     "startQuartal": "Start Quartal",
     "quartal1": "1. Quartal",
     "quartal2": "2. Quartal",
@@ -180,7 +183,12 @@
     "studentName": "Student Name",
     "exclude": "Exclude",
     "filters": "Filters",
-    "cancelGroupCreation": "Cancel Creation"
+    "cancelGroupCreation": "Cancel Creation",
+    "csvFormat": "email; id (optional); firstName; lastName; role; course; specialization",
+    "degreeType": {
+      "BACHELOR": "Bachelor",
+      "MASTER": "Master"
+    }
   },
   "academicStructure": {
     "title": "Academic Structure",

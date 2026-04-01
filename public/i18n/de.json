@@ -149,13 +149,15 @@
     "singleProvisioning": "Einzelbereitstellung",
     "singleProvisioningDesc": "Einen Studierenden oder Dozierenden direkt zur Plattform einladen.",
     "studentData": "Studentendaten",
-    "matrikelnummer": "Matrikelnummer (Benutzer-ID)",
+    "studentDetails": "Studentendetails",
+    "matrikelnummer": "Matrikelnummer (optional)",
     "inviteNewMember": "Neues Mitglied einladen",
     "batchEntry": "Stapelerfassung",
     "batchEntryDesc": "Fügen Sie Dutzende von Datensätzen gleichzeitig ein.",
     "batchFormat": "Format:",
     "batchFormatValue": "E-Mail ; Matrikelnr. ; Studiengang ; Vertiefung",
     "listData": "Listendaten",
+    "defaultValues": "Standardwerte",
     "defaultCourse": "Standard-Studiengang",
     "defaultSpecialization": "Standard-Vertiefung",
     "executeBatchInvitations": "Stapeleinladungen ausführen",
@@ -166,6 +168,7 @@
     "studentsDetected": "Studierende erkannt",
     "launchAutomatedIntake": "Automatisierte Aufnahme starten",
     "createStudyGroup": "Studiengruppe erstellen",
+    "createStudyGroupDesc": "Initialisieren Sie neue akademische Kohorten mit automatischer Namensgenerierung.",
     "startQuartal": "Startquartal",
     "quartal1": "1. Quartal",
     "quartal2": "2. Quartal",
@@ -180,7 +183,12 @@
     "studentName": "Studierendenname",
     "exclude": "Ausschließen",
     "filters": "Filter",
-    "cancelGroupCreation": "Erstellung abbrechen"
+    "cancelGroupCreation": "Erstellung abbrechen",
+    "csvFormat": "email; id (optional); vorname; nachname; rolle; studiengang; vertiefung",
+    "degreeType": {
+      "BACHELOR": "Bachelor",
+      "MASTER": "Master"
+    }
   },
   "academicStructure": {
     "title": "Akademische Struktur",

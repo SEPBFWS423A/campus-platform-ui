@@ -1,4 +1,4 @@
-import {Component, computed, inject, signal} from '@angular/core';
+import {Component, computed, inject, OnInit, signal} from '@angular/core';
 import {Auth} from '../../../core/auth/auth';
 import {MatIconModule} from '@angular/material/icon';
 import {RouterLink, RouterLinkActive} from '@angular/router';
@@ -7,6 +7,7 @@ import {TranslatePipe} from '@ngx-translate/core';
 import {MatButton} from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { UserSettingsDialog } from '../settings/user-settings.dialog/user-settings.dialog';
+import { AdminService, InstitutionInfo } from '../../../features/admin/admin.service';
 
 export type NavLink = {
   path: string;
@@ -56,10 +57,18 @@ const NAVIGATION_CONFIG: Record<string, NavLink[]> = {
   templateUrl: './navigation.html',
   styleUrl: './navigation.scss',
 })
-export class Navigation {
+export class Navigation implements OnInit {
   public auth = inject(Auth);
   private dialog = inject(MatDialog);
+  private adminService = inject(AdminService);
   hoveredItem = signal<string | null>(null);
+  universityName = signal<string>('');
+
+  ngOnInit() {
+    this.adminService.getPublicInstitutionInfo().subscribe((info: InstitutionInfo) => {
+      this.universityName.set(info.universityName);
+    });
+  }
 
   currentLinks = computed(() => {
     const role = this.auth.userRole();

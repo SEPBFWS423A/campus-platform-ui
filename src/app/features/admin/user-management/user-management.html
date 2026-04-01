@@ -18,581 +18,686 @@
           <mat-icon matListItemIcon>group_add</mat-icon>
           <div matListItemTitle>{{ "userManagement.campusOnboarding" | translate }}</div>
         </a>
-        
+
         <!-- Nested Onboarding Modes -->
         @if (activeView() === 'onboarding') {
-          <div class="sub-nav-group animate-slide-down">
-            <a mat-list-item [class.active-sub-link]="onboardingMode() === 'individual'" (click)="onboardingMode.set('individual')">
-              <mat-icon matListItemIcon class="small-icon">person_add</mat-icon>
-              <div matListItemTitle>{{ "userManagement.singleIntake" | translate }}</div>
-            </a>
-            <a mat-list-item [class.active-sub-link]="onboardingMode() === 'bulk'" (click)="onboardingMode.set('bulk')">
-              <mat-icon matListItemIcon class="small-icon">content_paste_go</mat-icon>
-              <div matListItemTitle>{{ "userManagement.batchPaste" | translate }}</div>
-            </a>
-            <a mat-list-item [class.active-sub-link]="onboardingMode() === 'csv'" (click)="onboardingMode.set('csv')">
-              <mat-icon matListItemIcon class="small-icon">file_upload</mat-icon>
-              <div matListItemTitle>{{ "userManagement.rosterImport" | translate }}</div>
-            </a>
-          </div>
+        <div class="sub-nav-group animate-slide-down">
+          <a mat-list-item [class.active-sub-link]="onboardingMode() === 'individual'"
+            (click)="onboardingMode.set('individual')">
+            <mat-icon matListItemIcon class="small-icon">person_add</mat-icon>
+            <div matListItemTitle>{{ "userManagement.singleIntake" | translate }}</div>
+          </a>
+          <a mat-list-item [class.active-sub-link]="onboardingMode() === 'bulk'" (click)="onboardingMode.set('bulk')">
+            <mat-icon matListItemIcon class="small-icon">content_paste_go</mat-icon>
+            <div matListItemTitle>{{ "userManagement.batchPaste" | translate }}</div>
+          </a>
+          <a mat-list-item [class.active-sub-link]="onboardingMode() === 'csv'" (click)="onboardingMode.set('csv')">
+            <mat-icon matListItemIcon class="small-icon">file_upload</mat-icon>
+            <div matListItemTitle>{{ "userManagement.rosterImport" | translate }}</div>
+          </a>
+        </div>
         }
       </div>
     </mat-nav-list>
   </mat-sidenav>
 
   <!-- Right Slide-out Profile Panel -->
-  <mat-sidenav #userDrawer position="end" mode="over" [opened]="isDrawerOpen()" (closed)="closeUserDrawer()" class="profile-drawer">
+  <mat-sidenav #userDrawer position="end" mode="over" [opened]="isDrawerOpen()" (closed)="closeUserDrawer()"
+    class="profile-drawer">
     @if (selectedUser(); as user) {
-      <div class="drawer-content">
-        <div class="drawer-header">
-          <h2>{{ (isEditingUser() ? 'userManagement.editProfile' : 'userManagement.profileOverview') | translate }}</h2>
-          <div class="header-actions">
-            @if (!isEditingUser()) {
-              <button mat-icon-button color="primary" (click)="startEditing()"><mat-icon>edit</mat-icon></button>
-            }
-            <button mat-icon-button (click)="closeUserDrawer()"><mat-icon>close</mat-icon></button>
-          </div>
-        </div>
-
-        <mat-card class="profile-card modern-card">
+    <div class="drawer-content">
+      <div class="drawer-header">
+        <h2>{{ (isEditingUser() ? 'userManagement.editProfile' : 'userManagement.profileOverview') | translate }}</h2>
+        <div class="header-actions">
           @if (!isEditingUser()) {
-             <!-- VIEW MODE -->
-             <mat-card-header>
-               <div mat-card-avatar class="profile-avatar large">
-                 <mat-icon>account_circle</mat-icon>
-               </div>
-               <mat-card-title>{{ getProfileDisplayName(user) }}</mat-card-title>
-               <mat-card-subtitle>{{ user.email }}</mat-card-subtitle>
-             </mat-card-header>
-             
-             <mat-card-content>
-               <div class="profile-details">
-                 <div class="status-chips">
-                   <mat-chip [color]="getRoleColor(user.role)" selected>{{ 'userRole.' + user.role | translate }}</mat-chip>
-                   <mat-chip [color]="getEnabledColor(user.enabled)" selected>{{ (user.enabled ? 'userManagement.enabled' : 'userManagement.disabled') | translate }}</mat-chip>
-                 </div>
-                    <div class="info-grid-modern">
-                    @if (user.salutation) {
-                    <div class="info-tile"><span class="label">{{ "userManagement.salutation" | translate }}</span><span class="value">{{ user.salutation }}</span></div>
-                    }
-                    @if (user.title) {
-                    <div class="info-tile"><span class="label">{{ "userManagement.academicTitle" | translate }}</span><span class="value">{{ user.title }}</span></div>
-                    }
-                    @if (user.role === 'STUDENT') {
-                    <div class="info-tile"><span class="label">{{ "userManagement.studentNumber" | translate }}</span><span class="value">{{ user.studentNumber || '-' }}</span></div>
-                    <div class="info-tile"><span class="label">{{ "userManagement.course" | translate }}</span><span class="value">{{ user.courseOfStudyName || '-' }}</span>
-                    </div>
-                    <div class="info-tile"><span class="label">{{ "userManagement.specialization" | translate }}</span><span class="value">{{ user.specializationName ||
-                        '-' }}</span></div>
-                    <div class="info-tile"><span class="label">{{ "userManagement.startYear" | translate }}</span><span class="value">{{ user.startYear || '-' }}</span></div>
-                    }
-                  </div>
-   
-                 @if (user.role === 'STUDENT') {
-                   <div class="groups-section-modern">
-                     <h3>{{ "userManagement.studyGroups" | translate }}</h3>
-                     <mat-list dense>
-                       @for (group of getUserGroups(user.id); track group.id) {
-                         <mat-list-item class="group-item-inline">
-                           <mat-icon matListItemIcon>group_work</mat-icon>
-                           <span matListItemTitle>{{ group.name }}</span>
-                           <button mat-icon-button (click)="removeUserFromGroup(user.id, group.id)"><mat-icon>remove_circle_outline</mat-icon></button>
-                         </mat-list-item>
-                       } @empty {
-                         <p class="empty-state">{{ "userManagement.noGroupsFound" | translate }}</p>
-                       }
-                     </mat-list>
-                   </div>
-                 }
-               </div>
-             </mat-card-content>
-             <mat-card-actions align="end">
-               <button mat-button color="warn" (click)="deleteUser(user)">{{ "userManagement.deleteUser" | translate }}</button>
-             </mat-card-actions>
-          } @else {
-             <!-- EDIT MODE -->
-             <mat-card-content>
-                <form [formGroup]="userEditForm" class="edit-form-stack">
-                   <div class="form-row">
-                      <mat-form-field appearance="outline">
-                         <mat-label>{{ "userManagement.salutation" | translate }}</mat-label>
-                         <mat-select formControlName="salutation">
-                            <mat-option [value]="undefined">{{ "userManagement.none" | translate }}</mat-option>
-                            @for (s of salutations; track s) { <mat-option [value]="s">{{ s }}</mat-option> }
-                         </mat-select>
-                      </mat-form-field>
-                      <mat-form-field appearance="outline">
-                         <mat-label>{{ "userManagement.academicTitle" | translate }}</mat-label>
-                         <mat-select formControlName="title">
-                            <mat-option [value]="undefined">{{ "userManagement.none" | translate }}</mat-option>
-                            @for (t of academicTitles; track t) { <mat-option [value]="t">{{ t }}</mat-option> }
-                         </mat-select>
-                      </mat-form-field>
-                   </div>
-                   <div class="form-row">
-                      <mat-form-field appearance="outline">
-                         <mat-label>{{ "userManagement.firstName" | translate }}</mat-label>
-                         <input matInput formControlName="firstName">
-                      </mat-form-field>
-                      <mat-form-field appearance="outline">
-                         <mat-label>{{ "userManagement.lastName" | translate }}</mat-label>
-                         <input matInput formControlName="lastName">
-                      </mat-form-field>
-                   </div>
-                   <mat-form-field appearance="outline" class="full-width">
-                      <mat-label>{{ "userManagement.emailAddress" | translate }}</mat-label>
-                      <input matInput formControlName="email">
-                   </mat-form-field>
-                   
-                   <div class="form-row">
-                      <mat-form-field appearance="outline">
-                         <mat-label>{{ "user.role" | translate }}</mat-label>
-                         <mat-select formControlName="role">
-                            @for (r of roles; track r) { <mat-option [value]="r">{{ 'userRole.' + r | translate }}</mat-option> }
-                         </mat-select>
-                      </mat-form-field>
-                      <mat-form-field appearance="outline">
-                         <mat-label>{{ "userManagement.accountStatus" | translate }}</mat-label>
-                         <mat-select formControlName="enabled">
-                            <mat-option [value]="true">{{ "userManagement.enabled" | translate }}</mat-option>
-                            <mat-option [value]="false">{{ "userManagement.disabled" | translate }}</mat-option>
-                         </mat-select>
-                      </mat-form-field>
-                   </div>
-
-                    @if (userEditForm.get('role')?.value === 'STUDENT') {
-                       <div class="divider">{{ "userManagement.academicInformation" | translate }}</div>
-
-                   <div class="form-row">
-                      <mat-form-field appearance="outline">
-                         <mat-label>{{ "userManagement.studentNumber" | translate }}</mat-label>
-                         <input matInput formControlName="studentNumber">
-                      </mat-form-field>
-                      <mat-form-field appearance="outline">
-                         <mat-label>{{ "userManagement.courseOfStudy" | translate }}</mat-label>
-                         <mat-select formControlName="courseOfStudy">
-                           @for(c of allCoursesData(); track c.id) {
-                            <mat-option [value]="c.name">{{ c.name }}</mat-option>
-                           }
-                         </mat-select>
-                      </mat-form-field>
-                   </div>
-                   <div class="form-row">
-                      <mat-form-field appearance="outline">
-                         <mat-label>{{ "userManagement.specialization" | translate }}</mat-label>
-                         <mat-select formControlName="specializationId">
-                           @for(s of allSpecializationsData(); track s.id) {
-                            <mat-option [value]="s.id">{{ s.name }}</mat-option>
-                           }
-                         </mat-select>
-                      </mat-form-field>
-                      <mat-form-field appearance="outline">
-                         <mat-label>{{ "userManagement.startYear" | translate }}</mat-label>
-                         <input matInput type="number" formControlName="startYear">
-                      </mat-form-field>
-                    </div>
-                    }
-                 </form>
-             </mat-card-content>
-             <mat-card-actions align="end" class="edit-actions">
-                <button mat-button (click)="cancelEditing()">{{ "userManagement.cancel" | translate }}</button>
-                <button mat-flat-button color="primary" [disabled]="userEditForm.invalid" (click)="saveUserEdit()">{{ "userManagement.saveChanges" | translate }}</button>
-             </mat-card-actions>
+          <button mat-icon-button color="primary" (click)="startEditing()"><mat-icon>edit</mat-icon></button>
           }
-        </mat-card>
+          <button mat-icon-button (click)="closeUserDrawer()"><mat-icon>close</mat-icon></button>
+        </div>
       </div>
+
+      <mat-card class="profile-card modern-card">
+        @if (!isEditingUser()) {
+        <!-- VIEW MODE -->
+        <mat-card-header>
+          <div mat-card-avatar class="profile-avatar large">
+            <mat-icon>account_circle</mat-icon>
+          </div>
+          <mat-card-title>{{ getProfileDisplayName(user) }}</mat-card-title>
+          <mat-card-subtitle>{{ user.email }}</mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content>
+          <div class="profile-details">
+            <div class="status-chips">
+              <mat-chip [color]="getRoleColor(user.role)" selected>{{ 'userRole.' + user.role | translate }}</mat-chip>
+              <mat-chip [color]="getEnabledColor(user.enabled)" selected>{{ (user.enabled ? 'userManagement.enabled' :
+                'userManagement.disabled') | translate }}</mat-chip>
+            </div>
+            <div class="info-grid-modern">
+              @if (user.salutation) {
+              <div class="info-tile"><span class="label">{{ "userManagement.salutation" | translate }}</span><span
+                  class="value">{{ user.salutation }}</span></div>
+              }
+              @if (user.title) {
+              <div class="info-tile"><span class="label">{{ "userManagement.academicTitle" | translate }}</span><span
+                  class="value">{{ user.title }}</span></div>
+              }
+              @if (user.role === 'STUDENT') {
+              <div class="info-tile"><span class="label">{{ "userManagement.studentNumber" | translate }}</span><span
+                  class="value">{{ user.studentNumber || '-' }}</span></div>
+              <div class="info-tile"><span class="label">{{ "userManagement.course" | translate }}</span><span
+                  class="value">{{ user.courseOfStudyName || '-' }}</span>
+              </div>
+              <div class="info-tile"><span class="label">{{ "userManagement.specialization" | translate }}</span><span
+                  class="value">{{ user.specializationName ||
+                  '-' }}</span></div>
+              <div class="info-tile"><span class="label">{{ "userManagement.startYear" | translate }}</span><span
+                  class="value">{{ user.startYear || '-' }}</span></div>
+              }
+            </div>
+
+            @if (user.role === 'STUDENT') {
+            <div class="groups-section-modern">
+              <h3>{{ "userManagement.studyGroups" | translate }}</h3>
+              <mat-list dense>
+                @for (group of getUserGroups(user.id); track group.id) {
+                <mat-list-item class="group-item-inline">
+                  <mat-icon matListItemIcon>group_work</mat-icon>
+                  <span matListItemTitle>{{ group.name }}</span>
+                  <button mat-icon-button
+                    (click)="removeUserFromGroup(user.id, group.id)"><mat-icon>remove_circle_outline</mat-icon></button>
+                </mat-list-item>
+                } @empty {
+                <p class="empty-state">{{ "userManagement.noGroupsFound" | translate }}</p>
+                }
+              </mat-list>
+            </div>
+            }
+          </div>
+        </mat-card-content>
+        <mat-card-actions align="end">
+          <button mat-button color="warn" (click)="deleteUser(user)">{{ "userManagement.deleteUser" | translate
+            }}</button>
+        </mat-card-actions>
+        } @else {
+        <!-- EDIT MODE -->
+        <mat-card-content>
+          <form [formGroup]="userEditForm" class="edit-form-stack">
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>{{ "userManagement.salutation" | translate }}</mat-label>
+                <mat-select formControlName="salutation">
+                  <mat-option [value]="undefined">{{ "userManagement.none" | translate }}</mat-option>
+                  @for (s of salutations; track s) { <mat-option [value]="s">{{ s }}</mat-option> }
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>{{ "userManagement.academicTitle" | translate }}</mat-label>
+                <mat-select formControlName="title">
+                  <mat-option [value]="undefined">{{ "userManagement.none" | translate }}</mat-option>
+                  @for (t of academicTitles; track t) { <mat-option [value]="t">{{ t }}</mat-option> }
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>{{ "userManagement.firstName" | translate }}</mat-label>
+                <input matInput formControlName="firstName">
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>{{ "userManagement.lastName" | translate }}</mat-label>
+                <input matInput formControlName="lastName">
+              </mat-form-field>
+            </div>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{ "userManagement.emailAddress" | translate }}</mat-label>
+              <input matInput formControlName="email">
+            </mat-form-field>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>{{ "user.role" | translate }}</mat-label>
+                <mat-select formControlName="role">
+                  @for (r of roles; track r) { <mat-option [value]="r">{{ 'userRole.' + r | translate }}</mat-option> }
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>{{ "userManagement.accountStatus" | translate }}</mat-label>
+                <mat-select formControlName="enabled">
+                  <mat-option [value]="true">{{ "userManagement.enabled" | translate }}</mat-option>
+                  <mat-option [value]="false">{{ "userManagement.disabled" | translate }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            @if (userEditForm.get('role')?.value === 'STUDENT') {
+            <div class="divider">{{ "userManagement.academicInformation" | translate }}</div>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>{{ "userManagement.studentNumber" | translate }}</mat-label>
+                <input matInput formControlName="studentNumber">
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>{{ "userManagement.courseOfStudy" | translate }}</mat-label>
+                <mat-select formControlName="courseOfStudy">
+                  @for(c of allCoursesData(); track c.id) {
+                  <mat-option [value]="c.name">{{ c.name }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>{{ "userManagement.specialization" | translate }}</mat-label>
+                <mat-select formControlName="specializationId">
+                  @for(s of allSpecializationsData(); track s.id) {
+                  <mat-option [value]="s.id">{{ s.name }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>{{ "userManagement.startYear" | translate }}</mat-label>
+                <input matInput type="number" formControlName="startYear">
+              </mat-form-field>
+            </div>
+            }
+          </form>
+        </mat-card-content>
+        <mat-card-actions align="end" class="edit-actions">
+          <button mat-button (click)="cancelEditing()">{{ "userManagement.cancel" | translate }}</button>
+          <button mat-flat-button color="primary" [disabled]="userEditForm.invalid" (click)="saveUserEdit()">{{
+            "userManagement.saveChanges" | translate }}</button>
+        </mat-card-actions>
+        }
+      </mat-card>
+    </div>
     }
   </mat-sidenav>
 
   <mat-sidenav-content class="main-content">
     <!-- Context-aware Header -->
     @if (activeView() !== 'onboarding') {
-      <header class="dashboard-header animate-fade-in">
-        <div class="search-and-actions">
-          <mat-form-field appearance="outline" class="mega-search">
-             <mat-icon matPrefix>search</mat-icon>
-             <mat-label>{{ "userManagement.searchCampus" | translate }}</mat-label>
-             <input matInput (input)="updateSearch($event)" [value]="searchFilter()">
-          </mat-form-field>
-          
-          <div class="action-buttons">
-            @if (activeView() === 'groups') {
-              <button mat-flat-button color="primary" (click)="showAddGroupForm.set(!showAddGroupForm())">
-                <mat-icon>{{ showAddGroupForm() ? 'close' : 'add' }}</mat-icon>
-                <span>{{ (showAddGroupForm() ? 'userManagement.cancelGroupCreation' : 'userManagement.createGroup') | translate }}</span>
-              </button>
-            }
-          </div>
+    <header class="dashboard-header animate-fade-in">
+      <div class="search-and-actions">
+        <mat-form-field appearance="outline" class="mega-search">
+          <mat-icon matPrefix>search</mat-icon>
+          <mat-label>{{ "userManagement.searchCampus" | translate }}</mat-label>
+          <input matInput (input)="updateSearch($event)" [value]="searchFilter()">
+        </mat-form-field>
+
+        <div class="action-buttons">
+          @if (activeView() === 'groups') {
+          <button mat-flat-button color="primary" (click)="showAddGroupForm.set(!showAddGroupForm())">
+            <mat-icon>{{ showAddGroupForm() ? 'close' : 'add' }}</mat-icon>
+            <span>{{ (showAddGroupForm() ? 'userManagement.cancelGroupCreation' : 'userManagement.createGroup') |
+              translate }}</span>
+          </button>
+          }
         </div>
+      </div>
 
-        <div class="quick-filters">
-           <mat-icon class="filter-icon">tune</mat-icon>
-           <span class="filter-label">{{ "userManagement.filters" | translate }}:</span>
+      <div class="quick-filters">
+        <mat-icon class="filter-icon">tune</mat-icon>
+        <span class="filter-label">{{ "userManagement.filters" | translate }}:</span>
 
-           <mat-form-field appearance="outline" dense>
-             <mat-label>{{ "userManagement.course" | translate }}</mat-label>
-             <mat-select [value]="courseFilter()" (selectionChange)="courseFilter.set($event.value)">
-               <mat-option value="">{{ "userManagement.allCourses" | translate }}</mat-option>
-               @for (c of courses(); track c) { <mat-option [value]="c">{{ c }}</mat-option> }
-             </mat-select>
-           </mat-form-field>
+        <mat-form-field appearance="outline" dense>
+          <mat-label>{{ "userManagement.course" | translate }}</mat-label>
+          <mat-select [value]="courseFilter()" (selectionChange)="courseFilter.set($event.value)">
+            <mat-option value="">{{ "userManagement.allCourses" | translate }}</mat-option>
+            @for (c of courses(); track c) { <mat-option [value]="c">{{ c }}</mat-option> }
+          </mat-select>
+        </mat-form-field>
 
-           <mat-form-field appearance="outline" dense>
-             <mat-label>{{ "userManagement.specialization" | translate }}</mat-label>
-             <mat-select [value]="specializationFilter()" (selectionChange)="specializationFilter.set($event.value)">
-               <mat-option value="">{{ "userManagement.allSpecializations" | translate }}</mat-option>
-               @for (s of specializationsByCourse(); track s) { <mat-option [value]="s">{{ s }}</mat-option> }
-             </mat-select>
-           </mat-form-field>
+        <mat-form-field appearance="outline" dense>
+          <mat-label>{{ "userManagement.specialization" | translate }}</mat-label>
+          <mat-select [value]="specializationFilter()" (selectionChange)="specializationFilter.set($event.value)">
+            <mat-option value="">{{ "userManagement.allSpecializations" | translate }}</mat-option>
+            @for (s of specializationsByCourse(); track s) { <mat-option [value]="s">{{ s }}</mat-option> }
+          </mat-select>
+        </mat-form-field>
 
-           @if (activeView() === 'directory') {
-             <mat-form-field appearance="outline" dense>
-               <mat-label>{{ "user.role" | translate }}</mat-label>
-               <mat-select [value]="roleFilter()" (selectionChange)="roleFilter.set($event.value)">
-                 <mat-option value="">{{ "userManagement.allRoles" | translate }}</mat-option>
-                 @for (r of roles; track r) { <mat-option [value]="r">{{ 'userRole.' + r | translate }}</mat-option> }
-               </mat-select>
-             </mat-form-field>
-           }
-        </div>
-      </header>
+        @if (activeView() === 'directory') {
+        <mat-form-field appearance="outline" dense>
+          <mat-label>{{ "user.role" | translate }}</mat-label>
+          <mat-select [value]="roleFilter()" (selectionChange)="roleFilter.set($event.value)">
+            <mat-option value="">{{ "userManagement.allRoles" | translate }}</mat-option>
+            @for (r of roles; track r) { <mat-option [value]="r">{{ 'userRole.' + r | translate }}</mat-option> }
+          </mat-select>
+        </mat-form-field>
+        }
+      </div>
+    </header>
     }
 
     <main class="view-viewport" [class.onboarding-active]="activeView() === 'onboarding'">
       <!-- DIRECTORY VIEW -->
       @if (activeView() === 'directory') {
-        <mat-card class="data-view-card">
-          <mat-table [dataSource]="filteredUsers()" class="modern-table">
+      <mat-card class="data-view-card">
+        <mat-table [dataSource]="filteredUsers()" class="modern-table">
 
-            <ng-container matColumnDef="firstName">
-              <th mat-header-cell *matHeaderCellDef>{{ "user.firstname" | translate }}</th>
-              <td mat-cell *matCellDef="let element" class="bold-text">{{ element.firstName }}</td>
-            </ng-container>
-            <ng-container matColumnDef="lastName">
-              <th mat-header-cell *matHeaderCellDef>{{ "user.lastname" | translate }}</th>
-              <td mat-cell *matCellDef="let element" class="bold-text">{{ element.lastName }}</td>
-            </ng-container>
-            <ng-container matColumnDef="id">
-              <th mat-header-cell *matHeaderCellDef>{{ "userManagement.userId" | translate }}</th>
-              <td mat-cell *matCellDef="let element">{{ element.studentNumber || '-' }}</td>
-            </ng-container>
-            <ng-container matColumnDef="email">
-              <th mat-header-cell *matHeaderCellDef>{{ "user.email" | translate }}</th>
-              <td mat-cell *matCellDef="let element" class="dimmed-text">{{ element.email }}</td>
-            </ng-container>
-            <ng-container matColumnDef="role">
-              <th mat-header-cell *matHeaderCellDef>{{ "user.role" | translate }}</th>
-              <td mat-cell *matCellDef="let element">
-                <mat-chip [color]="getRoleColor(element.role)" selected>{{ 'userRole.' + element.role | translate }}</mat-chip>
-              </td>
-            </ng-container>
+          <ng-container matColumnDef="firstName">
+            <th mat-header-cell *matHeaderCellDef>{{ "user.firstname" | translate }}</th>
+            <td mat-cell *matCellDef="let element" class="bold-text">{{ element.firstName }}</td>
+          </ng-container>
+          <ng-container matColumnDef="lastName">
+            <th mat-header-cell *matHeaderCellDef>{{ "user.lastname" | translate }}</th>
+            <td mat-cell *matCellDef="let element" class="bold-text">{{ element.lastName }}</td>
+          </ng-container>
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef>{{ "userManagement.userId" | translate }}</th>
+            <td mat-cell *matCellDef="let element">{{ element.studentNumber || '-' }}</td>
+          </ng-container>
+          <ng-container matColumnDef="email">
+            <th mat-header-cell *matHeaderCellDef>{{ "user.email" | translate }}</th>
+            <td mat-cell *matCellDef="let element" class="dimmed-text">{{ element.email }}</td>
+          </ng-container>
+          <ng-container matColumnDef="role">
+            <th mat-header-cell *matHeaderCellDef>{{ "user.role" | translate }}</th>
+            <td mat-cell *matCellDef="let element">
+              <mat-chip [color]="getRoleColor(element.role)" selected>{{ 'userRole.' + element.role | translate
+                }}</mat-chip>
+            </td>
+          </ng-container>
 
-            <ng-container matColumnDef="enabled">
-              <th mat-header-cell *matHeaderCellDef>{{ "userManagement.status" | translate }}</th>
-              <td mat-cell *matCellDef="let element">
-                <span class="status-indicator" [class.enabled]="element.enabled" [class.disabled]="!element.enabled">
-                  {{ (element.enabled ? 'userManagement.enabled' : 'userManagement.disabled') | translate }}
-                </span>
-              </td>
-            </ng-container>
-            <ng-container matColumnDef="actions">
-              <th mat-header-cell *matHeaderCellDef></th>
-              <td mat-cell *matCellDef="let element" (click)="$event.stopPropagation()" class="align-right">
-                <button mat-icon-button [matMenuTriggerFor]="menu"><mat-icon>more_vert</mat-icon></button>
-                <mat-menu #menu="matMenu">
-                  <button mat-menu-item (click)="selectUser(element)"><mat-icon>visibility</mat-icon> {{ "userManagement.viewProfile" | translate }}</button>
-                  <button mat-menu-item (click)="selectedUser.set(element); startEditing(); isDrawerOpen.set(true)"><mat-icon>edit</mat-icon> {{ "userManagement.editUser" | translate }}</button>
-                  <button mat-menu-item color="warn" (click)="deleteUser(element)"><mat-icon>delete</mat-icon> {{ "userManagement.remove" | translate }}</button>
-                </mat-menu>
-              </td>
-            </ng-container>
-            <tr mat-header-row *matHeaderRowDef="['firstName', 'lastName', 'id', 'email', 'role', 'enabled', 'actions']"></tr>
-            <tr mat-row *matRowDef="let element; columns: ['firstName', 'lastName', 'id', 'email', 'role', 'enabled', 'actions']" (click)="selectUser(element)" class="clickable-row"></tr>
-          </mat-table>
-        </mat-card>
+          <ng-container matColumnDef="enabled">
+            <th mat-header-cell *matHeaderCellDef>{{ "userManagement.status" | translate }}</th>
+            <td mat-cell *matCellDef="let element">
+              <span class="status-indicator" [class.enabled]="element.enabled" [class.disabled]="!element.enabled">
+                {{ (element.enabled ? 'userManagement.enabled' : 'userManagement.disabled') | translate }}
+              </span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let element" (click)="$event.stopPropagation()" class="align-right">
+              <button mat-icon-button [matMenuTriggerFor]="menu"><mat-icon>more_vert</mat-icon></button>
+              <mat-menu #menu="matMenu">
+                <button mat-menu-item (click)="selectUser(element)"><mat-icon>visibility</mat-icon> {{
+                  "userManagement.viewProfile" | translate }}</button>
+                <button mat-menu-item
+                  (click)="selectedUser.set(element); startEditing(); isDrawerOpen.set(true)"><mat-icon>edit</mat-icon>
+                  {{ "userManagement.editUser" | translate }}</button>
+                <button mat-menu-item color="warn" (click)="deleteUser(element)"><mat-icon>delete</mat-icon> {{
+                  "userManagement.remove" | translate }}</button>
+              </mat-menu>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="['firstName', 'lastName', 'id', 'email', 'role', 'enabled', 'actions']">
+          </tr>
+          <tr mat-row
+            *matRowDef="let element; columns: ['firstName', 'lastName', 'id', 'email', 'role', 'enabled', 'actions']"
+            (click)="selectUser(element)" class="clickable-row"></tr>
+        </mat-table>
+      </mat-card>
       }
 
       <!-- ONBOARDING SURFACES -->
       @if (activeView() === 'onboarding') {
-        <div class="onboarding-high-surface">
-          <!-- Individual Mode -->
-          @if (onboardingMode() === 'individual') {
-            <div class="portal-action-container animate-fade-in">
-              <div class="pane-content-centered">
-                <div class="content-header">
-                   <h2>{{ "userManagement.singleProvisioning" | translate }}</h2>
-                   <p>{{ "userManagement.singleProvisioningDesc" | translate }}</p>
-                </div>
-                <form [formGroup]="inviteForm" class="modern-form-stack">
-                  <div class="form-row">
-                    <mat-form-field appearance="fill">
-                      <mat-label>{{ "userManagement.salutation" | translate }}</mat-label>
-                      <mat-select formControlName="salutation">
-                         <mat-option [value]="undefined">{{ "userManagement.none" | translate }}</mat-option>
-                         @for (s of salutations; track s) { <mat-option [value]="s">{{ s }}</mat-option> }
-                      </mat-select>
-                    </mat-form-field>
-                    <mat-form-field appearance="fill">
-                      <mat-label>{{ "userManagement.academicTitle" | translate }}</mat-label>
-                      <mat-select formControlName="title">
-                         <mat-option [value]="undefined">{{ "userManagement.none" | translate }}</mat-option>
-                         @for (t of academicTitles; track t) { <mat-option [value]="t">{{ t }}</mat-option> }
-                      </mat-select>
-                    </mat-form-field>
-                  </div>
-                  <div class="form-section">
-                    <mat-form-field appearance="fill" class="full-width">
-                      <mat-label>{{ "userManagement.emailAddress" | translate }}</mat-label>
-                      <input matInput formControlName="email">
-                    </mat-form-field>
-                    <mat-form-field appearance="fill" class="full-width">
-                      <mat-label>{{ "user.role" | translate }}</mat-label>
-                      <mat-select formControlName="role">
-                        @for (r of roles; track r) { <mat-option [value]="r">{{ 'userRole.' + r | translate }}</mat-option> }
-                      </mat-select>
-                    </mat-form-field>
-                  </div>
+      <div class="onboarding-high-surface">
+        <!-- Individual Mode -->
+        @if (onboardingMode() === 'individual') {
+        <div class="onboarding-action-card animate-fade-in">
+          <div class="onboarding-header">
+            <div class="icon-orb"><mat-icon>person_add_alt</mat-icon></div>
+            <div class="header-text">
+              <h2>{{ "userManagement.singleProvisioning" | translate }}</h2>
+              <p>{{ "userManagement.singleProvisioningDesc" | translate }}</p>
+            </div>
+          </div>
 
-                  @if (inviteForm.get('role')?.value === 'STUDENT') {
-                    <div class="form-section accent-section">
-                      <h3>{{ "userManagement.studentData" | translate }}</h3>
-                      <mat-form-field appearance="fill" class="full-width">
-                        <mat-label>{{ "userManagement.matrikelnummer" | translate }}</mat-label>
-                        <input matInput formControlName="studentNumber">
-                      </mat-form-field>
-                      <div class="form-row-2">
-                        <mat-form-field appearance="fill">
-                          <mat-label>{{ "userManagement.course" | translate }}</mat-label>
-                          <mat-select formControlName="courseOfStudy">
-                            @for(c of allCoursesData(); track c.id) {
-                              <mat-option [value]="c.name">{{ c.name }}</mat-option>
-                            }
-                          </mat-select>
-                        </mat-form-field>
-                        <mat-form-field appearance="fill">
-                          <mat-label>{{ "userManagement.specialization" | translate }}</mat-label>
-                          <mat-select formControlName="specializationId">
-                            @for(s of specializationsByCourse(); track s) {
-                              <mat-option [value]="s">{{ s }}</mat-option>
-                            }
-                          </mat-select>
-                        </mat-form-field>
-                      </div>
-                    </div>
-                  }
-                  <div class="pane-footer">
-                     <button mat-flat-button color="primary" class="giant-button" [disabled]="inviteForm.invalid || isInviting()" (click)="sendInvitation()">
-                        @if (isInviting()) { <mat-spinner diameter="24"></mat-spinner> }
-                        @else { {{ "userManagement.inviteNewMember" | translate }} }
-                     </button>
-                  </div>
-                </form>
+          <form [formGroup]="inviteForm" class="onboarding-form-compact">
+            <div class="form-grid">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label>{{ "userManagement.salutation" | translate }}</mat-label>
+                <mat-select formControlName="salutation">
+                  <mat-option [value]="undefined">{{ "userManagement.none" | translate }}</mat-option>
+                  @for (s of salutations; track s) { <mat-option [value]="s">{{ s }}</mat-option> }
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label>{{ "userManagement.academicTitle" | translate }}</mat-label>
+                <mat-select formControlName="title">
+                  <mat-option [value]="undefined">{{ "userManagement.none" | translate }}</mat-option>
+                  @for (t of academicTitles; track t) { <mat-option [value]="t">{{ t }}</mat-option> }
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="col-span-2" subscriptSizing="dynamic">
+                <mat-label>{{ "userManagement.emailAddress" | translate }}</mat-label>
+                <input matInput formControlName="email">
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="col-span-2" subscriptSizing="dynamic">
+                <mat-label>{{ "user.role" | translate }}</mat-label>
+                <mat-select formControlName="role">
+                  @for (r of roles; track r) { <mat-option [value]="r">{{ 'userRole.' + r | translate }}</mat-option> }
+                </mat-select>
+              </mat-form-field>
+
+              @if (inviteForm.get('role')?.value === 'STUDENT') {
+              <div class="student-nested-form col-span-2 animate-fade-in">
+                <div class="section-label">{{ "userManagement.studentDetails" | translate }}</div>
+                <div class="nested-grid">
+                  <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                    <mat-label>{{ "userManagement.matrikelnummer" | translate }}</mat-label>
+                    <input matInput formControlName="studentNumber">
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                    <mat-label>{{ "userManagement.course" | translate }}</mat-label>
+                    <mat-select formControlName="courseOfStudy">
+                      @for(c of allCoursesData(); track c.id) {
+                      <mat-option [value]="c.name">
+                        {{ c.name }} ({{ 'userManagement.degreeType.' + c.degreeType | translate }})
+                      </mat-option>
+                      }
+                    </mat-select>
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="col-span-2" subscriptSizing="dynamic">
+                    <mat-label>{{ "userManagement.specialization" | translate }}</mat-label>
+                    <mat-select formControlName="specializationId">
+                      @for(s of specializationsByCourse(); track s) {
+                      <mat-option [value]="s">{{ s }}</mat-option>
+                      }
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+              </div>
+              }
+            </div>
+
+            <div class="onboarding-footer center-align">
+              <button mat-flat-button color="primary" class="onboarding-submit"
+                [disabled]="inviteForm.invalid || isInviting()" (click)="sendInvitation()">
+                @if (isInviting()) { <mat-spinner diameter="20"></mat-spinner> }
+                @else {
+                <span class="btn-content">
+                  <span>{{ "userManagement.inviteNewMember" | translate }}</span>
+                  <mat-icon>send</mat-icon>
+                </span>
+                }
+              </button>
+            </div>
+          </form>
+        </div>
+        }
+
+        <!-- Batch Paste Mode -->
+        @if (onboardingMode() === 'bulk') {
+        <div class="onboarding-action-card wide animate-fade-in">
+          <div class="onboarding-header">
+            <div class="icon-orb accent"><mat-icon>content_paste_go</mat-icon></div>
+            <div class="header-text">
+              <h2>{{ "userManagement.batchEntry" | translate }}</h2>
+              <p>{{ "userManagement.batchEntryDesc" | translate }}</p>
+            </div>
+          </div>
+
+          <form [formGroup]="bulkInviteForm" class="onboarding-form-compact">
+            <div class="batch-split-layout">
+              <div class="editor-side">
+                <mat-form-field appearance="outline" class="full-width textarea-field">
+                  <mat-label>{{ "userManagement.listData" | translate }}</mat-label>
+                  <textarea matInput formControlName="emails" rows="12"
+                    placeholder="s1@uni.de; 701001; CS; AI"></textarea>
+                  <mat-hint>{{ "userManagement.batchFormat" | translate }}
+                    <code>{{ "userManagement.csvFormat" | translate }}</code></mat-hint>
+                </mat-form-field>
+              </div>
+
+              <div class="settings-side">
+                <div class="section-label">{{ "userManagement.defaultValues" | translate }}</div>
+                <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                  <mat-label>{{ "user.role" | translate }}</mat-label>
+                  <mat-select formControlName="role">
+                    @for (r of roles; track r) { <mat-option [value]="r">{{ 'userRole.' + r | translate }}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                  <mat-label>{{ "userManagement.defaultCourse" | translate }}</mat-label>
+                  <mat-select formControlName="defaultCourse">
+                    <mat-option [value]="undefined">{{ "userManagement.none" | translate }}</mat-option>
+                    @for(c of allCoursesData(); track c.id) {
+                    <mat-option [value]="c.name">
+                      {{ c.name }} ({{ 'userManagement.degreeType.' + c.degreeType | translate }})
+                    </mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                  <mat-label>{{ "userManagement.defaultSpecialization" | translate }}</mat-label>
+                  <mat-select formControlName="defaultSpecialization">
+                    <mat-option [value]="undefined">{{ "userManagement.none" | translate }}</mat-option>
+                    @for(s of availableSpecializationsForBulk(); track s) {
+                    <mat-option [value]="s">{{ s }}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
               </div>
             </div>
-          }
 
-          <!-- Batch Paste Mode -->
-          @if (onboardingMode() === 'bulk') {
-             <div class="portal-action-container animate-fade-in">
-                <div class="pane-content-large">
-                   <div class="content-header">
-                      <h2>{{ "userManagement.batchEntry" | translate }}</h2>
-                      <p>{{ "userManagement.batchEntryDesc" | translate }}</p>
-                   </div>
-                   <form [formGroup]="bulkInviteForm" class="modern-form-stack">
-                     <div class="instruction-banner">
-                        <mat-icon>info</mat-icon>
-                        <span>{{ "userManagement.batchFormat" | translate }} <code>{{ "userManagement.batchFormatValue" | translate }}</code></span>
-                     </div>
-                     <mat-form-field appearance="fill" class="full-width">
-                       <mat-label>{{ "userManagement.listData" | translate }}</mat-label>
-                       <textarea matInput formControlName="emails" rows="18" placeholder="s1@uni.de; 701001; CS; AI"></textarea>
-                     </mat-form-field>
-                     <div class="batch-defaults-row">
-                         <mat-form-field appearance="fill">
-                            <mat-label>{{ "user.role" | translate }}</mat-label>
-                            <mat-select formControlName="role">
-                               @for (r of roles; track r) { <mat-option [value]="r">{{ 'userRole.' + r | translate }}</mat-option> }
-                            </mat-select>
-                         </mat-form-field>
-                         <mat-form-field appearance="fill">
-                            <mat-label>{{ "userManagement.defaultCourse" | translate }}</mat-label>
-                            <input matInput formControlName="defaultCourse">
-                         </mat-form-field>
-                         <mat-form-field appearance="fill">
-                            <mat-label>{{ "userManagement.defaultSpecialization" | translate }}</mat-label>
-                            <input matInput formControlName="defaultSpecialization">
-                         </mat-form-field>
-                     </div>
-                     <div class="pane-footer">
-                        <button mat-flat-button color="accent" class="giant-button" [disabled]="bulkInviteForm.invalid || isInviting()" (click)="sendBulkInvitations()">
-                           @if (isInviting()) { <mat-spinner diameter="24" class="white-spinner"></mat-spinner> }
-                           @else { {{ "userManagement.executeBatchInvitations" | translate }} }
-                        </button>
-                     </div>
-                   </form>
-                </div>
-             </div>
-          }
-
-          <!-- roster Import Mode -->
-          @if (onboardingMode() === 'csv') {
-             <div class="portal-action-container animate-fade-in">
-                <div class="pane-content-large">
-                   <div class="content-header center">
-                      <h2>{{ "userManagement.rosterLifecycleTransfer" | translate }}</h2>
-                      <p>{{ "userManagement.rosterLifecycleTransferDesc" | translate }}</p>
-                   </div>
-                   <div class="high-dropzone" (click)="fileInput.click()">
-                      <mat-icon class="huge">inventory_2</mat-icon>
-                      <h3>{{ "userManagement.rosterFile" | translate }}</h3>
-                      <p>{{ "userManagement.dragDataHere" | translate }}</p>
-                      @if (csvFileName()) { <div class="file-pill">{{ csvFileName() }}</div> }
-                      <input #fileInput type="file" accept=".csv,.txt" hidden (change)="onFileSelected($event)">
-                   </div>
-
-                   @if (csvInvitations().length > 0) {
-                      <div class="import-stats">
-                         <div class="stat-main">
-                            <span class="num">{{ csvInvitations().length }}</span>
-                            <span class="sub">{{ "userManagement.studentsDetected" | translate }}</span>
-                         </div>
-                      </div>
-                   }
-
-                   <div class="pane-footer center-align">
-                      <button mat-flat-button color="primary" class="giant-button high-action" [disabled]="csvInvitations().length === 0 || isInviting()" (click)="sendCsvInvitations()">
-                         @if (isInviting()) { <mat-spinner diameter="24"></mat-spinner> }
-                         @else { {{ "userManagement.launchAutomatedIntake" | translate }} }
-                      </button>
-                   </div>
-                </div>
-             </div>
-          }
+            <div class="onboarding-footer center-align">
+              <button mat-flat-button color="accent" class="onboarding-submit"
+                [disabled]="bulkInviteForm.invalid || isInviting()" (click)="sendBulkInvitations()">
+                @if (isInviting()) { <mat-spinner diameter="20" class="white-spinner"></mat-spinner> }
+                @else {
+                <span class="btn-content">
+                  <span>{{ "userManagement.executeBatchInvitations" | translate }}</span>
+                  <mat-icon>dynamic_feed</mat-icon>
+                </span>
+                }
+              </button>
+            </div>
+          </form>
         </div>
+        }
+
+        <!-- Roster Import Mode -->
+        @if (onboardingMode() === 'csv') {
+        <div class="onboarding-action-card animate-fade-in">
+          <div class="onboarding-header center">
+            <div class="icon-orb large tertiary"><mat-icon>inventory_2</mat-icon></div>
+            <div class="header-text">
+              <h2>{{ "userManagement.rosterLifecycleTransfer" | translate }}</h2>
+              <p>{{ "userManagement.rosterLifecycleTransferDesc" | translate }}</p>
+            </div>
+          </div>
+
+          <div class="compact-dropzone" (click)="fileInput.click()" [class.has-file]="csvFileName()">
+            <mat-icon class="drop-icon">cloud_upload</mat-icon>
+            <div class="drop-text">
+              <h3>{{ csvFileName() || ("userManagement.rosterFile" | translate) }}</h3>
+              <p>{{ csvFileName() ? ("userManagement.fileReady" | translate) : ("userManagement.dragDataHere" |
+                translate) }}</p>
+            </div>
+            <input #fileInput type="file" accept=".csv,.txt" hidden (change)="onFileSelected($event)">
+          </div>
+
+          <!-- Format Advice Surface -->
+          <div class="format-advice-panel animate-fade-in">
+            <div class="advice-header">
+              <mat-icon>info</mat-icon>
+              <span>{{ "userManagement.batchFormat" | translate }}</span>
+            </div>
+            <code class="advice-code">{{ "userManagement.csvFormat" | translate }}</code>
+          </div>
+
+          @if (csvInvitations().length > 0) {
+          <div class="compact-import-summary animate-fade-in">
+            <mat-icon>check_circle</mat-icon>
+            <span>{{ csvInvitations().length }} {{ "userManagement.studentsDetected" | translate }}</span>
+          </div>
+          }
+
+          <div class="onboarding-footer center-align">
+            <button mat-flat-button color="primary" class="onboarding-submit"
+              [disabled]="csvInvitations().length === 0 || isInviting()" (click)="sendCsvInvitations()">
+              @if (isInviting()) { <mat-spinner diameter="20"></mat-spinner> }
+              @else {
+              <span class="btn-content">
+                <span>{{ "userManagement.launchAutomatedIntake" | translate }}</span>
+                <mat-icon>auto_fix_high</mat-icon>
+              </span>
+              }
+            </button>
+          </div>
+        </div>
+        }
+      </div>
       }
 
       <!-- GROUPS VIEW -->
       @if (activeView() === 'groups') {
-        @if (!selectedGroup()) {
-          @if (showAddGroupForm()) {
-            <mat-card class="creation-overlay-card">
-              <mat-card-header><mat-card-title>{{ "userManagement.createStudyGroup" | translate }}</mat-card-title></mat-card-header>
-              <mat-card-content>
-                <form [formGroup]="groupForm" class="creation-form">
-                  <div class="form-row">
-                    <mat-form-field appearance="outline">
-                      <mat-label>{{ "userManagement.courseOfStudy" | translate }}</mat-label>
-                      <mat-select formControlName="courseOfStudy">
-                        @for(c of allCoursesData(); track c.id) {
-                          <mat-option [value]="c.name">{{ c.name }}</mat-option>
-                        }
-                      </mat-select>
-                    </mat-form-field>
-                    <mat-form-field appearance="outline">
-                      <mat-label>{{ "userManagement.specialization" | translate }}</mat-label>
-                      <input matInput formControlName="specialization">
-                    </mat-form-field>
-                  </div>
-                  <div class="form-row">
-                    <mat-form-field appearance="outline">
-                      <mat-label>{{ "userManagement.startYear" | translate }}</mat-label>
-                      <input matInput type="number" formControlName="startYear">
-                    </mat-form-field>
-                    <mat-form-field appearance="outline">
-                      <mat-label>{{ "userManagement.startQuartal" | translate }}</mat-label>
-                      <mat-select formControlName="startQuartal">
-                        <mat-option [value]="1">{{ "userManagement.quartal1" | translate }}</mat-option>
-                        <mat-option [value]="2">{{ "userManagement.quartal2" | translate }}</mat-option>
-                        <mat-option [value]="3">{{ "userManagement.quartal3" | translate }}</mat-option>
-                        <mat-option [value]="4">{{ "userManagement.quartal4" | translate }}</mat-option>
-                      </mat-select>
-                    </mat-form-field>
-                  </div>
-                  <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>{{ "userManagement.groupName" | translate }}</mat-label>
-                    <input matInput formControlName="name">
-                    <mat-hint>{{ "userManagement.groupNameHint" | translate }}</mat-hint>
-                  </mat-form-field>
-                </form>
-              </mat-card-content>
-              <mat-card-actions align="end">
-                <button mat-button (click)="showAddGroupForm.set(false)">{{ "userManagement.cancel" | translate }}</button>
-                <button mat-flat-button color="primary" [disabled]="groupForm.invalid" (click)="addGroup()">{{ "userManagement.initializeGroup" | translate }}</button>
-              </mat-card-actions>
-            </mat-card>
-          }
-
-          <div class="groups-grid-modern">
-            @for (group of filteredGroupsList(); track group.id) {
-              <mat-card class="modern-group-card clickable" (click)="selectGroup(group)">
-                <mat-card-header>
-                  <div mat-card-avatar class="group-icon-avatar"><mat-icon>group</mat-icon></div>
-                  <mat-card-title>{{ group.name }}</mat-card-title>
-                  <mat-card-subtitle>{{ group.courseOfStudy }}</mat-card-subtitle>
-                </mat-card-header>
-                <mat-card-content>
-                  <div class="group-stats">
-                    <div class="stat"><span class="label">{{ "userManagement.members" | translate }}</span><span class="value">{{ group.memberCount }}</span></div>
-                    <div class="stat"><span class="label">{{ "userManagement.specialization" | translate }}</span><span class="value">{{ group.specialization }}</span></div>
-                  </div>
-                </mat-card-content>
-              </mat-card>
-            } @empty {
-              <div class="empty-deck">
-                <mat-icon>group_off</mat-icon>
-                <p>{{ "userManagement.noGroupsMatchingFilters" | translate }}</p>
-              </div>
-            }
+      @if (!selectedGroup()) {
+      @if (showAddGroupForm()) {
+      <div class="onboarding-high-surface compact-creation-surface">
+        <div class="onboarding-action-card animate-fade-in">
+          <div class="onboarding-header">
+            <div class="icon-orb"><mat-icon>hub</mat-icon></div>
+            <div class="header-text">
+              <h2>{{ "userManagement.createStudyGroup" | translate }}</h2>
+              <p>{{ "userManagement.createStudyGroupDesc" | translate }}</p>
+            </div>
           </div>
-        } @else {
-          <mat-card class="detail-master-card">
-            <div class="detail-head">
-              <button mat-icon-button (click)="selectedGroup.set(null)"><mat-icon>arrow_back</mat-icon></button>
-              <div class="title-block">
-                <h1>{{ selectedGroup()?.name }}</h1>
-                <p>{{ selectedGroup()?.courseOfStudy }} • {{ selectedGroup()?.specialization }}</p>
-              </div>
-              <span class="member-count-badge">{{ selectedGroup()?.memberCount }} {{ "userManagement.students" | translate }}</span>
+
+          <form [formGroup]="groupForm" class="onboarding-form-compact">
+            <div class="form-grid">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label>{{ "userManagement.courseOfStudy" | translate }}</mat-label>
+                <mat-select formControlName="courseOfStudy">
+                  @for(c of allCoursesData(); track c.id) {
+                  <mat-option [value]="c.name">
+                    {{ c.name }} ({{ 'userManagement.degreeType.' + c.degreeType | translate }})
+                  </mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label>{{ "userManagement.specialization" | translate }}</mat-label>
+                <mat-select formControlName="specialization">
+                  @for(s of availableSpecializationsForGroup(); track s) {
+                  <mat-option [value]="s">{{ s }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label>{{ "userManagement.startYear" | translate }}</mat-label>
+                <input matInput type="number" formControlName="startYear">
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label>{{ "userManagement.startQuartal" | translate }}</mat-label>
+                <mat-select formControlName="startQuartal">
+                  <mat-option [value]="1">{{ "userManagement.quartal1" | translate }}</mat-option>
+                  <mat-option [value]="2">{{ "userManagement.quartal2" | translate }}</mat-option>
+                  <mat-option [value]="3">{{ "userManagement.quartal3" | translate }}</mat-option>
+                  <mat-option [value]="4">{{ "userManagement.quartal4" | translate }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="col-span-2" subscriptSizing="dynamic">
+                <mat-label>{{ "userManagement.groupName" | translate }}</mat-label>
+                <input matInput formControlName="name">
+                <mat-hint>{{ "userManagement.groupNameHint" | translate }}</mat-hint>
+              </mat-form-field>
             </div>
 
-            <div class="detail-split">
-              <div class="add-member-zone">
-                <mat-form-field appearance="outline" class="full-width">
-                  <mat-icon matPrefix>person_add_alt</mat-icon>
-                  <mat-label>{{ "userManagement.addStudentToGroup" | translate }}</mat-label>
-                  <input matInput [formControl]="addMemberControl" [matAutocomplete]="auto">
-                  <mat-autocomplete #auto="matAutocomplete" (optionSelected)="addMember($event.option.value)">
-                    @for (s of filteredStudentsAutoComplete(); track s.id) {
-                      <mat-option [value]="s">{{ getAssociationDisplayName(s) }} ({{ s.studentNumber }})</mat-option>
-                    }
-                  </mat-autocomplete>
-                </mat-form-field>
-              </div>
-
-              <div class="member-list-zone">
-                <mat-table [dataSource]="currentGroupMembers()" class="compact-table">
-                  <ng-container matColumnDef="name">
-                    <th mat-header-cell *matHeaderCellDef>{{ "userManagement.studentName" | translate }}</th>
-                    <td mat-cell *matCellDef="let s">{{ getAssociationDisplayName(s) }}</td>
-                  </ng-container>
-                  <ng-container matColumnDef="id">
-                    <th mat-header-cell *matHeaderCellDef>{{ "userManagement.userId" | translate }}</th>
-                    <td mat-cell *matCellDef="let s" class="dimmed-text">{{ s.studentNumber }}</td>
-                  </ng-container>
-                  <ng-container matColumnDef="actions">
-                    <th mat-header-cell *matHeaderCellDef></th>
-                    <td mat-cell *matCellDef="let s" class="align-right">
-                      <button mat-button color="warn" (click)="removeUserFromGroup(s.id, selectedGroup()!.id)">{{ "userManagement.exclude" | translate }}</button>
-                    </td>
-                  </ng-container>
-                  <tr mat-header-row *matHeaderRowDef="['name', 'id', 'actions']"></tr>
-                  <tr mat-row *matRowDef="let row; columns: ['name', 'id', 'actions']"></tr>
-                </mat-table>
-              </div>
+            <div class="onboarding-footer center-align">
+              <button mat-stroked-button (click)="showAddGroupForm.set(false)" class="onboarding-submit secondary-btn">
+                <span class="btn-content">
+                  <span>{{ "userManagement.cancel" | translate }}</span>
+                  <mat-icon>close</mat-icon>
+                </span>
+              </button>
+              <button mat-flat-button color="primary" class="onboarding-submit" [disabled]="groupForm.invalid"
+                (click)="addGroup()">
+                <span class="btn-content">
+                  <span>{{ "userManagement.initializeGroup" | translate }}</span>
+                  <mat-icon>check_circle</mat-icon>
+                </span>
+              </button>
             </div>
-          </mat-card>
+          </form>
+        </div>
+      </div>
+      }
+
+      <div class="groups-grid-modern">
+        @for (group of filteredGroupsList(); track group.id) {
+        <mat-card class="modern-group-card clickable" (click)="selectGroup(group)">
+          <mat-card-header>
+            <div mat-card-avatar class="group-icon-avatar"><mat-icon>group</mat-icon></div>
+            <mat-card-title>{{ group.name }}</mat-card-title>
+            <mat-card-subtitle>{{ group.courseOfStudy }}</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="group-stats">
+              <div class="stat"><span class="label">{{ "userManagement.members" | translate }}</span><span
+                  class="value">{{ group.memberCount }}</span></div>
+              <div class="stat"><span class="label">{{ "userManagement.specialization" | translate }}</span><span
+                  class="value">{{ group.specialization }}</span></div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+        } @empty {
+        <div class="empty-deck">
+          <mat-icon>group_off</mat-icon>
+          <p>{{ "userManagement.noGroupsMatchingFilters" | translate }}</p>
+        </div>
         }
+      </div>
+      } @else {
+      <mat-card class="detail-master-card">
+        <div class="detail-head">
+          <button mat-icon-button (click)="selectedGroup.set(null)"><mat-icon>arrow_back</mat-icon></button>
+          <div class="title-block">
+            <h1>{{ selectedGroup()?.name }}</h1>
+            <p>{{ selectedGroup()?.courseOfStudy }} • {{ selectedGroup()?.specialization }}</p>
+          </div>
+          <span class="member-count-badge">{{ selectedGroup()?.memberCount }} {{ "userManagement.students" | translate
+            }}</span>
+        </div>
+
+        <div class="detail-split">
+          <div class="add-member-zone">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-icon matPrefix>person_add_alt</mat-icon>
+              <mat-label>{{ "userManagement.addStudentToGroup" | translate }}</mat-label>
+              <input matInput [formControl]="addMemberControl" [matAutocomplete]="auto">
+              <mat-autocomplete #auto="matAutocomplete" (optionSelected)="addMember($event.option.value)">
+                @for (s of filteredStudentsAutoComplete(); track s.id) {
+                <mat-option [value]="s">{{ getAssociationDisplayName(s) }} ({{ s.studentNumber }})</mat-option>
+                }
+              </mat-autocomplete>
+            </mat-form-field>
+          </div>
+
+          <div class="member-list-zone">
+            <mat-table [dataSource]="currentGroupMembers()" class="compact-table">
+              <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef>{{ "userManagement.studentName" | translate }}</th>
+                <td mat-cell *matCellDef="let s">{{ getAssociationDisplayName(s) }}</td>
+              </ng-container>
+              <ng-container matColumnDef="id">
+                <th mat-header-cell *matHeaderCellDef>{{ "userManagement.userId" | translate }}</th>
+                <td mat-cell *matCellDef="let s" class="dimmed-text">{{ s.studentNumber }}</td>
+              </ng-container>
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef></th>
+                <td mat-cell *matCellDef="let s" class="align-right">
+                  <button mat-button color="warn" (click)="removeUserFromGroup(s.id, selectedGroup()!.id)">{{
+                    "userManagement.exclude" | translate }}</button>
+                </td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="['name', 'id', 'actions']"></tr>
+              <tr mat-row *matRowDef="let row; columns: ['name', 'id', 'actions']"></tr>
+            </mat-table>
+          </div>
+        </div>
+      </mat-card>
+      }
       }
     </main>
   </mat-sidenav-content>

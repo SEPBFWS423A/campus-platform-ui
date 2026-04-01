@@ -1,4 +1,5 @@
 import { Component, computed, inject, OnInit, signal, ViewChild, ElementRef } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, FormControl, Validators, FormGroup } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -202,6 +203,24 @@ export class UserManagement implements OnInit {
     return this.specializationsData().filter(f => f.courseId === courseId).map(f => f.name);
   });
 
+  groupCourseValue = toSignal(this.groupForm.get('courseOfStudy')!.valueChanges.pipe(startWith('')), { initialValue: '' });
+
+  availableSpecializationsForGroup = computed(() => {
+    const courseName = this.groupCourseValue();
+    if (!courseName) return [];
+    const courseId = this.allCoursesData().find(c => c.name === courseName)?.id;
+    return this.allSpecializationsData().filter(f => f.courseId === courseId).map(f => f.name);
+  });
+
+  bulkCourseValue = toSignal(this.bulkInviteForm.get('defaultCourse')!.valueChanges.pipe(startWith('')), { initialValue: '' });
+
+  availableSpecializationsForBulk = computed(() => {
+    const courseName = this.bulkCourseValue();
+    if (!courseName) return [];
+    const courseId = this.allCoursesData().find(c => c.name === courseName)?.id;
+    return this.allSpecializationsData().filter(f => f.courseId === courseId).map(f => f.name);
+  });
+
   ngOnInit() {
     this.loadAllData();
     this.setupAutocomplete();
@@ -301,11 +320,21 @@ export class UserManagement implements OnInit {
 
   sendBulkInvitations() {
     if (this.bulkInviteForm.invalid || this.isInviting()) return;
-    const { emails, role } = this.bulkInviteForm.value;
+    const { emails, role, defaultCourse, defaultSpecialization } = this.bulkInviteForm.value;
     if (emails && role) {
       this.isInviting.set(true);
       const lines = emails.split('\n').filter(Boolean);
-      const invitations = lines.map(line => ({ email: line.trim(), role: role as UserRole }));
+      const invitations = lines.map(line => {
+        const parts = line.split(';').map(p => p.trim());
+        const hasId = parts[1] && /^\d+$/.test(parts[1]); // Check if 2nd col is ID
+        return {
+          email: parts[0],
+          studentNumber: hasId ? parts[1] : undefined,
+          role: role as UserRole,
+          courseOfStudy: defaultCourse || undefined,
+          specialization: defaultSpecialization || undefined
+        };
+      });
       this.adminService.bulkInvite(invitations).pipe(
         finalize(() => this.isInviting.set(false))
       ).subscribe(() => {
@@ -323,7 +352,20 @@ export class UserManagement implements OnInit {
       reader.onload = (e) => {
         const text = e.target?.result as string;
         const lines = text.split('\n').filter(Boolean);
-        const invs = lines.map(l => ({ email: l.trim(), role: UserRole.Student }));
+        const invs = lines.map(l => {
+          const parts = l.split(';').map(p => p.trim());
+          const hasId = parts[1] && /^\d+$/.test(parts[1]); // Intelligent Shift Helper
+          
+          return {
+            email: parts[0],
+            studentNumber: hasId ? parts[1] : undefined,
+            firstName: hasId ? parts[2] : parts[1],
+            lastName: hasId ? parts[3] : parts[2],
+            role: (hasId ? parts[4] : parts[3]) as any || UserRole.Student,
+            courseOfStudy: hasId ? parts[5] : parts[4],
+            specialization: hasId ? parts[6] : parts[5]
+          };
+        });
         this.csvInvitations.set(invs);
       };
       reader.readAsText(file);
