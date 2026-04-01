@@ -107,6 +107,13 @@ export interface InstitutionInfo {
   impressum: string;
 }
 
+export interface Room {
+  id: number;
+  name: string;
+  seats: number;
+  examSeats: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -225,5 +232,21 @@ export class AdminService {
 
   deleteExamType(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/exam-types/${id}`);
+  }
+
+  getRooms(): Observable<Room[]> {
+    return this.http.get<Room[]>(this.roomsUrl);
+  }
+
+  createRoom(room: Omit<Room, 'id'>): Observable<Room> {
+    return this.http.post<Room>(this.roomsUrl, room);
+  }
+
+  updateRoom(id: number, room: Omit<Room, 'id'>): Observable<Room> {
+    return this.http.put<Room>(`${this.roomsUrl}/${id}`, room);
+  }
+
+  deleteRoom(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.roomsUrl}/${id}`);
   }
 }

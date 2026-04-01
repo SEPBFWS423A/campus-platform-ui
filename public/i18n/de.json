@@ -70,6 +70,19 @@
       "theme-rose": "Rosa"
     }
   },
+  "themeColors": {
+    "theme-campus": "Campus",
+    "theme-azure": "Azurblau",
+    "theme-blue": "Blau",
+    "theme-cyan": "Türkis",
+    "theme-green": "Grün",
+    "theme-yellow": "Gelb",
+    "theme-orange": "Orange",
+    "theme-red": "Rot",
+    "theme-violet": "Violett",
+    "theme-magenta": "Magenta",
+    "theme-rose": "Rosa"
+  },
   "unauthorized": {
     "title": "Zugriff verweigert",
     "message": "Du hast keine Berechtigung, diese Seite aufzurufen.",

@@ -1,11 +1,107 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatDialog } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTableModule } from '@angular/material/table';
+import { MatTabsModule } from '@angular/material/tabs';
+import { AdminService, Room } from '../admin.service';
+import { RoomEditDialog } from './room-edit.dialog/room-edit.dialog';
+import { RoomDeleteDialog } from './room-delete.dialog/room-delete.dialog';
 
 @Component({
   selector: 'app-room-management',
-  imports: [],
+  imports: [
+    ReactiveFormsModule,
+    MatButtonModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatSelectModule,
+    MatTableModule,
+    MatTabsModule,
+  ],
   templateUrl: './room-management.html',
   styleUrl: './room-management.scss',
 })
-export class RoomManagement {
+export class RoomManagement implements OnInit {
+  private adminService = inject(AdminService);
+  private dialog = inject(MatDialog);
+  private fb = inject(FormBuilder);
 
+  rooms: Room[] = [];
+  displayedColumns = ['name', 'seats', 'examSeats', 'actions'];
+
+  createError = signal<string | null>(null);
+  createForm: FormGroup = this.fb.group({
+    name: ['', Validators.required],
+    seats: [null, [Validators.required, Validators.min(0)]],
+    examSeats: [null, [Validators.required, Validators.min(0)]],
+  });
+
+  get totalRooms(): number { return this.rooms.length; }
+  get totalSeats(): number { return this.rooms.reduce((s, r) => s + r.seats, 0); }
+  get totalUtilization(): string { return '0%'; }
+
+  ngOnInit(): void {
+    this.loadRooms();
+  }
+
+  onCreateRoom(): void {
+    if (this.createForm.invalid) return;
+    this.createError.set(null);
+    this.adminService.createRoom(this.createForm.value).subscribe({
+      next: (room) => {
+        this.rooms = [...this.rooms, room];
+        this.createForm.reset();
+      },
+      error: () => this.createError.set('Raum konnte nicht angelegt werden.'),
+    });
+  }
+
+  onEditRoom(id: number): void {
+    const room = this.rooms.find(r => r.id === id);
+    if (!room) return;
+
+    this.dialog.open(RoomEditDialog, { data: room, width: '560px', maxHeight: '95vh' })
+      .afterClosed()
+      .subscribe(result => {
+        if (!result) return;
+        this.adminService.updateRoom(id, result).subscribe({
+          next: (updated) => {
+            this.rooms = this.rooms.map(r => r.id === id ? updated : r);
+          },
+          error: () => this.createError.set('Raum konnte nicht aktualisiert werden.'),
+        });
+      });
+  }
+
+  onDeleteRoom(id: number): void {
+    const room = this.rooms.find(r => r.id === id);
+    if (!room) return;
+
+    this.dialog.open(RoomDeleteDialog, { data: room, width: '400px' })
+      .afterClosed()
+      .subscribe(confirmed => {
+        if (!confirmed) return;
+        this.adminService.deleteRoom(id).subscribe({
+          next: () => {
+            this.rooms = this.rooms.filter(r => r.id !== id);
+          },
+          error: () => this.createError.set('Raum konnte nicht gelöscht werden.'),
+        });
+      });
+  }
+
+  private loadRooms(): void {
+    this.adminService.getRooms().subscribe({
+      next: (rooms) => { this.rooms = rooms; },
+      error: () => this.createError.set('Räume konnten nicht geladen werden.'),
+    });
+  }
 }

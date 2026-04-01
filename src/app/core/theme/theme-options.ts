@@ -4,6 +4,7 @@ export enum ThemeBrightness {
 }
 
 export enum ThemeColorPalette {
+    campus = 'theme-campus',
     red = 'theme-red',
     green = 'theme-green',
     blue = 'theme-blue',
@@ -22,6 +23,7 @@ export interface ThemeOption {
 }
 
 export const THEME_PALETTE_OPTIONS: ThemeOption[] = [
+    { value: ThemeColorPalette.campus, colorHex: '#2563EB' },
     { value: ThemeColorPalette.azure, colorHex: '#007fff' },
     { value: ThemeColorPalette.blue, colorHex: '#2196f3' },
     { value: ThemeColorPalette.cyan, colorHex: '#21f3e2' },
