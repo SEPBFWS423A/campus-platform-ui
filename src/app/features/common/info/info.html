@@ -1,1 +1,58 @@
-<p>info works!</p>
+<section class="faq-page">
+  <div class="faq-header">
+    <div class="faq-header__content">
+      <span class="faq-header__badge">Info</span>
+      <h1>Häufige Fragen</h1>
+      <p>
+        Hier finden Sie Antworten auf häufig gestellte Fragen rund um die Campus-Plattform.
+      </p>
+    </div>
+  </div>
+
+  <div class="faq-toolbar">
+    <div class="faq-search">
+      <input
+        #searchInput
+        type="text"
+        placeholder="Fragen durchsuchen..."
+        [value]="searchTerm()"
+        (input)="updateSearchTerm(searchInput.value)"
+      />
+    </div>
+  </div>
+
+  @if (filteredFaqs().length === 0) {
+    <div class="faq-empty">
+      <h2>Keine Ergebnisse gefunden</h2>
+      <p>Bitte ändern Sie Ihren Suchbegriff und versuchen Sie es erneut.</p>
+    </div>
+  } @else {
+    <div class="faq-list">
+      @for (faq of filteredFaqs(); track faq.id) {
+        <article class="faq-card" [class.faq-card--open]="isOpen(faq.id)">
+          <button
+            type="button"
+            class="faq-card__question"
+            (click)="toggleFaq(faq.id)"
+            [attr.aria-expanded]="isOpen(faq.id)"
+          >
+            <div class="faq-card__question-text">
+              <span class="faq-card__category">{{ faq.category }}</span>
+              <h2>{{ faq.question }}</h2>
+            </div>
+
+            <span class="faq-card__icon">
+              {{ isOpen(faq.id) ? '−' : '+' }}
+            </span>
+          </button>
+
+          @if (isOpen(faq.id)) {
+            <div class="faq-card__answer">
+              <p>{{ faq.answer }}</p>
+            </div>
+          }
+        </article>
+      }
+    </div>
+  }
+</section>

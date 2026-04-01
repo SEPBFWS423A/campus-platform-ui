@@ -15,5 +15,5 @@ export const commonRoutes: Routes = [
   {
     path: 'change-password',
     component: ChangePassword
-  }
+  },
 ];
