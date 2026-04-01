@@ -14,7 +14,7 @@
       </div>
       <div class="stat-info">
         <span class="stat-label">Räume gesamt</span>
-        <span class="stat-value">{{ totalRooms }}</span>
+        <span class="stat-value">{{ totalRooms() }}</span>
       </div>
     </mat-card>
 
@@ -24,7 +24,7 @@
       </div>
       <div class="stat-info">
         <span class="stat-label">Sitzplätze gesamt</span>
-        <span class="stat-value">{{ totalSeats }}</span>
+        <span class="stat-value">{{ totalSeats() }}</span>
       </div>
     </mat-card>
 
@@ -34,7 +34,7 @@
       </div>
       <div class="stat-info">
         <span class="stat-label">Gesamtauslastung</span>
-        <span class="stat-value">{{ totalUtilization }}</span>
+        <span class="stat-value">{{ totalUtilization() }}</span>
       </div>
     </mat-card>
   </div>
@@ -79,7 +79,7 @@
             <h3>Alle Räume</h3>
           </div>
           <div class="room-table-wrapper">
-            <table mat-table [dataSource]="rooms" class="management-table" id="rooms-table">
+            <table mat-table [dataSource]="rooms()" class="management-table" id="rooms-table">
               <ng-container matColumnDef="name">
                 <th mat-header-cell *matHeaderCellDef>Name</th>
                 <td mat-cell *matCellDef="let room" class="room-name-cell">{{ room.name }}</td>
@@ -112,5 +112,26 @@
         </mat-card>
       </div>
     </mat-tab>
+
+    <!-- Tab: Belegungsplan -->
+    <mat-tab>
+      <ng-template matTabLabel>
+        <mat-icon>calendar_month</mat-icon> Belegungsplan
+      </ng-template>
+      <div class="management-tab-content">
+        <app-room-schedule [rooms]="rooms()" />
+      </div>
+    </mat-tab>
+
+    <!-- Tab: Raumauslastung -->
+    <mat-tab>
+      <ng-template matTabLabel>
+        <mat-icon>donut_large</mat-icon> Raumauslastung
+      </ng-template>
+      <div class="management-tab-content">
+        <app-room-utilization [rooms]="rooms()" />
+      </div>
+    </mat-tab>
+
   </mat-tab-group>
 </div>
