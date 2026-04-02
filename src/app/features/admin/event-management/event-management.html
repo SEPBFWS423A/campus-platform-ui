@@ -1,1 +1,75 @@
-<p>event-management works!</p>
+<div class="view-viewport">
+  <div class="content-wrapper">
+  <div class="header-container">
+    <h1>{{ 'eventManagement.title' | translate }}</h1>
+    <button mat-raised-button color="primary" (click)="openAddDialog()">
+      <mat-icon>add</mat-icon> {{ 'eventManagement.addCourseSeries' | translate }}
+    </button>
+  </div>
+
+  <div class="table-container mat-elevation-z8">
+    <mat-table [dataSource]="dataSource()">
+
+      <ng-container matColumnDef="id">
+        <mat-header-cell *matHeaderCellDef style="flex: 0 0 60px;"> {{ 'eventManagement.id' | translate }} </mat-header-cell>
+        <mat-cell *matCellDef="let element" style="flex: 0 0 60px;"> {{element.id}} </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="moduleName">
+        <mat-header-cell *matHeaderCellDef> {{ 'eventManagement.module' | translate }} </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.moduleName}} </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="assignedLecturerName">
+        <mat-header-cell *matHeaderCellDef> {{ 'eventManagement.lecturer' | translate }} </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.assignedLecturerName}} </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <mat-header-cell *matHeaderCellDef> {{ 'eventManagement.status' | translate }} </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          <span class="status-indicator" 
+                [class.planned]="element.status === 'PLANNED'"
+                [class.active]="element.status === 'ACTIVE'"
+                [class.completed]="element.status === 'COMPLETED'">
+            {{ 'eventManagement.status' + element.status | translate }}
+          </span>
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="selectedExamTypeName">
+        <mat-header-cell *matHeaderCellDef> {{ 'eventManagement.examType' | translate }} </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.selectedExamTypeName || '-'}} </mat-cell>
+      </ng-container>
+      
+      <ng-container matColumnDef="studyGroups">
+        <mat-header-cell *matHeaderCellDef> {{ 'eventManagement.studyGroups' | translate }} </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          <div class="study-groups-list">
+            {{ getStudyGroupNames(element) }}
+          </div>
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <mat-header-cell *matHeaderCellDef> {{ 'eventManagement.actions' | translate }} </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          <button mat-icon-button color="primary" (click)="openEditDialog(element)" title="Edit">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="deleteItem(element.id)" title="Delete">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    </mat-table>
+
+    <div *ngIf="dataSource().length === 0" class="empty-state">
+      {{ 'eventManagement.noData' | translate }}
+    </div>
+  </div>
+</div>
+</div>
