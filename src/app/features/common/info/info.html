@@ -2,7 +2,7 @@
   <div class="faq-header">
     <div class="faq-header__content">
       <span class="faq-header__badge">Info</span>
-      <h1>Häufige Fragen</h1>
+      <h1>Informationen & häufige Fragen</h1>
       <p>
         Hier finden Sie Antworten auf häufig gestellte Fragen rund um die Campus-Plattform.
       </p>
@@ -14,14 +14,24 @@
       <input
         #searchInput
         type="text"
-        placeholder="Fragen durchsuchen..."
+        placeholder="Informationen durchsuchen..."
         [value]="searchTerm()"
         (input)="updateSearchTerm(searchInput.value)"
       />
     </div>
   </div>
 
-  @if (filteredFaqs().length === 0) {
+  @if (loading()) {
+    <div class="faq-empty">
+      <h2>Inhalte werden geladen</h2>
+      <p>Bitte warten Sie einen Moment.</p>
+    </div>
+  } @else if (error()) {
+    <div class="faq-empty">
+      <h2>Fehler</h2>
+      <p>{{ error() }}</p>
+    </div>
+  } @else if (filteredFaqs().length === 0) {
     <div class="faq-empty">
       <h2>Keine Ergebnisse gefunden</h2>
       <p>Bitte ändern Sie Ihren Suchbegriff und versuchen Sie es erneut.</p>
