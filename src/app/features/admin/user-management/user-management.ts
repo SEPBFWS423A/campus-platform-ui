@@ -174,7 +174,7 @@ export class UserManagement implements OnInit {
   filteredGroupsList = computed(() => {
     const search = this.searchFilter().toLowerCase();
     const course = this.courseFilter();
-    return this.allGroups().filter(g => (!search || g.name.toLowerCase().includes(search)) && (!course || g.courseOfStudy === course));
+    return this.allGroups().filter(g => (!search || g.name.toLowerCase().includes(search)) && (!course || g.courseOfStudyName === course));
   });
 
   getProfileDisplayName(u: any) {

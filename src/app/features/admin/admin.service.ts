@@ -51,7 +51,9 @@ export interface InvitationPayload {
 export interface StudyGroup {
   id: string;
   name: string;
-  courseOfStudy: string;
+  courseOfStudyId: string;
+  courseOfStudyName: string;
+  specializationId: string;
   specialization: string;
   memberCount: number;
   members: GroupMember[];
@@ -112,6 +114,36 @@ export interface Room {
   name: string;
   seats: number;
   examSeats: number;
+}
+
+export enum CourseStatus {
+  PLANNED = 'PLANNED',
+  ACTIVE = 'ACTIVE',
+  COMPLETED = 'COMPLETED'
+}
+
+export interface CourseSeries {
+  id: number;
+  moduleId: number;
+  moduleName: string;
+  assignedLecturerId: number;
+  assignedLecturerName: string;
+  status: CourseStatus;
+  selectedExamTypeId?: number;
+  selectedExamTypeName?: string;
+  submissionStartDate?: string;
+  submissionDeadline?: string;
+  studyGroups: { id: number; name: string }[];
+}
+
+export interface CourseSeriesRequest {
+  moduleId: number;
+  assignedLecturerId: number;
+  status: CourseStatus;
+  selectedExamTypeId?: number;
+  submissionStartDate?: string;
+  submissionDeadline?: string;
+  studyGroupIds: number[];
 }
 
 @Injectable({
@@ -244,5 +276,22 @@ export class AdminService {
 
   deleteRoom(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/rooms/${id}`);
+  }
+
+  // --- Course Series ---
+  getCourseSeries(): Observable<CourseSeries[]> {
+    return this.http.get<CourseSeries[]>(`${this.apiUrl}/course-series`);
+  }
+
+  createCourseSeries(request: CourseSeriesRequest): Observable<CourseSeries> {
+    return this.http.post<CourseSeries>(`${this.apiUrl}/course-series`, request);
+  }
+
+  updateCourseSeries(id: number, request: CourseSeriesRequest): Observable<CourseSeries> {
+    return this.http.put<CourseSeries>(`${this.apiUrl}/course-series/${id}`, request);
+  }
+
+  deleteCourseSeries(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/course-series/${id}`);
   }
 }

@@ -630,7 +630,7 @@
           <mat-card-header>
             <div mat-card-avatar class="group-icon-avatar"><mat-icon>group</mat-icon></div>
             <mat-card-title>{{ group.name }}</mat-card-title>
-            <mat-card-subtitle>{{ group.courseOfStudy }}</mat-card-subtitle>
+            <mat-card-subtitle>{{ group.courseOfStudyName }}</mat-card-subtitle>
           </mat-card-header>
           <mat-card-content>
             <div class="group-stats">
@@ -654,7 +654,7 @@
           <button mat-icon-button (click)="selectedGroup.set(null)"><mat-icon>arrow_back</mat-icon></button>
           <div class="title-block">
             <h1>{{ selectedGroup()?.name }}</h1>
-            <p>{{ selectedGroup()?.courseOfStudy }} • {{ selectedGroup()?.specialization }}</p>
+            <p>{{ selectedGroup()?.courseOfStudyName }} • {{ selectedGroup()?.specialization }}</p>
           </div>
           <span class="member-count-badge">{{ selectedGroup()?.memberCount }} {{ "userManagement.students" | translate
             }}</span>
