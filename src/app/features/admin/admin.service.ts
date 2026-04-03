@@ -209,6 +209,10 @@ export class AdminService {
     return this.http.post<CourseOfStudy>(`${this.apiUrl}/courses`, course);
   }
 
+  updateCourse(id: string, course: Partial<CourseOfStudy>): Observable<CourseOfStudy> {
+    return this.http.put<CourseOfStudy>(`${this.apiUrl}/courses/${id}`, course);
+  }
+
   deleteCourse(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/courses/${id}`);
   }
@@ -220,6 +224,10 @@ export class AdminService {
 
   createSpecialization(specialization: Partial<Specialization>): Observable<Specialization> {
     return this.http.post<Specialization>(`${this.apiUrl}/specializations`, specialization);
+  }
+
+  updateSpecialization(id: string, specialization: Partial<Specialization>): Observable<Specialization> {
+    return this.http.put<Specialization>(`${this.apiUrl}/specializations/${id}`, specialization);
   }
 
   deleteSpecialization(id: string): Observable<void> {
