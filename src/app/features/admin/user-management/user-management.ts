@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnInit, signal, ViewChild, ElementRef } from '@angular/core';
+import { Component, computed, inject, OnInit, signal, ViewChild, ElementRef, TemplateRef } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, FormControl, Validators, FormGroup } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -9,7 +9,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCardModule } from '@angular/material/card';
 import { TranslateModule } from '@ngx-translate/core';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableModule, MatTable } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -20,7 +20,9 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { startWith, map, finalize } from 'rxjs/operators';
+import { combineLatest } from 'rxjs';
 import { AdminService, User, StudyGroup, InvitationPayload, CourseOfStudy, Specialization, DegreeType, InstitutionInfo, GroupMember } from '../admin.service';
 import { UserRole } from '../../../core/models/user-role';
 import { NotificationService } from '../../../core/services/notification.service';
@@ -50,6 +52,7 @@ import { ConfirmationDialogComponent } from '../../../shared/components/confirma
     MatCheckboxModule,
     MatTabsModule,
     MatButtonToggleModule,
+    MatTooltipModule,
   ],
   templateUrl: './user-management.html',
   styleUrls: ['./user-management.scss'],
@@ -61,6 +64,8 @@ export class UserManagement implements OnInit {
   private dialog = inject(MatDialog);
 
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('compactTable') compactTable!: MatTable<any>;
+  @ViewChild('groupDialogTemplate') groupDialogTemplate!: TemplateRef<any>;
 
   // --- Real Data ---
   private usersData = signal<User[]>([]);
@@ -80,7 +85,9 @@ export class UserManagement implements OnInit {
 
   // Creation State
   showAddGroupForm = signal(false);
+  editingGroupId = signal<string | null>(null);
   isInviting = signal(false);
+  isSavingGroup = signal(false);
   institutionInfo = signal<InstitutionInfo | null>(null);
   private isNameManuallyEdited = false;
 
@@ -89,8 +96,6 @@ export class UserManagement implements OnInit {
 
   // Forms
   inviteForm = this.fb.group({
-    salutation: [''],
-    title: [''],
     email: ['', [Validators.required, Validators.email]],
     role: [UserRole.Student, Validators.required],
     studentNumber: [''],
@@ -138,12 +143,13 @@ export class UserManagement implements OnInit {
   // Filter signals
   searchFilter = signal('');
   roleFilter = signal<UserRole | ''>('');
-  courseFilter = signal<string | ''>('');
+  courseIdFilter = signal<string | ''>('');
   yearFilter = signal<number | ''>('');
   specializationFilter = signal<string | ''>('');
 
   // Auto-complete
   addMemberControl = new FormControl('');
+  addMemberYearControl = new FormControl<number | null>(null);
   filteredStudentsAutoComplete = signal<User[]>([]);
 
   // CSV parsing
@@ -154,7 +160,7 @@ export class UserManagement implements OnInit {
   filteredUsers = computed(() => {
     const search = (this.searchFilter() || '').toLowerCase().trim();
     const role = this.roleFilter();
-    const course = this.courseFilter();
+    const courseId = this.courseIdFilter();
     const year = this.yearFilter();
     const specialization = this.specializationFilter();
 
@@ -167,14 +173,17 @@ export class UserManagement implements OnInit {
         (u.courseOfStudyName || '').toLowerCase().includes(search)
       );
 
-      return matchesSearch && (!role || u.role === role) && (!course || u.courseOfStudyName === course) && (!year || u.startYear === year) && (!specialization || u.specializationName === specialization);
+      const courseId = this.courseIdFilter();
+      const userCourseId = u.specializationId ? this.allSpecializationsData().find(s => s.id === u.specializationId)?.courseId : null;
+
+      return matchesSearch && (!role || u.role === role) && (!courseId || userCourseId === courseId) && (!year || u.startYear === year) && (!specialization || u.specializationName === specialization);
     });
   });
 
   filteredGroupsList = computed(() => {
     const search = this.searchFilter().toLowerCase();
-    const course = this.courseFilter();
-    return this.allGroups().filter(g => (!search || g.name.toLowerCase().includes(search)) && (!course || g.courseOfStudyName === course));
+    const courseId = this.courseIdFilter();
+    return this.allGroups().filter(g => (!search || g.name.toLowerCase().includes(search)) && (!courseId || g.courseOfStudyId === courseId));
   });
 
   getProfileDisplayName(u: any) {
@@ -187,37 +196,60 @@ export class UserManagement implements OnInit {
     return parts.join(' ');
   }
 
+  displayStudent = (user: User | null): string => {
+    return user ? `${this.getAssociationDisplayName(user)} (${user.studentNumber})` : '';
+  };
+
   currentGroupMembers = computed(() => {
     const group = this.selectedGroup();
-    return group ? group.members : [];
+    if (!group) return [];
+    return [...group.members].sort((a, b) => {
+      const idA = a.studentNumber || '';
+      const idB = b.studentNumber || '';
+      return idA.localeCompare(idB, undefined, { numeric: true });
+    });
   });
 
   roles = Object.values(UserRole);
 
-  courses = computed(() => Array.from(new Set(this.coursesData().map(c => c.name))));
+  courses = computed(() => this.coursesData());
   years = computed(() => Array.from(new Set(this.allUsers().map(u => u.startYear).filter(Boolean))).sort());
+  
   specializationsByCourse = computed(() => {
-    const courseName = this.courseFilter();
-    if (!courseName) return Array.from(new Set(this.specializationsData().map(f => f.name)));
-    const courseId = this.coursesData().find(c => c.name === courseName)?.id;
+    const courseId = this.courseIdFilter();
+    if (!courseId) return [];
     return this.specializationsData().filter(f => f.courseId === courseId).map(f => f.name);
+  });
+
+  inviteCourseValue = toSignal(this.inviteForm.get('courseOfStudy')!.valueChanges.pipe(startWith('')), { initialValue: '' });
+
+  availableSpecializationsForIndividual = computed(() => {
+    const courseId = this.inviteCourseValue();
+    if (!courseId) return [];
+    return this.allSpecializationsData().filter(f => f.courseId === courseId).map(f => f.name);
+  });
+
+  editCourseValue = toSignal(this.userEditForm.get('courseOfStudy')!.valueChanges.pipe(startWith('')), { initialValue: '' });
+
+  availableSpecializationsForEdit = computed(() => {
+    const courseId = this.editCourseValue();
+    if (!courseId) return [];
+    return this.allSpecializationsData().filter(f => f.courseId === courseId);
   });
 
   groupCourseValue = toSignal(this.groupForm.get('courseOfStudy')!.valueChanges.pipe(startWith('')), { initialValue: '' });
 
   availableSpecializationsForGroup = computed(() => {
-    const courseName = this.groupCourseValue();
-    if (!courseName) return [];
-    const courseId = this.allCoursesData().find(c => c.name === courseName)?.id;
+    const courseId = this.groupCourseValue();
+    if (!courseId) return [];
     return this.allSpecializationsData().filter(f => f.courseId === courseId).map(f => f.name);
   });
 
   bulkCourseValue = toSignal(this.bulkInviteForm.get('defaultCourse')!.valueChanges.pipe(startWith('')), { initialValue: '' });
 
   availableSpecializationsForBulk = computed(() => {
-    const courseName = this.bulkCourseValue();
-    if (!courseName) return [];
-    const courseId = this.allCoursesData().find(c => c.name === courseName)?.id;
+    const courseId = this.bulkCourseValue();
+    if (!courseId) return [];
     return this.allSpecializationsData().filter(f => f.courseId === courseId).map(f => f.name);
   });
 
@@ -241,20 +273,22 @@ export class UserManagement implements OnInit {
   }
 
   generateGroupName() {
-    const { courseOfStudy, specialization, startYear, startQuartal } = this.groupForm.value;
+    const { courseOfStudy: courseId, specialization, startYear, startQuartal } = this.groupForm.value;
     const info = this.institutionInfo();
 
-    if (!courseOfStudy || !specialization || !startYear || !startQuartal || !info) return;
+    if (!courseId || !specialization || !startYear || !startQuartal || !info) return;
+
+    const course = this.allCoursesData().find(c => c.id === courseId);
+    if (!course) return;
 
     const campusLetter = (info.city || 'X')[0].toUpperCase();
     const uniLetter = (info.universityName || 'X')[0].toUpperCase();
-    const courseLetter = (courseOfStudy || 'X')[0].toUpperCase();
+    const courseLetter = (course.name || 'X')[0].toUpperCase();
     const specLetter = (specialization || 'X')[0].toUpperCase();
     const quartal = startQuartal;
     const yearDigits = startYear.toString().slice(-2);
 
-    const course = this.coursesData().find(c => c.name === courseOfStudy);
-    const degreeLetter = course?.degreeType === DegreeType.Bachelor ? 'A' : 'M';
+    const degreeLetter = course.degreeType === DegreeType.Bachelor ? 'A' : 'M';
 
     const generatedName = `${campusLetter}${uniLetter}${courseLetter}${specLetter}${quartal}${yearDigits}${degreeLetter}`;
 
@@ -272,13 +306,26 @@ export class UserManagement implements OnInit {
 
 
   setupAutocomplete() {
-    this.addMemberControl.valueChanges.pipe(
-      startWith(''),
-      map(val => {
+    combineLatest([
+      this.addMemberControl.valueChanges.pipe(startWith('')),
+      this.addMemberYearControl.valueChanges.pipe(startWith(this.addMemberYearControl.value))
+    ]).pipe(
+      map(([val, filterYear]) => {
         const str = (typeof val === 'string' ? val : '').toLowerCase();
         const g = this.selectedGroup();
         if (!g) return [];
-        return this.allUsers().filter(u => u.role === UserRole.Student && !g.members.some(m => m.id === u.id) && (this.getAssociationDisplayName(u).toLowerCase().includes(str) || u.studentNumber?.includes(str)));
+        const filtered = this.allUsers().filter(u =>
+          u.role === UserRole.Student &&
+          u.specializationName === g.specialization &&
+          (!filterYear || u.startYear === filterYear) &&
+          !g.members.some(m => m.id === u.id) &&
+          (this.getAssociationDisplayName(u).toLowerCase().includes(str) || u.studentNumber?.includes(str))
+        );
+        return filtered.sort((a, b) => {
+          const idA = a.studentNumber || '';
+          const idB = b.studentNumber || '';
+          return idA.localeCompare(idB, undefined, { numeric: true });
+        });
       })
     ).subscribe(students => this.filteredStudentsAutoComplete.set(students as User[]));
   }
@@ -290,7 +337,17 @@ export class UserManagement implements OnInit {
   }
 
   selectUser(user: User) { this.selectedUser.set(user); this.isDrawerOpen.set(true); this.isEditingUser.set(false); }
-  startEditing() { if (this.selectedUser()) { this.userEditForm.patchValue(this.selectedUser()!); this.isEditingUser.set(true); } }
+  startEditing() {
+    const user = this.selectedUser();
+    if (user) {
+      const courseId = user.specializationId ? this.allSpecializationsData().find(s => s.id === user.specializationId)?.courseId : null;
+      this.userEditForm.patchValue({
+        ...user,
+        courseOfStudy: courseId
+      });
+      this.isEditingUser.set(true);
+    }
+  }
   saveUserEdit() {
     const user = this.selectedUser();
     if (user && this.userEditForm.valid) {
@@ -327,14 +384,24 @@ export class UserManagement implements OnInit {
       const invitations = lines.map(line => {
         const parts = line.split(';').map(p => p.trim());
         const hasId = parts[1] && /^\d+$/.test(parts[1]); // Check if 2nd col is ID
+        
+        // Mapping: email; [id]; [role]; [course]; [spec]
+        const csvRole = (hasId ? parts[2] : parts[1]);
+        const csvCourse = (hasId ? parts[3] : parts[2]);
+        const csvSpec = (hasId ? parts[4] : parts[3]);
+
+        const normalizedRole = this.normalizeRole(csvRole);
+        const selectedCourseName = defaultCourse ? this.allCoursesData().find(c => c.id === defaultCourse)?.name : undefined;
+
         return {
           email: parts[0],
           studentNumber: hasId ? parts[1] : undefined,
-          role: role as UserRole,
-          courseOfStudy: defaultCourse || undefined,
-          specialization: defaultSpecialization || undefined
+          role: normalizedRole || (role as UserRole),
+          courseOfStudy: csvCourse || selectedCourseName,
+          specialization: csvSpec || defaultSpecialization || undefined
         };
       });
+
       this.adminService.bulkInvite(invitations).pipe(
         finalize(() => this.isInviting.set(false))
       ).subscribe(() => {
@@ -344,27 +411,37 @@ export class UserManagement implements OnInit {
     }
   }
 
-  onFileSelected(event: Event) {
-    const file = (event.target as HTMLInputElement).files?.[0];
+  private normalizeRole(roleStr: string | undefined): UserRole | null {
+    if (!roleStr) return null;
+    const s = roleStr.trim().toUpperCase();
+    if (['STUDENT', 'STUDIERENDER', 'STUDIERENDE'].includes(s)) return UserRole.Student;
+    if (['LECTURER', 'DOZENT', 'DOZENTIN', 'LEHRKRAFT'].includes(s)) return UserRole.Lecturer;
+    if (['ADMIN', 'ADMINISTRATOR', 'ADMINISTRATORIN'].includes(s)) return UserRole.Admin;
+    return null;
+  }
+
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
     if (file) {
       this.csvFileName.set(file.name);
       const reader = new FileReader();
-      reader.onload = (e) => {
-        const text = e.target?.result as string;
-        const lines = text.split('\n').filter(Boolean);
-        const invs = lines.map(l => {
+      reader.onload = (e: any) => {
+        const text = e.target.result;
+        const lines = text.split('\n').filter((l: string) => l.trim().length > 0);
+        const invs = lines.map((l: string) => {
           const parts = l.split(';').map(p => p.trim());
           const hasId = parts[1] && /^\d+$/.test(parts[1]); // Intelligent Shift Helper
-          
+
+          const rawRole = hasId ? parts[2] : parts[1];
+          const role = this.normalizeRole(rawRole) || UserRole.Student;
+
           return {
             email: parts[0],
             studentNumber: hasId ? parts[1] : undefined,
-            firstName: hasId ? parts[2] : parts[1],
-            lastName: hasId ? parts[3] : parts[2],
-            role: (hasId ? parts[4] : parts[3]) as any || UserRole.Student,
-            courseOfStudy: hasId ? parts[5] : parts[4],
-            specialization: hasId ? parts[6] : parts[5]
-          };
+            role: role,
+            courseOfStudy: hasId ? parts[3] : parts[2],
+            specialization: hasId ? parts[4] : parts[3]
+          } as InvitationPayload;
         });
         this.csvInvitations.set(invs);
       };
@@ -385,17 +462,163 @@ export class UserManagement implements OnInit {
     }
   }
 
-  addGroup() {
+  saveGroup() {
     if (this.groupForm.invalid) return;
-    this.adminService.createGroup(this.groupForm.value as any).subscribe(newGroup => {
-      this.groupsData.update(g => [...g, newGroup]);
-      this.showAddGroupForm.set(false);
-      this.groupForm.reset({
-        startYear: new Date().getFullYear(),
-        startQuartal: 4
+    const formVal = this.groupForm.value as any;
+
+    // Find IDs by name because the form controls store string names for auto-generation logic
+    const course = this.allCoursesData().find(c => c.id === formVal.courseOfStudy);
+    const spec = this.allSpecializationsData().find(s => s.name === formVal.specialization && s.courseId === course?.id);
+
+    const payload: Partial<StudyGroup> = {
+      name: formVal.name,
+      courseOfStudyId: course?.id,
+      courseOfStudyName: course?.name,
+      specializationId: spec?.id,
+      specialization: spec?.name
+    };
+
+    const editingId = this.editingGroupId();
+    this.isSavingGroup.set(true);
+
+    if (editingId) {
+      this.adminService.updateGroup(editingId, payload).pipe(
+        finalize(() => this.isSavingGroup.set(false))
+      ).subscribe({
+        next: (updatedGroup) => {
+          const sid = String(editingId);
+
+          this.groupsData.update(groups => {
+            return groups.map(gr => {
+              if (String(gr.id) === sid) {
+                return {
+                  ...gr,
+                  ...(updatedGroup || {}),
+                  id: String(updatedGroup?.id || gr.id),
+                  courseOfStudyName: course?.name || updatedGroup?.courseOfStudyName || gr.courseOfStudyName,
+                  specialization: spec?.name || updatedGroup?.specialization || gr.specialization
+                };
+              }
+              return gr;
+            });
+          });
+
+          const currentSelected = this.selectedGroup();
+          if (currentSelected && String(currentSelected.id) === sid) {
+            this.selectedGroup.set({
+              ...currentSelected,
+              ...(updatedGroup || {}),
+              id: String(updatedGroup?.id || currentSelected.id),
+              courseOfStudyName: course?.name || updatedGroup?.courseOfStudyName || currentSelected.courseOfStudyName,
+              specialization: spec?.name || updatedGroup?.specialization || currentSelected.specialization
+            });
+          }
+
+          this.closeGroupDialog();
+          this.notificationService.showSuccess('userManagement.updateGroupSuccess');
+        },
+        error: (err) => console.error('Error updating group:', err)
       });
-      this.isNameManuallyEdited = false;
-      this.notificationService.showSuccess('userManagement.addGroupSuccess');
+    } else {
+      this.adminService.createGroup(payload).pipe(
+        finalize(() => this.isSavingGroup.set(false))
+      ).subscribe({
+        next: (newGroup) => {
+          if (!newGroup) {
+            console.warn('Backend returned empty body for group creation, re-fetching list...');
+            this.adminService.getGroups().subscribe(groups => this.groupsData.set(groups));
+          } else {
+            console.log('Group created successfully:', newGroup);
+            const completeGroup: StudyGroup = {
+              ...newGroup,
+              id: String(newGroup.id),
+              courseOfStudyName: course?.name || newGroup.courseOfStudyName,
+              specialization: spec?.name || newGroup.specialization,
+              members: newGroup.members || [],
+              memberCount: newGroup.memberCount || 0
+            };
+            this.groupsData.update(groups => [...groups, completeGroup]);
+          }
+
+          this.closeGroupDialog();
+          this.notificationService.showSuccess('userManagement.addGroupSuccess');
+        },
+        error: (err) => console.error('Error creating group:', err)
+      });
+    }
+  }
+
+  editSelectedGroup() {
+    const group = this.selectedGroup();
+    if (!group) return;
+
+    this.editingGroupId.set(group.id);
+    this.isNameManuallyEdited = true; // Prevents auto-generation from overwriting the raw name
+
+    const course = this.allCoursesData().find(c => c.name === group.courseOfStudyName);
+    const spec = this.allSpecializationsData().find(s => s.name === group.specialization);
+
+    // Try to extract original manual name part from generated name
+    let rawName = group.name;
+    const match = group.name.match(/(\d)(\d{2})(.+)([A-Z])$/);
+    if (match) {
+      // If it looks like generated name, the middle part is the raw name
+      rawName = match[3];
+    }
+
+    this.groupForm.patchValue({
+      name: rawName,
+      courseOfStudy: group.courseOfStudyName,
+      specialization: group.specialization,
+      startYear: group.name.match(/(\d{2})[A-Z]$/) ? 2000 + parseInt(group.name.match(/(\d{2})/)?.[0] || '24', 10) : new Date().getFullYear(),
+      startQuartal: group.name.match(/(\d)\d{2}/) ? parseInt(group.name.match(/(\d)\d{2}/)?.[1] || '4', 10) : 4
+    });
+
+    this.dialog.open(this.groupDialogTemplate, {
+      width: '600px',
+      disableClose: true
+    });
+  }
+
+  openCreateGroupDialog() {
+    this.editingGroupId.set(null);
+    this.groupForm.reset({ startYear: new Date().getFullYear(), startQuartal: 4 });
+    this.isNameManuallyEdited = false;
+    this.dialog.open(this.groupDialogTemplate, {
+      width: '600px',
+      disableClose: true
+    });
+  }
+
+  closeGroupDialog() {
+    this.editingGroupId.set(null);
+    this.groupForm.reset({ startYear: new Date().getFullYear(), startQuartal: 4 });
+    this.isNameManuallyEdited = false;
+    this.dialog.closeAll();
+  }
+
+  cancelEditGroup() {
+    this.closeGroupDialog();
+  }
+
+  deleteSelectedGroup() {
+    const group = this.selectedGroup();
+    if (!group) return;
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        title: 'userManagement.deleteGroupTitle',
+        message: 'userManagement.deleteGroupMessage'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(res => {
+      if (res) {
+        this.adminService.deleteGroup(group.id).subscribe(() => {
+          this.groupsData.update(gs => gs.filter(g => g.id !== group.id));
+          this.selectedGroup.set(null);
+          this.notificationService.showSuccess('userManagement.deleteGroupSuccess');
+        });
+      }
     });
   }
 
@@ -413,6 +636,7 @@ export class UserManagement implements OnInit {
           this.groupsData.update(gs => gs.map(g => g.id === groupId ? { ...g, members: g.members.filter(m => m.id !== userId), memberCount: g.memberCount - 1 } : g));
           if (this.selectedGroup()?.id === groupId) {
             this.selectedGroup.update(g => g ? { ...g, members: g.members.filter(m => m.id !== userId), memberCount: g.memberCount - 1 } : null);
+            if (this.compactTable) this.compactTable.renderRows();
           }
           this.notificationService.showSuccess('academicStructure.removeUserFromGroupSuccess');
         });
@@ -427,6 +651,7 @@ export class UserManagement implements OnInit {
       const newMember: GroupMember = { id: student.id, firstName: student.firstName, lastName: student.lastName, studentNumber: student.studentNumber || '', title: student.title };
       this.groupsData.update(gs => gs.map(group => group.id === g.id ? { ...group, members: [...group.members, newMember], memberCount: group.memberCount + 1 } : group));
       this.selectedGroup.update(group => group ? { ...group, members: [...group.members, newMember], memberCount: group.memberCount + 1 } : null);
+      if (this.compactTable) this.compactTable.renderRows();
       this.addMemberControl.setValue('');
       this.notificationService.showSuccess('userManagement.addMemberSuccess');
     });
