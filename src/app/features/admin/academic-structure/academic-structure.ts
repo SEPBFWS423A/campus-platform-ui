@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal, ViewChild, TemplateRef } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators, FormControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -66,6 +66,14 @@ export class AcademicStructure implements OnInit {
   showAddModuleForm = signal(false);
   showAddExamTypeForm = signal(false);
   selectedModule = signal<Module | null>(null);
+  selectedCourse = signal<CourseOfStudy | null>(null);
+  selectedSpecialization = signal<Specialization | null>(null);
+
+  @ViewChild('courseDialogTemplate') courseDialogTemplate!: TemplateRef<any>;
+  @ViewChild('specializationDialogTemplate') specializationDialogTemplate!: TemplateRef<any>;
+
+  isEditingCourse = computed(() => !!this.selectedCourse());
+  isEditingSpecialization = computed(() => !!this.selectedSpecialization());
 
   selectedPossibleExamTypes = signal<ModuleExam[]>([]);
 
@@ -232,14 +240,46 @@ export class AcademicStructure implements OnInit {
   }
 
   // --- Course CRUD ---
+  openAddCourse() {
+    this.selectedCourse.set(null);
+    this.courseForm.reset({ degreeType: DegreeType.Bachelor });
+    this.dialog.open(this.courseDialogTemplate, { width: '500px', disableClose: true });
+  }
+
+  editCourse(course: CourseOfStudy) {
+    this.selectedCourse.set(course);
+    this.courseForm.patchValue({
+      name: course.name,
+      degreeType: course.degreeType
+    });
+    this.dialog.open(this.courseDialogTemplate, { width: '500px', disableClose: true });
+  }
+
   addCourse() {
     if (this.courseForm.invalid) return;
-    this.adminService.createCourse(this.courseForm.value as any).subscribe(c => {
-      this.courses.update(list => [...list, c]);
-      this.courseForm.reset({ degreeType: DegreeType.Bachelor });
-      this.showAddCourseForm.set(false);
-      this.notificationService.showSuccess('academicStructure.addCourseSuccess');
-    });
+    const value = this.courseForm.value as any;
+    const editingId = this.selectedCourse()?.id;
+
+    if (editingId) {
+      this.adminService.updateCourse(editingId, value).subscribe(c => {
+        this.courses.update(list => list.map(item => item.id === editingId ? c : item));
+        this.cancelCourseEdit();
+        this.notificationService.showSuccess('academicStructure.updateCourseSuccess');
+      });
+    } else {
+      this.adminService.createCourse(value).subscribe(c => {
+        this.courses.update(list => [...list, c]);
+        this.cancelCourseEdit();
+        this.notificationService.showSuccess('academicStructure.addCourseSuccess');
+      });
+    }
+  }
+
+  cancelCourseEdit() {
+    this.selectedCourse.set(null);
+    this.courseForm.reset({ degreeType: DegreeType.Bachelor });
+    this.showAddCourseForm.set(false);
+    this.dialog.closeAll();
   }
 
   deleteCourse(id: string) {
@@ -262,14 +302,46 @@ export class AcademicStructure implements OnInit {
   }
 
   // --- Specialization CRUD ---
+  openAddSpecialization(courseId: string) {
+    this.selectedSpecialization.set(null);
+    this.specializationForm.reset({ courseId });
+    this.dialog.open(this.specializationDialogTemplate, { width: '400px', disableClose: true });
+  }
+
+  editSpecialization(spec: Specialization) {
+    this.selectedSpecialization.set(spec);
+    this.specializationForm.patchValue({
+      name: spec.name,
+      courseId: spec.courseId
+    });
+    this.dialog.open(this.specializationDialogTemplate, { width: '400px', disableClose: true });
+  }
+
   addSpecialization() {
     if (this.specializationForm.invalid) return;
-    this.adminService.createSpecialization(this.specializationForm.value as any).subscribe(s => {
-      this.specializations.update(list => [...list, s]);
-      this.specializationForm.reset({ courseId: s.courseId });
-      this.showAddSpecializationForm.set(false);
-      this.notificationService.showSuccess('academicStructure.addSpecializationSuccess');
-    });
+    const value = this.specializationForm.value as any;
+    const editingId = this.selectedSpecialization()?.id;
+
+    if (editingId) {
+      this.adminService.updateSpecialization(editingId, value).subscribe(s => {
+        this.specializations.update(list => list.map(item => item.id === editingId ? s : item));
+        this.cancelSpecializationEdit();
+        this.notificationService.showSuccess('academicStructure.updateSpecializationSuccess');
+      });
+    } else {
+      this.adminService.createSpecialization(value).subscribe(s => {
+        this.specializations.update(list => [...list, s]);
+        this.cancelSpecializationEdit();
+        this.notificationService.showSuccess('academicStructure.addSpecializationSuccess');
+      });
+    }
+  }
+
+  cancelSpecializationEdit() {
+    this.selectedSpecialization.set(null);
+    this.specializationForm.reset();
+    this.showAddSpecializationForm.set(false);
+    this.dialog.closeAll();
   }
 
   deleteSpecialization(id: string) {

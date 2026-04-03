@@ -49,10 +49,10 @@
                   <mat-icon>{{ showAddModuleForm() ? 'close' : 'add' }}</mat-icon> {{ (showAddModuleForm() ? 'academicStructure.cancel' : 'academicStructure.defineModule') | translate }}
                </button>
                } @else if (activeView() === 'structure') {
-               <button mat-flat-button color="primary" class="high-button"
-                  (click)="showAddCourseForm.set(!showAddCourseForm())">
-                  <mat-icon>{{ showAddCourseForm() ? 'close' : 'add' }}</mat-icon> {{ (showAddCourseForm() ? 'academicStructure.cancel' : 'academicStructure.createCourse') | translate }}
-               </button>
+                <button mat-flat-button color="primary" class="high-button"
+                   (click)="openAddCourse()">
+                   <mat-icon>add</mat-icon> {{ "academicStructure.createCourse" | translate }}
+                </button>
                } @else if (activeView() === 'university') {
                <button mat-flat-button color="primary" class="high-button" (click)="saveUniversityInfo()"
                   [disabled]="universityForm.invalid">
@@ -222,38 +222,6 @@
          <!-- STRUCTURE VIEW -->
          @if (activeView() === 'structure') {
          <div class="view-section animate-fade-in">
-            @if (showAddCourseForm()) {
-            <mat-card class="creation-overlay-card animate-slide-down">
-               <mat-card-header><mat-card-title>{{ "academicStructure.createNewCourseOfStudy" | translate
-                     }}</mat-card-title></mat-card-header>
-               <mat-card-content>
-                  <form [formGroup]="courseForm" class="course-creation-form">
-                     <div class="form-row">
-                        <mat-form-field appearance="outline" class="flex-2">
-                           <mat-label>{{ "academicStructure.courseName" | translate }}</mat-label>
-                           <input matInput [formControl]="courseNameFormControl"
-                              placeholder="{{ 'academicStructure.courseNamePlaceholder' | translate }}">
-                        </mat-form-field>
-                        <mat-form-field appearance="outline" class="flex-1">
-                           <mat-label>{{ "academicStructure.degree" | translate }}</mat-label>
-                           <mat-select formControlName="degreeType">
-                              @for (type of degreeTypes; track type) { <mat-option [value]="type">{{ type
-                                 }}</mat-option> }
-                           </mat-select>
-                        </mat-form-field>
-                     </div>
-                  </form>
-               </mat-card-content>
-               <mat-card-actions align="end">
-                  <button mat-button (click)="showAddCourseForm.set(false)">{{ "academicStructure.cancel" | translate
-                     }}</button>
-                  <button mat-flat-button color="primary" (click)="addCourse()" [disabled]="courseForm.invalid">{{
-                     "academicStructure.createCourse" | translate }}
-                  </button>
-               </mat-card-actions>
-            </mat-card>
-            }
-
             <div class="course-grid">
                @for (course of courses(); track course.id) {
                <mat-card class="modern-card">
@@ -264,6 +232,7 @@
                         {{ course.degreeType }} {{ "academicStructure.degree" | translate }}
                      </div>
                      <div class="header-actions">
+                        <button mat-icon-button (click)="editCourse(course)"><mat-icon>edit</mat-icon></button>
                         <button mat-icon-button color="warn"
                            (click)="deleteCourse(course.id)"><mat-icon>delete</mat-icon></button>
                      </div>
@@ -272,27 +241,15 @@
                      <div class="specialization-section">
                         <div class="section-label">
                            <span>{{ "academicStructure.specializationAreas" | translate }}</span>
-                           <button mat-icon-button
-                              (click)="specializationForm.get('courseId')?.setValue(course.id); showAddSpecializationForm.set(!showAddSpecializationForm())">
-                              <mat-icon>{{ (showAddSpecializationForm() && specializationForm.get('courseId')?.value === course.id) ? 'close' : 'add_circle_outline' }}</mat-icon>
+                           <button mat-icon-button (click)="openAddSpecialization(course.id)">
+                              <mat-icon>add_circle_outline</mat-icon>
                            </button>
                         </div>
 
-                        @if (showAddSpecializationForm() && specializationForm.get('courseId')?.value === course.id) {
-                        <div class="inline-add-field animate-slide-down">
-                           <mat-form-field appearance="outline" dense>
-                              <input matInput
-                                 placeholder="{{ 'academicStructure.newSpecializationAreaPlaceholder' | translate }}"
-                                 [formControl]="specializationNameFormControl">
-                           </mat-form-field>
-                           <button mat-icon-button color="primary" (click)="addSpecialization()"
-                              [disabled]="specializationForm.invalid"><mat-icon>check</mat-icon></button>
-                        </div>
-                        }
 
                         <div class="specialization-chip-container">
                            @for (s of getSpecializationsForCourse(course.id); track s.id) {
-                           <mat-chip-row class="modern-chip" (removed)="deleteSpecialization(s.id)">
+                           <mat-chip-row class="modern-chip" (removed)="deleteSpecialization(s.id)" (click)="editSpecialization(s)">
                               {{ s.name }}
                               <button matChipRemove><mat-icon>close</mat-icon></button>
                            </mat-chip-row>
@@ -526,3 +483,64 @@
       </main>
    </mat-sidenav-content>
 </mat-sidenav-container>
+
+<!-- COURSE DIALOG TEMPLATE -->
+<ng-template #courseDialogTemplate>
+   <h2 mat-dialog-title>
+      {{ (isEditingCourse() ? "academicStructure.editCourseOfStudy" : "academicStructure.createNewCourseOfStudy") | translate }}
+   </h2>
+   <mat-dialog-content>
+      <form [formGroup]="courseForm" class="course-creation-form" style="padding-top: 10px;">
+         <div class="form-row" style="display: flex; gap: 16px;">
+            <mat-form-field appearance="outline" style="flex: 2;">
+               <mat-label>{{ "academicStructure.courseName" | translate }}</mat-label>
+               <input matInput [formControl]="courseNameFormControl"
+                  placeholder="{{ 'academicStructure.courseNamePlaceholder' | translate }}">
+            </mat-form-field>
+            <mat-form-field appearance="outline" style="flex: 1;">
+               <mat-label>{{ "academicStructure.degree" | translate }}</mat-label>
+               <mat-select formControlName="degreeType">
+                  @for (type of degreeTypes; track type) { <mat-option [value]="type">{{ type }}</mat-option> }
+               </mat-select>
+            </mat-form-field>
+         </div>
+      </form>
+   </mat-dialog-content>
+   <mat-dialog-actions align="end">
+      <button mat-button (click)="cancelCourseEdit()">{{ "academicStructure.cancel" | translate }}</button>
+      <button mat-flat-button color="primary" (click)="addCourse()" [disabled]="courseForm.invalid">
+         {{ (isEditingCourse() ? "academicStructure.updateCourse" : "academicStructure.createCourse") | translate }}
+      </button>
+   </mat-dialog-actions>
+</ng-template>
+
+<!-- SPECIALIZATION DIALOG TEMPLATE -->
+<ng-template #specializationDialogTemplate>
+   <h2 mat-dialog-title>
+      {{ (isEditingSpecialization() ? "academicStructure.editSpecialization" : "academicStructure.addNewSpecializationArea") | translate }}
+   </h2>
+   <mat-dialog-content>
+      <form [formGroup]="specializationForm" style="padding-top: 10px;">
+         <mat-form-field appearance="outline" style="width: 100%;">
+            <mat-label>{{ "academicStructure.specializationName" | translate }}</mat-label>
+            <input matInput placeholder="{{ 'academicStructure.newSpecializationAreaPlaceholder' | translate }}"
+               [formControl]="specializationNameFormControl">
+         </mat-form-field>
+
+         <mat-form-field appearance="outline" style="width: 100%;">
+            <mat-label>{{ "academicStructure.courseOfStudy" | translate }}</mat-label>
+            <mat-select formControlName="courseId">
+               @for (course of courses(); track course.id) {
+                  <mat-option [value]="course.id">{{ course.name }} ({{ course.degreeType }})</mat-option>
+               }
+            </mat-select>
+         </mat-form-field>
+      </form>
+   </mat-dialog-content>
+   <mat-dialog-actions align="end">
+      <button mat-button (click)="cancelSpecializationEdit()">{{ "academicStructure.cancel" | translate }}</button>
+      <button mat-flat-button color="primary" (click)="addSpecialization()" [disabled]="specializationForm.invalid">
+         {{ (isEditingSpecialization() ? "academicStructure.update" : "academicStructure.add") | translate }}
+      </button>
+   </mat-dialog-actions>
+</ng-template>
