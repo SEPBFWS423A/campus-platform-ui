@@ -184,6 +184,14 @@ export class AdminService {
     return this.http.post<StudyGroup>(`${this.apiUrl}/groups`, group);
   }
 
+  updateGroup(id: string, group: Partial<StudyGroup>): Observable<StudyGroup> {
+    return this.http.put<StudyGroup>(`${this.apiUrl}/groups/${id}`, group);
+  }
+
+  deleteGroup(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/groups/${id}`);
+  }
+
   addGroupMember(groupId: string, userId: string): Observable<void> {
     return this.http.post<void>(`${this.apiUrl}/groups/${groupId}/members/${userId}`, {});
   }

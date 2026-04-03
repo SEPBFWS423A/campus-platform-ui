@@ -156,7 +156,7 @@
     "batchEntry": "Stapelerfassung",
     "batchEntryDesc": "Fügen Sie Dutzende von Datensätzen gleichzeitig ein.",
     "batchFormat": "Format:",
-    "batchFormatValue": "E-Mail ; Matrikelnr. ; Studiengang ; Vertiefung",
+    "batchFormatValue": "E-Mail ; [Matrikelnr.] ; [Rolle] ; [Studiengang] ; [Vertiefung]",
     "listData": "Listendaten",
     "defaultValues": "Standardwerte",
     "defaultCourse": "Standard-Studiengang",
@@ -185,11 +185,19 @@
     "exclude": "Ausschließen",
     "filters": "Filter",
     "cancelGroupCreation": "Erstellung abbrechen",
-    "csvFormat": "email; id (optional); vorname; nachname; rolle; studiengang; vertiefung",
+    "csvFormat": "E-Mail; [Matrikelnr.]; Rolle; Studiengang (wenn Student); Vertiefung (wenn Student)",
     "degreeType": {
       "BACHELOR": "Bachelor",
       "MASTER": "Master"
-    }
+    },
+    "noStudentsFound": "Keine Studierenden gefunden.",
+    "updateGroupSuccess": "Studiengruppe erfolgreich aktualisiert.",
+    "deleteGroupTitle": "Studiengruppe löschen",
+    "deleteGroupMessage": "Sind Sie sicher, dass Sie diese Studiengruppe löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+    "deleteGroupSuccess": "Studiengruppe erfolgreich gelöscht.",
+    "allYears": "Alle Jahrgänge",
+    "searchStudent": "Studierende suchen",
+    "editGroupSubtitle": "Aktualisieren Sie die Konfiguration und Kennungen dieser Kohorte."
   },
   "academicStructure": {
     "title": "Akademische Struktur",
@@ -351,7 +359,27 @@
     "no_connection": "Keine Verbindung zum Server. Bitte prüfen Sie Ihre Internetverbindung.",
     "unauthorized": "Nicht autorisiert für diese Aktion.",
     "forbidden": "Zugriff verweigert.",
-    "server_error": "Interner Serverfehler."
+    "server_error": "Interner Serverfehler.",
+    "group": {
+      "alreadyExists": "Eine Gruppe mit diesem Namen existiert bereits.",
+      "notFound": "Die ausgewählte Studiengruppe konnte nicht gefunden werden.",
+      "referenced": "Die Gruppe kann nicht gelöscht werden, da sie noch in Veranstaltungsreihen oder von Benutzern verwendet wird."
+    },
+    "module": {
+      "notFound": "Das Modul konnte nicht gefunden werden.",
+      "referenced": "Das Modul kann nicht gelöscht werden, da es noch in Veranstaltungsreihen oder Prüfungen referenziert wird."
+    },
+    "examType": {
+      "referenced": "Diese Prüfungsform kann nicht gelöscht werden, da sie noch in einem oder mehreren Modulen verwendet wird."
+    },
+    "course": {
+      "notFound": "Der Studiengang konnte nicht gefunden werden.",
+      "referenced": "Dieser Studiengang kann nicht gelöscht werden, da es ein Modul dieses Studiengangs gibt."
+    },
+    "specialization": {
+      "notFound": "Die Vertiefungsrichtung konnte nicht gefunden werden.",
+      "referenced": "Diese Spezialisierung kann nicht gelöscht werden, da es ein Modul dieser Spezialisierung gibt."
+    }
   },
   "eventManagement": {
     "title": "Veranstaltungen (Vorlesungsreihen)",
@@ -388,6 +416,10 @@
   },
   "common": {
     "success": "Aktion erfolgreich",
-    "close": "Schließen"
+    "close": "Schließen",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "edit": "Bearbeiten",
+    "delete": "Löschen"
   }
 }
