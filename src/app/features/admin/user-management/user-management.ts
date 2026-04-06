@@ -27,6 +27,7 @@ import { AdminService, User, StudyGroup, InvitationPayload, CourseOfStudy, Speci
 import { UserRole } from '../../../core/models/user-role';
 import { NotificationService } from '../../../core/services/notification.service';
 import { ConfirmationDialogComponent } from '../../../shared/components/confirmation-dialog/confirmation-dialog.component';
+import {UserService} from '../../../core/user/user.service';
 
 @Component({
   selector: 'app-user-management',
@@ -59,6 +60,7 @@ import { ConfirmationDialogComponent } from '../../../shared/components/confirma
 })
 export class UserManagement implements OnInit {
   private adminService = inject(AdminService);
+  private userService = inject(UserService);
   private fb = inject(FormBuilder);
   private notificationService = inject(NotificationService);
   private dialog = inject(MatDialog);
@@ -160,7 +162,6 @@ export class UserManagement implements OnInit {
   filteredUsers = computed(() => {
     const search = (this.searchFilter() || '').toLowerCase().trim();
     const role = this.roleFilter();
-    const courseId = this.courseIdFilter();
     const year = this.yearFilter();
     const specialization = this.specializationFilter();
 
@@ -214,7 +215,7 @@ export class UserManagement implements OnInit {
 
   courses = computed(() => this.coursesData());
   years = computed(() => Array.from(new Set(this.allUsers().map(u => u.startYear).filter(Boolean))).sort());
-  
+
   specializationsByCourse = computed(() => {
     const courseId = this.courseIdFilter();
     if (!courseId) return [];
@@ -300,7 +301,7 @@ export class UserManagement implements OnInit {
     this.adminService.getGroups().subscribe(groups => this.groupsData.set(groups));
     this.adminService.getCourses().subscribe(courses => this.coursesData.set(courses));
     this.adminService.getSpecializations().subscribe(specializations => this.specializationsData.set(specializations));
-    this.adminService.getInstitutionInfo().subscribe(info => this.institutionInfo.set(info));
+    this.userService.getInstitutionInfo().subscribe(info => this.institutionInfo.set(info));
   }
 
 
@@ -384,7 +385,7 @@ export class UserManagement implements OnInit {
       const invitations = lines.map(line => {
         const parts = line.split(';').map(p => p.trim());
         const hasId = parts[1] && /^\d+$/.test(parts[1]); // Check if 2nd col is ID
-        
+
         // Mapping: email; [id]; [role]; [course]; [spec]
         const csvRole = (hasId ? parts[2] : parts[1]);
         const csvCourse = (hasId ? parts[3] : parts[2]);
@@ -555,9 +556,6 @@ export class UserManagement implements OnInit {
     this.editingGroupId.set(group.id);
     this.isNameManuallyEdited = true; // Prevents auto-generation from overwriting the raw name
 
-    const course = this.allCoursesData().find(c => c.name === group.courseOfStudyName);
-    const spec = this.allSpecializationsData().find(s => s.name === group.specialization);
-
     // Try to extract original manual name part from generated name
     let rawName = group.name;
     const match = group.name.match(/(\d)(\d{2})(.+)([A-Z])$/);
@@ -568,7 +566,7 @@ export class UserManagement implements OnInit {
 
     this.groupForm.patchValue({
       name: rawName,
-      courseOfStudy: group.courseOfStudyName,
+      courseOfStudy: group.courseOfStudyId,
       specialization: group.specialization,
       startYear: group.name.match(/(\d{2})[A-Z]$/) ? 2000 + parseInt(group.name.match(/(\d{2})/)?.[0] || '24', 10) : new Date().getFullYear(),
       startQuartal: group.name.match(/(\d)\d{2}/) ? parseInt(group.name.match(/(\d)\d{2}/)?.[1] || '4', 10) : 4

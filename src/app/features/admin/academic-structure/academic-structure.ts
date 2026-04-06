@@ -18,6 +18,7 @@ import { AdminService, CourseOfStudy, Specialization, Module, User, UserRole, De
 import { NotificationService } from '../../../core/services/notification.service';
 import { ConfirmationDialogComponent } from '../../../shared/components/confirmation-dialog/confirmation-dialog.component';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import {UserService} from '../../../core/user/user.service';
 
 @Component({
   selector: 'app-academic-structure',
@@ -45,6 +46,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 })
 export class AcademicStructure implements OnInit {
   private adminService = inject(AdminService);
+  private userService = inject(UserService);
   private fb = inject(FormBuilder);
   private notificationService = inject(NotificationService);
   private dialog = inject(MatDialog);
@@ -220,7 +222,7 @@ export class AcademicStructure implements OnInit {
     this.adminService.getUsers().subscribe(u => {
       this.lecturers.set(u.filter(user => user.role === UserRole.Lecturer));
     });
-    this.adminService.getInstitutionInfo().subscribe(info => {
+    this.userService.getInstitutionInfo().subscribe(info => {
       this.universityInfo.set(info);
       this.universityForm.patchValue(info);
     });

@@ -739,7 +739,7 @@
             <mat-label>{{ "userManagement.courseOfStudy" | translate }}</mat-label>
             <mat-select formControlName="courseOfStudy">
               @for(c of allCoursesData(); track c.id) {
-              <mat-option [value]="c.name">
+              <mat-option [value]="c.id">
                 {{ c.name }} ({{ 'userManagement.degreeType.' + c.degreeType | translate }})
               </mat-option>
               }

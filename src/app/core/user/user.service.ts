@@ -2,7 +2,8 @@ import { inject, Injectable, signal, WritableSignal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { Observable, tap } from 'rxjs';
-import {UserRole} from '../models/user-role';
+import { UserRole } from '../models/user-role';
+import {InstitutionInfo} from '../../features/admin/admin.service';
 
 export interface UserProfile {
   id: string;
@@ -53,5 +54,9 @@ export class UserService {
 
   clearProfile() {
     this._profile.set(null);
+  }
+
+  getInstitutionInfo(): Observable<InstitutionInfo> {
+    return this.http.get<InstitutionInfo>(`${this.apiUrl}/institution`);
   }
 }

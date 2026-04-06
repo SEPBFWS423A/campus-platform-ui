@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 export { UserRole } from '../../core/models/user-role';
@@ -8,7 +8,7 @@ import { UserRole } from '../../core/models/user-role';
 
 export interface User {
   id: string;
-  salutation?: string; // e.g. "Mr.", "Ms.", "Mx." 
+  salutation?: string; // e.g. "Mr.", "Ms.", "Mx."
   title?: string;      // e.g. "Dr.", "Prof."
   firstName: string;
   lastName: string;
@@ -249,12 +249,6 @@ export class AdminService {
 
   deleteModule(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/modules/${id}`);
-  }
-
-  // --- Institution Information ---
-  getInstitutionInfo(): Observable<InstitutionInfo> {
-    const userUrl = `${environment.apiUrl}/users`;
-    return this.http.get<InstitutionInfo>(`${userUrl}/institution`);
   }
 
   updateInstitutionInfo(info: InstitutionInfo): Observable<InstitutionInfo> {
