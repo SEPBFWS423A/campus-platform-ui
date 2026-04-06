@@ -12,6 +12,8 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { AdminService, Room } from '../admin.service';
 import { RoomEditDialog } from './room-edit.dialog/room-edit.dialog';
 import { RoomDeleteDialog } from './room-delete.dialog/room-delete.dialog';
+import { RoomSchedule } from './room-schedule/room-schedule';
+import { RoomUtilization } from './room-utilization/room-utilization';
 
 @Component({
   selector: 'app-room-management',
@@ -25,6 +27,8 @@ import { RoomDeleteDialog } from './room-delete.dialog/room-delete.dialog';
     MatSelectModule,
     MatTableModule,
     MatTabsModule,
+    RoomSchedule,
+    RoomUtilization,
   ],
   templateUrl: './room-management.html',
   styleUrl: './room-management.scss',

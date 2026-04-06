@@ -1,0 +1,78 @@
+<mat-card class="card util-card">
+
+  <!-- Header mit Datumsbereich-Picker -->
+  <div class="util-header">
+    <div class="util-header-left">
+      <h3>Raumauslastung</h3>
+      @if (dateRange.value.start && dateRange.value.end) {
+        <span class="util-date-label">{{ selectedLabel() }}</span>
+      }
+    </div>
+
+    <mat-form-field class="date-range-field" appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Zeitraum wählen</mat-label>
+      <mat-date-range-input [formGroup]="dateRange" [rangePicker]="picker">
+        <input matStartDate formControlName="start" placeholder="Startdatum"
+               (dateChange)="onDateChange()">
+        <input matEndDate formControlName="end" placeholder="Enddatum"
+               (dateChange)="onDateChange()">
+      </mat-date-range-input>
+      <mat-datepicker-toggle matIconSuffix [for]="picker">
+        <mat-icon matDatepickerToggleIcon>calendar_month</mat-icon>
+      </mat-datepicker-toggle>
+      <mat-date-range-picker #picker></mat-date-range-picker>
+    </mat-form-field>
+  </div>
+
+  <!-- Legende -->
+  <div class="legend">
+    <span class="legend-item">
+      <span class="legend-swatch low"></span> Niedrig (0–40%)
+    </span>
+    <span class="legend-item">
+      <span class="legend-swatch medium"></span> Mittel (41–70%)
+    </span>
+    <span class="legend-item">
+      <span class="legend-swatch high"></span> Hoch (71–100%)
+    </span>
+  </div>
+
+  <!-- Raumkarten -->
+  @if (rooms().length === 0) {
+    <div class="empty-state">
+      <mat-icon>meeting_room</mat-icon>
+      <p>Keine Räume vorhanden.</p>
+    </div>
+  } @else {
+    <div class="util-cards-grid">
+      @for (card of roomCards(); track card.id) {
+        <div class="util-room-card">
+
+          <!-- Donut-Diagramm -->
+          <svg viewBox="0 0 100 100" class="donut-svg" aria-hidden="true">
+            <circle class="donut-bg" cx="50" cy="50" [attr.r]="38" />
+            <circle
+              class="donut-fill {{ card.fillClass }}"
+              cx="50" cy="50"
+              [attr.r]="38"
+              [attr.stroke-dasharray]="card.dashArray"
+              transform="rotate(-90 50 50)"
+            />
+            <text x="50" y="55" class="donut-text">{{ card.utilization }}%</text>
+          </svg>
+
+          <div class="util-card-info">
+            <span class="util-room-name">{{ card.name }}</span>
+            <span class="util-room-seats">
+              <mat-icon>event_seat</mat-icon>{{ card.seats }} Plätze
+            </span>
+            <span class="util-exam-seats">
+              <mat-icon>assignment</mat-icon>{{ card.examSeats }} Klausurplätze
+            </span>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+</mat-card>
