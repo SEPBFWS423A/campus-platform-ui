@@ -156,7 +156,7 @@
     "batchEntry": "Batch Entry",
     "batchEntryDesc": "Paste dozens of records at once for high-efficiency provisioning.",
     "batchFormat": "Format:",
-    "batchFormatValue": "email ; studentId ; course ; specialization",
+    "batchFormatValue": "email ; [studentId] ; [role] ; [course] ; [specialization]",
     "listData": "List Data",
     "defaultValues": "Default Values",
     "defaultCourse": "Default Course",
@@ -185,11 +185,19 @@
     "exclude": "Exclude",
     "filters": "Filters",
     "cancelGroupCreation": "Cancel Creation",
-    "csvFormat": "email; id (optional); firstName; lastName; role; course; specialization",
+    "csvFormat": "email; [id]; role; course (if student); specialization (if student)",
     "degreeType": {
       "BACHELOR": "Bachelor",
       "MASTER": "Master"
-    }
+    },
+    "noStudentsFound": "No students found.",
+    "updateGroupSuccess": "Study group updated successfully.",
+    "deleteGroupTitle": "Delete Group",
+    "deleteGroupMessage": "Are you sure you want to delete this study group? This action cannot be undone.",
+    "deleteGroupSuccess": "Study group deleted successfully.",
+    "allYears": "All Years",
+    "searchStudent": "Search Student",
+    "editGroupSubtitle": "Update the configuration and identifiers of this cohort."
   },
   "academicStructure": {
     "title": "Academic Structure",
@@ -209,6 +217,14 @@
     "manageModuleRosterAndQualifications": "Manage the course-specific module roster and teaching qualifications.",
     "defineModule": "Define Module",
     "createCourse": "Create Course",
+    "editCourseOfStudy": "Edit Course of Study",
+    "updateCourse": "Update Course",
+    "updateCourseSuccess": "Course successfully updated.",
+    "updateSpecializationSuccess": "Specialization successfully updated.",
+    "editExamType": "Edit Exam Type",
+    "updateExamTypeSuccess": "Exam type successfully updated.",
+    "editAcademicModule": "Edit Academic Module",
+    "updateModuleSuccess": "Module successfully updated.",
     "syncInformation": "Sync Information",
     "addExamType": "Add Exam Type",
     "searchModules": "Search modules...",
@@ -217,6 +233,11 @@
     "degree": "Degree",
     "all": "All",
     "specialization": "Specialization",
+    "editSpecialization": "Edit Specialization",
+    "addNewSpecializationArea": "Add New Specialization Area",
+    "specializationName": "Specialization Name",
+    "update": "Update",
+    "add": "Add",
     "allSpecializations": "All Specializations",
     "semester": "Semester",
     "universityName": "University Name",
@@ -351,10 +372,67 @@
     "no_connection": "Cannot connect to server. Please check your internet connection.",
     "unauthorized": "You are not authorized to perform this operation.",
     "forbidden": "Access denied.",
-    "server_error": "Internal server error."
+    "server_error": "Internal server error.",
+    "group": {
+      "alreadyExists": "A group with this name already exists.",
+      "notFound": "The selected study group could not be found.",
+      "referenced": "The group cannot be deleted because it is still referenced by active courses or users."
+    },
+    "module": {
+      "notFound": "The module could not be found.",
+      "referenced": "The module cannot be deleted because it is still referenced by a course series or student grades."
+    },
+    "examType": {
+      "referenced": "This exam type cannot be deleted because it is still being used by one or more modules."
+    },
+    "course": {
+      "notFound": "The course of study could not be found.",
+      "referenced": "This course of study cannot be deleted because there is a module of this course of study."
+    },
+    "specialization": {
+      "notFound": "The specialization could not be found.",
+      "referenced": "This specialization cannot be deleted because there is a module of this specialization."
+    }
+  },
+  "eventManagement": {
+    "title": "Event Management (Course Series)",
+    "addCourseSeries": "Add Course Series",
+    "editCourseSeries": "Edit Course Series",
+    "id": "ID",
+    "module": "Module",
+    "lecturer": "Lecturer",
+    "status": "Status",
+    "examType": "Exam Type",
+    "studyGroups": "Study Groups",
+    "actions": "Actions",
+    "noData": "No course series available. Click \"Add Course Series\" to create one.",
+    "assignedLecturer": "Assigned Lecturer",
+    "statusPLANNED": "Planned",
+    "statusACTIVE": "Active",
+    "statusCOMPLETED": "Completed",
+    "examTypeOptional": "Exam Type (Optional)",
+    "none": "None",
+    "submissionStartDate": "Submission Start Date",
+    "submissionDeadline": "Submission Deadline",
+    "cancel": "Cancel",
+    "save": "Save",
+    "errorLoading": "Error loading course series",
+    "createdSuccessfully": "Created successfully",
+    "failedToCreate": "Failed to create",
+    "updatedSuccessfully": "Updated successfully",
+    "failedToUpdate": "Failed to update",
+    "confirmAction": "Confirm Action",
+    "confirmDeleteMsg": "Are you sure you want to delete this course series?",
+    "delete": "Delete",
+    "deletedSuccessfully": "Deleted successfully",
+    "failedToDelete": "Failed to delete"
   },
   "common": {
     "success": "Action successful",
-    "close": "Close"
+    "close": "Close",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete"
   }
 }

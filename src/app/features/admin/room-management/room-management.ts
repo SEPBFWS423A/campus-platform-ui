@@ -39,6 +39,10 @@ export class RoomManagement implements OnInit {
   private fb = inject(FormBuilder);
 
   rooms = signal<Room[]>([]);
+  totalRooms = computed(() => this.rooms().length);
+  totalSeats = computed(() => this.rooms().reduce((s, r) => s + r.seats, 0));
+  totalUtilization = computed(() => '0%');
+
   displayedColumns = ['name', 'seats', 'examSeats', 'actions'];
 
   createError = signal<string | null>(null);
@@ -47,10 +51,6 @@ export class RoomManagement implements OnInit {
     seats: [null, [Validators.required, Validators.min(0)]],
     examSeats: [null, [Validators.required, Validators.min(0)]],
   });
-
-  totalRooms = computed(() => this.rooms().length);
-  totalSeats = computed(() => this.rooms().reduce((s, r) => s + r.seats, 0));
-  totalUtilization = computed(() => '0%');
 
   ngOnInit(): void {
     this.loadRooms();
@@ -61,7 +61,7 @@ export class RoomManagement implements OnInit {
     this.createError.set(null);
     this.adminService.createRoom(this.createForm.value).subscribe({
       next: (room) => {
-        this.rooms.update(rs => [...rs, room]);
+        this.rooms.update(rooms => [...rooms, room]);
         this.createForm.reset();
       },
       error: () => this.createError.set('Raum konnte nicht angelegt werden.'),
@@ -78,7 +78,7 @@ export class RoomManagement implements OnInit {
         if (!result) return;
         this.adminService.updateRoom(id, result).subscribe({
           next: (updated) => {
-            this.rooms.update(rs => rs.map(r => r.id === id ? updated : r));
+            this.rooms.update(rooms => rooms.map(r => r.id === id ? updated : r));
           },
           error: () => this.createError.set('Raum konnte nicht aktualisiert werden.'),
         });
@@ -95,7 +95,7 @@ export class RoomManagement implements OnInit {
         if (!confirmed) return;
         this.adminService.deleteRoom(id).subscribe({
           next: () => {
-            this.rooms.update(rs => rs.filter(r => r.id !== id));
+            this.rooms.update(rooms => rooms.filter(r => r.id !== id));
           },
           error: () => this.createError.set('Raum konnte nicht gelöscht werden.'),
         });

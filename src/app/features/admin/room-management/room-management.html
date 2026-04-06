@@ -1,4 +1,3 @@
-
 <header class="section-header">
   <div class="header-content">
     <h1>Raumverwaltung</h1>
@@ -70,7 +69,7 @@
             </button>
           </form>
           @if (createError()) {
-            <div id="room-create-error" class="management-alert error">{{ createError() }}</div>
+          <div id="room-create-error" class="management-alert error">{{ createError() }}</div>
           }
         </mat-card>
 
@@ -96,10 +95,12 @@
                 <th mat-header-cell *matHeaderCellDef>Aktionen</th>
                 <td mat-cell *matCellDef="let room">
                   <div class="actions-cell">
-                    <button mat-icon-button class="btn-icon-only edit-room-btn" title="Bearbeiten" (click)="onEditRoom(room.id)">
+                    <button mat-icon-button class="btn-icon-only edit-room-btn" title="Bearbeiten"
+                      (click)="onEditRoom(room.id)">
                       <mat-icon>edit</mat-icon>
                     </button>
-                    <button mat-icon-button class="btn-icon-only danger delete-room-btn" title="Löschen" (click)="onDeleteRoom(room.id)">
+                    <button mat-icon-button class="btn-icon-only danger delete-room-btn" title="Löschen"
+                      (click)="onDeleteRoom(room.id)">
                       <mat-icon>delete</mat-icon>
                     </button>
                   </div>

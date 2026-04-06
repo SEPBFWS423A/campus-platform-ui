@@ -51,7 +51,9 @@ export interface InvitationPayload {
 export interface StudyGroup {
   id: string;
   name: string;
-  courseOfStudy: string;
+  courseOfStudyId: string;
+  courseOfStudyName: string;
+  specializationId: string;
   specialization: string;
   memberCount: number;
   members: GroupMember[];
@@ -114,6 +116,36 @@ export interface Room {
   examSeats: number;
 }
 
+export enum CourseStatus {
+  PLANNED = 'PLANNED',
+  ACTIVE = 'ACTIVE',
+  COMPLETED = 'COMPLETED'
+}
+
+export interface CourseSeries {
+  id: number;
+  moduleId: number;
+  moduleName: string;
+  assignedLecturerId: number;
+  assignedLecturerName: string;
+  status: CourseStatus;
+  selectedExamTypeId?: number;
+  selectedExamTypeName?: string;
+  submissionStartDate?: string;
+  submissionDeadline?: string;
+  studyGroups: { id: number; name: string }[];
+}
+
+export interface CourseSeriesRequest {
+  moduleId: number;
+  assignedLecturerId: number;
+  status: CourseStatus;
+  selectedExamTypeId?: number;
+  submissionStartDate?: string;
+  submissionDeadline?: string;
+  studyGroupIds: number[];
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -152,6 +184,14 @@ export class AdminService {
     return this.http.post<StudyGroup>(`${this.apiUrl}/groups`, group);
   }
 
+  updateGroup(id: string, group: Partial<StudyGroup>): Observable<StudyGroup> {
+    return this.http.put<StudyGroup>(`${this.apiUrl}/groups/${id}`, group);
+  }
+
+  deleteGroup(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/groups/${id}`);
+  }
+
   addGroupMember(groupId: string, userId: string): Observable<void> {
     return this.http.post<void>(`${this.apiUrl}/groups/${groupId}/members/${userId}`, {});
   }
@@ -169,6 +209,10 @@ export class AdminService {
     return this.http.post<CourseOfStudy>(`${this.apiUrl}/courses`, course);
   }
 
+  updateCourse(id: string, course: Partial<CourseOfStudy>): Observable<CourseOfStudy> {
+    return this.http.put<CourseOfStudy>(`${this.apiUrl}/courses/${id}`, course);
+  }
+
   deleteCourse(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/courses/${id}`);
   }
@@ -180,6 +224,10 @@ export class AdminService {
 
   createSpecialization(specialization: Partial<Specialization>): Observable<Specialization> {
     return this.http.post<Specialization>(`${this.apiUrl}/specializations`, specialization);
+  }
+
+  updateSpecialization(id: string, specialization: Partial<Specialization>): Observable<Specialization> {
+    return this.http.put<Specialization>(`${this.apiUrl}/specializations/${id}`, specialization);
   }
 
   deleteSpecialization(id: string): Observable<void> {
@@ -205,12 +253,8 @@ export class AdminService {
 
   // --- Institution Information ---
   getInstitutionInfo(): Observable<InstitutionInfo> {
-    return this.http.get<InstitutionInfo>(`${this.apiUrl}/institution`);
-  }
-
-  getPublicInstitutionInfo(): Observable<InstitutionInfo> {
-    const publicUrl = `${environment.apiUrl}/public`;
-    return this.http.get<InstitutionInfo>(`${publicUrl}/institution`);
+    const userUrl = `${environment.apiUrl}/users`;
+    return this.http.get<InstitutionInfo>(`${userUrl}/institution`);
   }
 
   updateInstitutionInfo(info: InstitutionInfo): Observable<InstitutionInfo> {
@@ -248,5 +292,22 @@ export class AdminService {
 
   deleteRoom(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/rooms/${id}`);
+  }
+
+  // --- Course Series ---
+  getCourseSeries(): Observable<CourseSeries[]> {
+    return this.http.get<CourseSeries[]>(`${this.apiUrl}/course-series`);
+  }
+
+  createCourseSeries(request: CourseSeriesRequest): Observable<CourseSeries> {
+    return this.http.post<CourseSeries>(`${this.apiUrl}/course-series`, request);
+  }
+
+  updateCourseSeries(id: number, request: CourseSeriesRequest): Observable<CourseSeries> {
+    return this.http.put<CourseSeries>(`${this.apiUrl}/course-series/${id}`, request);
+  }
+
+  deleteCourseSeries(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/course-series/${id}`);
   }
 }

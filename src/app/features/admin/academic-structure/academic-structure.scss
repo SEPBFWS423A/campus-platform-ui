@@ -158,33 +158,56 @@
     border-color: var(--mat-sys-primary);
   }
 
-  mat-card-header {
-    padding: 24px 24px 16px !important;
-    position: relative;
+    mat-card-header {
+      padding: 20px 24px !important;
+      position: relative;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 16px;
     
     .icon-avatar {
-      width: 48px;
-      height: 48px;
+      width: 44px;
+      height: 44px;
       background-color: var(--mat-sys-surface-container-high);
       color: var(--mat-sys-on-surface-variant);
       display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: 14px;
-      margin-right: 16px;
+      border-radius: 12px;
+      margin-right: 0;
+      margin-bottom: 0;
     }
     
-    mat-card-title { font-weight: 800; font-size: 1.5rem; letter-spacing: -0.5px; color: var(--mat-sys-on-surface); margin-top: 4px !important; }
+    .header-text-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+    }
+    
+    mat-card-title { 
+      font-weight: 800; 
+      font-size: 1.4rem; 
+      letter-spacing: -0.5px; 
+      color: var(--mat-sys-on-surface); 
+      margin: 0 !important; 
+    }
     
     .degree-badge {
-      display: inline-block;
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 0.75rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 12px;
+      border-radius: 8px;
+      font-size: 0.7rem;
       font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-top: 8px;
+      letter-spacing: 0.6px;
+      height: 24px;
+      margin-top: 0;
+      line-height: normal;
+      width: fit-content;
       background-color: var(--mat-sys-surface-container-low);
       color: var(--mat-sys-on-surface-variant);
       
@@ -193,9 +216,10 @@
     }
     
     .header-actions {
-       position: absolute;
-       top: 16px;
-       right: 16px;
+       display: flex;
+       align-items: center;
+       gap: 4px;
+       margin-left: auto;
     }
   }
 

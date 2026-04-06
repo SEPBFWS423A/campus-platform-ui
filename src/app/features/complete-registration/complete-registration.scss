@@ -6,7 +6,7 @@
 }
 
 mat-card {
-  max-width: 400px;
+  max-width: 450px;
   width: 100%;
 }
 
@@ -14,6 +14,16 @@ form {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  margin-top: 1rem;
+}
+
+.profile-header-fields, .name-fields {
+  display: flex;
+  gap: 1rem;
+  
+  mat-form-field {
+    flex: 1;
+  }
 }
 
 .message {
