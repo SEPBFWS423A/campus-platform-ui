@@ -104,5 +104,3 @@ export class InfoComponent implements OnInit {
     return this.openFaqId === id;
   }
 }
-
-//Kommentare angehängt um durch Changes Pushen zu könnn, wird wieder entfernt
