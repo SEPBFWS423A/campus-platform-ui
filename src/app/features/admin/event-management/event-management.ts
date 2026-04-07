@@ -1,14 +1,17 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { signal, computed } from '@angular/core';
 
 import { AdminService, CourseSeries } from '../admin.service';
-import { CourseSeriesDialogComponent } from './course-series-dialog.component';
+import { CourseSeriesCreateDialogComponent } from './course-series-create-dialog/course-series-create-dialog.component';
 
 @Component({
   selector: 'app-confirm-dialog',
@@ -25,16 +28,37 @@ import { CourseSeriesDialogComponent } from './course-series-dialog.component';
 })
 export class ConfirmDialogComponent {}
 
+import { RouterModule } from '@angular/router';
+
 @Component({
   selector: 'app-event-management',
   standalone: true,
-  imports: [CommonModule, MatTableModule, MatButtonModule, MatIconModule, MatDialogModule, MatSnackBarModule, TranslateModule],
+  imports: [CommonModule, RouterModule, MatTableModule, MatButtonModule, MatIconModule, MatDialogModule, MatSnackBarModule, MatFormFieldModule, MatInputModule, TranslateModule],
   templateUrl: './event-management.html',
   styleUrl: './event-management.scss',
 })
 export class EventManagement implements OnInit {
   displayedColumns: string[] = ['id', 'moduleName', 'assignedLecturerName', 'status', 'selectedExamTypeName', 'studyGroups', 'actions'];
-  dataSource = signal<CourseSeries[]>([]);
+  
+  allCourseSeries = signal<CourseSeries[]>([]);
+  searchQuery = signal('');
+
+  dataSource = computed(() => {
+    const query = this.searchQuery().toLowerCase();
+    const series = this.allCourseSeries();
+    if (!query) return series;
+
+    return series.filter(s => {
+      const translatedStatus = this.translate.instant('eventManagement.status' + s.status).toLowerCase();
+      return s.id?.toString().includes(query) ||
+             s.moduleName?.toLowerCase().includes(query) ||
+             s.assignedLecturerName?.toLowerCase().includes(query) ||
+             s.status?.toLowerCase().includes(query) ||
+             translatedStatus.includes(query) ||
+             s.selectedExamTypeName?.toLowerCase().includes(query) ||
+             s.studyGroups?.some(sg => sg.name.toLowerCase().includes(query));
+    });
+  });
 
   constructor(
     private adminService: AdminService,
@@ -49,13 +73,13 @@ export class EventManagement implements OnInit {
 
   loadData() {
     this.adminService.getCourseSeries().subscribe({
-      next: (data) => this.dataSource.set(data),
+      next: (data) => this.allCourseSeries.set(data),
       error: (err) => this.snackBar.open(this.translate.instant('eventManagement.errorLoading'), this.translate.instant('common.close'), { duration: 3000 })
     });
   }
 
   openAddDialog() {
-    const dialogRef = this.dialog.open(CourseSeriesDialogComponent, { width: '500px', data: {} });
+    const dialogRef = this.dialog.open(CourseSeriesCreateDialogComponent, { width: '500px' });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.adminService.createCourseSeries(result).subscribe({
@@ -69,33 +93,12 @@ export class EventManagement implements OnInit {
     });
   }
 
-  openEditDialog(courseSeries: CourseSeries) {
-    const dialogRef = this.dialog.open(CourseSeriesDialogComponent, { width: '500px', data: { courseSeries } });
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        // Optimistic UI Update using signals
-        this.dataSource.update(data => data.map(item => item.id === courseSeries.id ? { ...item, ...result } : item));
-        
-        this.adminService.updateCourseSeries(courseSeries.id, result).subscribe({
-          next: () => {
-            this.snackBar.open(this.translate.instant('eventManagement.updatedSuccessfully'), this.translate.instant('common.close'), { duration: 3000 });
-            this.loadData();
-          },
-          error: (err) => {
-            this.snackBar.open(this.translate.instant('eventManagement.failedToUpdate'), this.translate.instant('common.close'), { duration: 3000 });
-            this.loadData(); // Revert on failure
-          }
-        });
-      }
-    });
-  }
-
   deleteItem(id: number) {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, { width: '350px' });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         // Optimistic UI Update using signals
-        this.dataSource.update(data => data.filter(item => item.id !== id));
+        this.allCourseSeries.update(data => data.filter(item => item.id !== id));
 
         this.adminService.deleteCourseSeries(id).subscribe({
           next: () => {
@@ -108,6 +111,11 @@ export class EventManagement implements OnInit {
         });
       }
     });
+  }
+
+  onSearch(event: Event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.searchQuery.set(value);
   }
 
   getStudyGroupNames(element: CourseSeries): string {

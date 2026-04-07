@@ -28,10 +28,24 @@
   padding-bottom: 24px;
   padding-top: 12px;
 
+  .title-group {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+  }
+
   h1 {
     margin: 0;
+    white-space: nowrap;
   }
-}
+
+  .search-field {
+    width: 400px;
+    ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+        display: none;
+      }
+    }
+  }
 
 .empty-state {
   padding: 24px;
