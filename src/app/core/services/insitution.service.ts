@@ -1,25 +1,18 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { faqModel } from '../models/faq.model';
 import { environment } from '../../../environments/environment';
+import { InstitutionInfo } from '../models/institution-info.model';
 
-export interface FaqUpsertRequest {
-  question: string;
-  answer: string;
-  category: string;
-  sortOrder: number;
-  published: boolean;
-}
 @Injectable({
   providedIn: 'root'
 })
-export class FaqService {
+export class InstitutionService {
   private readonly apiUrl = environment.apiUrl;
+
   constructor(private http: HttpClient) {}
 
-  getVisibleFaqs(): Observable<faqModel[]> {
-    return this.http.get<faqModel[]>(`${this.apiUrl}/users/faqs`);
+  getInstitutionInfo(): Observable<InstitutionInfo> {
+    return this.http.get<InstitutionInfo>(`${this.apiUrl}/users/institution`);
   }
-
 }

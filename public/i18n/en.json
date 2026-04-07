@@ -286,7 +286,21 @@
     "examTypeNameEn": "Name (EN)",
     "examTypeShortDe": "Short (DE)",
     "examTypeShortEn": "Short (EN)",
-    "addType": "Add Type"
+    "addType": "Add Type",
+    "faqManagement": "FAQ Management",
+    "manageFaqsDescription": "Create, edit and delete FAQs.",
+    "addFaq": "Add FAQ",
+    "createFaq": "Create FAQ",
+    "editFaq": "Edit FAQ",
+    "question": "Question",
+    "answer": "Answer",
+    "category": "Category",
+    "order": "Order",
+    "status": "Status",
+    "published": "Published",
+    "draft": "Draft",
+    "noFaqsFound": "No FAQs available.",
+    "saveChanges": "Save changes"
   },
   "user": {
     "firstname": "First Name",
@@ -356,5 +370,34 @@
   "common": {
     "success": "Action successful",
     "close": "Close"
+  },
+  "info": {
+    "subtitle": "Important contacts and information",
+    "subtitleCitySuffix": " for {{city}}",    "loadingInstitutionTitle": "General information is loading",
+    "loadingFaqTitle": "FAQs are loading",
+    "pleaseWait": "Please wait a moment.",
+    "errorTitle": "Error",
+    "loadInstitutionError": "The general university information could not be loaded.",
+    "loadFaqError": "The FAQs could not be loaded.",
+    "contactTitle": "Contact",
+    "emailLabel": "Email",
+    "phoneLabel": "Phone",
+    "openingHoursLabel": "Opening hours",
+    "locationLabel": "Location",
+    "campusTitle": "Campus",
+    "linksTitle": "Important links",
+    "libraryLink": "Online library",
+    "cafeteriaLink": "Cafeteria menu",
+    "websiteContactLink": "Website contact",
+    "securityTitle": "Privacy & Security",
+    "securityLine1": "All data is transmitted in encrypted form.",
+    "securityLine2": "Access control is based on user roles.",
+    "imprintLabel": "Imprint",
+    "websiteContactLabel": "Website contact",
+    "faqTitle": "Frequently asked questions",
+    "faqSubtitle": "Answers to frequently asked questions about the campus platform.",
+    "searchPlaceholder": "Search questions...",
+    "noResultsTitle": "No results found",
+    "noResultsText": "Please change your search term and try again."
   }
 }

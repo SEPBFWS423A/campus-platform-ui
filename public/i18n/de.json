@@ -286,7 +286,21 @@
     "examTypeNameEn": "Name (EN)",
     "examTypeShortDe": "Kürzel (DE)",
     "examTypeShortEn": "Kürzel (EN)",
-    "addType": "Form hinzufügen"
+    "addType": "Form hinzufügen",
+    "faqManagement": "FAQ-Verwaltung",
+    "manageFaqsDescription": "FAQs erstellen, bearbeiten und löschen.",
+    "addFaq": "FAQ hinzufügen",
+    "createFaq": "FAQ anlegen",
+    "editFaq": "FAQ bearbeiten",
+    "question": "Frage",
+    "answer": "Antwort",
+    "category": "Kategorie",
+    "order": "Reihenfolge",
+    "status": "Status",
+    "published": "Veröffentlicht",
+    "draft": "Entwurf",
+    "noFaqsFound": "Keine FAQs vorhanden.",
+    "saveChanges": "Änderungen speichern"
   },
   "user": {
     "firstname": "Vorname",
@@ -356,5 +370,34 @@
   "common": {
     "success": "Aktion erfolgreich",
     "close": "Schließen"
+  },
+  "info": {
+    "subtitle": "Wichtige Kontakte und Informationen",
+    "subtitleCitySuffix": " für {{city}}",    "loadingInstitutionTitle": "Allgemeine Informationen werden geladen",
+    "loadingFaqTitle": "FAQs werden geladen",
+    "pleaseWait": "Bitte warten Sie einen Moment.",
+    "errorTitle": "Fehler",
+    "loadInstitutionError": "Die allgemeinen Hochschulinformationen konnten nicht geladen werden.",
+    "loadFaqError": "Die FAQs konnten nicht geladen werden.",
+    "contactTitle": "Kontakt",
+    "emailLabel": "E-Mail",
+    "phoneLabel": "Telefon",
+    "openingHoursLabel": "Öffnungszeiten",
+    "locationLabel": "Standort",
+    "campusTitle": "Campus",
+    "linksTitle": "Wichtige Links",
+    "libraryLink": "Online-Bibliothek",
+    "cafeteriaLink": "Mensa Speiseplan",
+    "websiteContactLink": "Website-Kontakt",
+    "securityTitle": "Datenschutz & Sicherheit",
+    "securityLine1": "Alle Daten werden verschlüsselt übertragen.",
+    "securityLine2": "Zugriffskontrolle nach Berechtigungsrolle.",
+    "imprintLabel": "Impressum",
+    "websiteContactLabel": "Kontakt Website",
+    "faqTitle": "Häufige Fragen",
+    "faqSubtitle": "Antworten auf häufig gestellte Fragen rund um die Campus-Plattform.",
+    "searchPlaceholder": "Fragen durchsuchen...",
+    "noResultsTitle": "Keine Ergebnisse gefunden",
+    "noResultsText": "Bitte ändern Sie Ihren Suchbegriff und versuchen Sie es erneut."
   }
 }

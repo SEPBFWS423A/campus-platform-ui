@@ -14,10 +14,10 @@
     border-right: 1px solid var(--mat-sys-outline-variant);
     box-shadow: 10px 0 30px rgba(0, 0, 0, 0.02);
 
-    .nav-list-modern { 
-      padding: 32px 16px; 
+    .nav-list-modern {
+      padding: 32px 16px;
     }
-    
+
     .nav-section { margin-bottom: 32px; }
 
     a.mat-mdc-list-item {
@@ -44,12 +44,12 @@
 
       &.active-link {
         background-color: var(--mat-sys-primary-container) !important;
-        
-        mat-icon { 
+
+        mat-icon {
           color: var(--mat-sys-primary);
           font-variation-settings: 'FILL' 1;
         }
-        
+
         ::ng-deep .mdc-list-item__primary-text {
           color: var(--mat-sys-on-primary-container);
           font-weight: 700;
@@ -83,7 +83,7 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 24px;
-      
+
       .title-block {
         h1 { margin: 0; font-size: 2.5rem; font-weight: 900; color: var(--mat-sys-on-surface); letter-spacing: -1.5px; }
         p { margin: 4px 0 0; color: var(--mat-sys-on-surface-variant); font-size: 1.1rem; font-weight: 500; }
@@ -111,14 +111,14 @@
       gap: 16px;
       align-items: center;
       margin-top: 16px;
-      
-      .mega-search { 
-        flex: 2; 
+
+      .mega-search {
+        flex: 2;
         max-width: 400px;
         ::ng-deep .mat-mdc-text-field-wrapper { background-color: var(--mat-sys-surface-container-low); border-radius: 12px; }
       }
-      .filter-select { 
-        flex: 1; 
+      .filter-select {
+        flex: 1;
         min-width: 150px;
         ::ng-deep .mat-mdc-text-field-wrapper { border-radius: 12px; }
         &.small { max-width: 120px; }
@@ -129,7 +129,7 @@
 
   .curriculum-viewport {
     padding: 48px;
-    
+
     .view-section {
        max-width: 1400px;
        margin: 0 auto;
@@ -161,7 +161,7 @@
   mat-card-header {
     padding: 24px 24px 16px !important;
     position: relative;
-    
+
     .icon-avatar {
       width: 48px;
       height: 48px;
@@ -173,9 +173,9 @@
       border-radius: 14px;
       margin-right: 16px;
     }
-    
+
     mat-card-title { font-weight: 800; font-size: 1.5rem; letter-spacing: -0.5px; color: var(--mat-sys-on-surface); margin-top: 4px !important; }
-    
+
     .degree-badge {
       display: inline-block;
       padding: 4px 12px;
@@ -187,11 +187,11 @@
       margin-top: 8px;
       background-color: var(--mat-sys-surface-container-low);
       color: var(--mat-sys-on-surface-variant);
-      
+
       &.bachelor { background-color: var(--mat-sys-secondary-container); color: var(--mat-sys-on-secondary-container); }
       &.master { background-color: var(--mat-sys-tertiary-container); color: var(--mat-sys-on-tertiary-container); }
     }
-    
+
     .header-actions {
        position: absolute;
        top: 16px;
@@ -220,7 +220,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    
+
     .modern-chip {
       background-color: var(--mat-sys-surface-container-low);
       border: 1px solid var(--mat-sys-outline-variant);
@@ -230,10 +230,10 @@
       border-radius: 10px;
       color: var(--mat-sys-on-surface);
       transition: var(--transition-smooth);
-      
+
       &:hover { border-color: var(--mat-sys-primary); color: var(--mat-sys-primary); }
     }
-    
+
     .empty-hint { font-style: italic; color: var(--mat-sys-on-surface-variant); font-size: 0.9rem; margin: 8px 0; display: block; opacity: 0.6; }
   }
 }
@@ -243,7 +243,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 32px;
-  
+
   .full-span { grid-column: 1 / -1; }
 }
 
@@ -256,20 +256,20 @@
 
   mat-card-header {
     padding: 24px 24px 20px !important;
-    mat-icon { 
-      background-color: var(--mat-sys-primary-container); 
-      color: var(--mat-sys-on-primary-container); 
-      border-radius: 16px; 
-      width: 44px; 
-      height: 44px; 
-      line-height: 44px; 
-      text-align: center; 
+    mat-icon {
+      background-color: var(--mat-sys-primary-container);
+      color: var(--mat-sys-on-primary-container);
+      border-radius: 16px;
+      width: 44px;
+      height: 44px;
+      line-height: 44px;
+      text-align: center;
     }
     mat-card-title { font-weight: 900; font-size: 1.4rem; letter-spacing: -0.5px; color: var(--mat-sys-on-surface); }
   }
-  
-  mat-card-content { 
-    padding: 0 24px 24px !important; 
+
+  mat-card-content {
+    padding: 0 24px 24px !important;
     .form-column { display: flex; flex-direction: column; gap: 12px; }
   }
 }
@@ -286,7 +286,7 @@
 .modern-table {
   width: 100%;
   border-collapse: collapse;
-  
+
   th {
      background-color: var(--mat-sys-surface-container-low);
      padding: 24px;
@@ -298,33 +298,33 @@
      letter-spacing: 1px;
      border-bottom: 2px solid var(--mat-sys-outline-variant);
   }
-  
+
   .module-row {
      border-bottom: 1px solid var(--mat-sys-outline-variant);
      transition: var(--transition-smooth);
      &:hover { background-color: var(--mat-sys-surface-container-lowest); }
-     
+
      td { padding: 24px; color: var(--mat-sys-on-surface); font-size: 0.95rem; }
   }
-  
+
   .bold-text { font-weight: 700; color: var(--mat-sys-on-surface); font-size: 1.05rem; }
-  
+
   .course-specialization-ref {
      display: flex;
      flex-direction: column;
      gap: 4px;
      .c-name { font-weight: 600; color: var(--mat-sys-on-surface-variant); font-size: 0.9rem; }
-     .f-tag { 
-        font-size: 0.75rem; 
-        color: var(--mat-sys-primary); 
-        background-color: var(--mat-sys-primary-container); 
-        padding: 2px 8px; 
-        border-radius: 6px; 
-        width: fit-content; 
-        font-weight: 700; 
+     .f-tag {
+        font-size: 0.75rem;
+        color: var(--mat-sys-primary);
+        background-color: var(--mat-sys-primary-container);
+        padding: 2px 8px;
+        border-radius: 6px;
+        width: fit-content;
+        font-weight: 700;
      }
   }
-  
+
   .staff-stack {
      display: flex;
      margin-left: 8px;
@@ -347,7 +347,7 @@
         &:hover { transform: scale(1.15); z-index: 2; border-color: var(--mat-sys-primary); }
      }
   }
-  
+
   .exam-badge-container {
      display: flex;
      flex-wrap: wrap;
@@ -363,11 +363,11 @@
         align-items: center;
         gap: 4px;
         border: 1px solid transparent;
-        
-        &.preferred { 
-          background-color: var(--mat-sys-secondary-container); 
-          color: var(--mat-sys-on-secondary-container); 
-          border-color: var(--mat-sys-secondary); 
+
+        &.preferred {
+          background-color: var(--mat-sys-secondary-container);
+          color: var(--mat-sys-on-secondary-container);
+          border-color: var(--mat-sys-secondary);
         }
         .pref-star { font-size: 12px; width: 12px; height: 12px; }
      }
@@ -379,7 +379,7 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 24px;
-    
+
     .modern-card {
         padding: 8px;
         .icon-avatar { background-color: var(--mat-sys-tertiary-container); color: var(--mat-sys-tertiary); }
@@ -395,18 +395,18 @@
   background-color: var(--mat-sys-surface);
   border: 1px solid var(--mat-sys-outline-variant);
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
-  
+
   mat-card-header {
      padding: 40px 48px 24px !important;
      mat-card-title { font-size: 1.8rem; font-weight: 900; letter-spacing: -1px; color: var(--mat-sys-on-surface); }
   }
   mat-card-content { padding: 0 48px 32px !important; }
-  mat-card-actions { 
-    padding: 24px 48px 40px !important; 
-    background-color: var(--mat-sys-surface-container-low); 
-    border-radius: 0 0 32px 32px; 
+  mat-card-actions {
+    padding: 24px 48px 40px !important;
+    background-color: var(--mat-sys-surface-container-low);
+    border-radius: 0 0 32px 32px;
   }
-  
+
   .form-row { display: flex; gap: 24px; margin-bottom: 16px; .flex-2 { flex: 2; } .flex-1 { flex: 1; } }
 }
 
@@ -417,3 +417,25 @@
 @keyframes slideDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
 .animate-fade-in { animation: fadeIn 0.6s ease-out; }
 .animate-slide-down { animation: slideDown 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+
+.actions-cell {
+  width: 120px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.center {
+  text-align: center;
+}
+
+/* Optional: bessere Darstellung langer FAQ-Antworten in der Tabelle */
+.modern-table .module-row td {
+  vertical-align: top;
+}
+
+/* Optional: damit veröffentlichte / Entwurf-Badges auch bei FAQs sauber wirken */
+.modern-table .degree-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}

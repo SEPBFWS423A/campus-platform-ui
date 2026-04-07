@@ -14,8 +14,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
-import { AdminService, CourseOfStudy, Specialization, Module, User, UserRole, DegreeType, InstitutionInfo, ModuleExam, ModuleLecturer } from '../admin.service';
-import { NotificationService } from '../../../core/services/notification.service';
+import { AdminService, CourseOfStudy, Specialization, Module, User, UserRole, DegreeType, InstitutionInfo, ModuleExam, ModuleLecturer, FaqModel, FaqUpsertRequest } from '../admin.service';import { NotificationService } from '../../../core/services/notification.service';
 import { ConfirmationDialogComponent } from '../../../shared/components/confirmation-dialog/confirmation-dialog.component';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
@@ -56,16 +55,19 @@ export class AcademicStructure implements OnInit {
   modules = signal<Module[]>([]);
   lecturers = signal<User[]>([]);
   universityInfo = signal<InstitutionInfo | null>(null);
+  faqs = signal<FaqModel[]>([]);
 
   // View state
-  activeView = signal<'structure' | 'modules' | 'university' | 'exam-types'>('university');
-  examTypes = signal<ModuleExam[]>([]);
+  activeView = signal<'structure' | 'modules' | 'university' | 'exam-types' | 'faqs'>('university');  examTypes = signal<ModuleExam[]>([]);
   isDrawerOpen = signal(false);
   showAddCourseForm = signal(false);
   showAddSpecializationForm = signal(false);
   showAddModuleForm = signal(false);
   showAddExamTypeForm = signal(false);
   selectedModule = signal<Module | null>(null);
+
+  showAddFaqForm = signal(false);
+  editingFaq = signal<FaqModel | null>(null);
 
   selectedPossibleExamTypes = signal<ModuleExam[]>([]);
 
@@ -114,6 +116,14 @@ export class AcademicStructure implements OnInit {
     nameEn: ['', Validators.required],
     shortDe: ['', Validators.required],
     shortEn: ['', Validators.required]
+  });
+
+  faqForm = this.fb.group({
+    question: ['', Validators.required],
+    answer: ['', Validators.required],
+    category: ['', [Validators.required, Validators.maxLength(100)]],
+    sortOrder: [1, [Validators.required, Validators.min(0)]],
+    published: [true, Validators.required]
   });
 
   universityForm = this.fb.group({
@@ -212,11 +222,12 @@ export class AcademicStructure implements OnInit {
       this.universityForm.patchValue(info);
     });
     this.adminService.getExamTypes().subscribe(et => this.examTypes.set(et));
+    this.adminService.getFaqs().subscribe(f => this.faqs.set(f));
   }
 
 
 
-  switchView(view: 'structure' | 'modules' | 'university' | 'exam-types') {
+  switchView(view: 'structure' | 'modules' | 'university' | 'exam-types' | 'faqs') {
     this.activeView.set(view);
     this.isDrawerOpen.set(false);
   }
@@ -354,6 +365,100 @@ export class AcademicStructure implements OnInit {
         });
       }
     });
+  }
+
+  // --- FAQ CRUD ---
+  addFaq() {
+    if (this.faqForm.invalid) return;
+
+    const payload = this.faqForm.value as FaqUpsertRequest;
+
+    this.adminService.createFaq(payload).subscribe({
+      next: (faq) => {
+        this.faqs.update(list => [...list, faq].sort((a, b) => a.sortOrder - b.sortOrder || a.id - b.id));
+        this.faqForm.reset({
+          question: '',
+          answer: '',
+          category: '',
+          sortOrder: this.getNextFaqSortOrder(),
+          published: true
+        });
+        this.showAddFaqForm.set(false);
+        this.notificationService.showSuccess('FAQ wurde erfolgreich erstellt.');
+      },
+      error: () => this.notificationService.showError('FAQ konnte nicht erstellt werden.')
+    });
+  }
+
+  startEditFaq(faq: FaqModel) {
+    this.editingFaq.set(faq);
+    this.showAddFaqForm.set(true);
+    this.faqForm.patchValue({
+      question: faq.question,
+      answer: faq.answer,
+      category: faq.category,
+      sortOrder: faq.sortOrder,
+      published: faq.published
+    });
+  }
+
+  saveFaqEdit() {
+    const editing = this.editingFaq();
+    if (!editing || this.faqForm.invalid) return;
+
+    const payload = this.faqForm.value as FaqUpsertRequest;
+
+    this.adminService.updateFaq(editing.id, payload).subscribe({
+      next: (updatedFaq) => {
+        this.faqs.update(list =>
+          list
+            .map(f => f.id === updatedFaq.id ? updatedFaq : f)
+            .sort((a, b) => a.sortOrder - b.sortOrder || a.id - b.id)
+        );
+        this.cancelFaqEdit();
+        this.notificationService.showSuccess('FAQ wurde erfolgreich aktualisiert.');
+      },
+      error: () => this.notificationService.showError('FAQ konnte nicht aktualisiert werden.')
+    });
+  }
+
+  deleteFaq(id: number) {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        title: 'FAQ löschen',
+        message: 'Möchten Sie diese FAQ wirklich löschen?'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(res => {
+      if (res) {
+        this.adminService.deleteFaq(id).subscribe({
+          next: () => {
+            this.faqs.update(list => list.filter(f => f.id !== id));
+            this.notificationService.showSuccess('FAQ wurde erfolgreich gelöscht.');
+          },
+          error: () => this.notificationService.showError('FAQ konnte nicht gelöscht werden.')
+        });
+      }
+    });
+  }
+
+  cancelFaqEdit() {
+    this.editingFaq.set(null);
+    this.showAddFaqForm.set(false);
+    this.faqForm.reset({
+      question: '',
+      answer: '',
+      category: '',
+      sortOrder: this.getNextFaqSortOrder(),
+      published: true
+    });
+  }
+
+  getNextFaqSortOrder(): number {
+    const currentFaqs = this.faqs();
+    if (currentFaqs.length === 0) return 1;
+    return Math.max(...currentFaqs.map(f => f.sortOrder)) + 1;
   }
 
   // Helpers

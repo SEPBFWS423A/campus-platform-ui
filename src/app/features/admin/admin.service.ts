@@ -8,7 +8,7 @@ import { UserRole } from '../../core/models/user-role';
 
 export interface User {
   id: string;
-  salutation?: string; // e.g. "Mr.", "Ms.", "Mx." 
+  salutation?: string; // e.g. "Mr.", "Ms.", "Mx."
   title?: string;      // e.g. "Dr.", "Prof."
   firstName: string;
   lastName: string;
@@ -112,6 +112,23 @@ export interface Room {
   name: string;
   seats: number;
   examSeats: number;
+}
+
+export interface FaqModel {
+  id: number;
+  question: string;
+  answer: string;
+  category: string;
+  sortOrder: number;
+  published: boolean;
+}
+
+export interface FaqUpsertRequest {
+  question: string;
+  answer: string;
+  category: string;
+  sortOrder: number;
+  published: boolean;
 }
 
 @Injectable({
@@ -244,5 +261,22 @@ export class AdminService {
 
   deleteRoom(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/rooms/${id}`);
+  }
+
+  // --- FAQ Management ---
+  getFaqs(): Observable<FaqModel[]> {
+    return this.http.get<FaqModel[]>(`${this.apiUrl}/faqs`);
+  }
+
+  createFaq(payload: FaqUpsertRequest): Observable<FaqModel> {
+    return this.http.post<FaqModel>(`${this.apiUrl}/faqs`, payload);
+  }
+
+  updateFaq(id: number, payload: FaqUpsertRequest): Observable<FaqModel> {
+    return this.http.put<FaqModel>(`${this.apiUrl}/faqs/${id}`, payload);
+  }
+
+  deleteFaq(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/faqs/${id}`);
   }
 }
