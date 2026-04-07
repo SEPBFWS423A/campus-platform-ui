@@ -146,6 +146,25 @@ export interface CourseSeriesRequest {
   studyGroupIds: number[];
 }
 
+export interface CourseEvent {
+  id: number;
+  courseSeriesId: number;
+  roomId?: number;
+  roomName?: string;
+  name: string;
+  eventType: string;
+  startTime?: string;
+  durationMinutes?: number;
+}
+
+export interface CourseEventRequest {
+  roomId?: number;
+  name: string;
+  eventType: string;
+  startTime?: string;
+  durationMinutes?: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -278,9 +297,21 @@ export class AdminService {
     return this.http.delete<void>(`${this.apiUrl}/rooms/${id}`);
   }
 
+  getAvailableRooms(startTime?: string, durationMinutes?: number, excludeEventId?: number): Observable<Room[]> {
+    let params: any = {};
+    if (startTime) params.startTime = startTime;
+    if (durationMinutes) params.durationMinutes = durationMinutes;
+    if (excludeEventId) params.excludeEventId = excludeEventId;
+    return this.http.get<Room[]>(`${this.apiUrl}/rooms/available`, { params });
+  }
+
   // --- Course Series ---
   getCourseSeries(): Observable<CourseSeries[]> {
     return this.http.get<CourseSeries[]>(`${this.apiUrl}/course-series`);
+  }
+
+  getCourseSeriesById(id: number): Observable<CourseSeries> {
+    return this.http.get<CourseSeries>(`${this.apiUrl}/course-series/${id}`);
   }
 
   createCourseSeries(request: CourseSeriesRequest): Observable<CourseSeries> {
@@ -293,5 +324,22 @@ export class AdminService {
 
   deleteCourseSeries(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/course-series/${id}`);
+  }
+
+  // --- Events ---
+  getEventsForSeries(seriesId: number): Observable<CourseEvent[]> {
+    return this.http.get<CourseEvent[]>(`${this.apiUrl}/course-series/${seriesId}/events`);
+  }
+
+  createEvent(seriesId: number, request: CourseEventRequest): Observable<CourseEvent> {
+    return this.http.post<CourseEvent>(`${this.apiUrl}/course-series/${seriesId}/events`, request);
+  }
+
+  updateEvent(eventId: number, request: CourseEventRequest): Observable<CourseEvent> {
+    return this.http.put<CourseEvent>(`${this.apiUrl}/events/${eventId}`, request);
+  }
+
+  deleteEvent(eventId: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/events/${eventId}`);
   }
 }

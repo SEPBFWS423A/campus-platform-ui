@@ -1,7 +1,14 @@
 <div class="view-viewport">
   <div class="content-wrapper">
   <div class="header-container">
-    <h1>{{ 'eventManagement.title' | translate }}</h1>
+    <div class="title-group">
+      <h1>{{ 'eventManagement.title' | translate }}</h1>
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-icon matPrefix>search</mat-icon>
+        <mat-label>{{ 'userManagement.search' | translate }}</mat-label>
+        <input matInput (input)="onSearch($event)" [placeholder]="'userManagement.searchCampus' | translate">
+      </mat-form-field>
+    </div>
     <button mat-raised-button color="primary" (click)="openAddDialog()">
       <mat-icon>add</mat-icon> {{ 'eventManagement.addCourseSeries' | translate }}
     </button>
@@ -54,8 +61,8 @@
       <ng-container matColumnDef="actions">
         <mat-header-cell *matHeaderCellDef> {{ 'eventManagement.actions' | translate }} </mat-header-cell>
         <mat-cell *matCellDef="let element">
-          <button mat-icon-button color="primary" (click)="openEditDialog(element)" title="Edit">
-            <mat-icon>edit</mat-icon>
+          <button mat-icon-button color="primary" [routerLink]="['/admin/event-management', element.id]" title="Details / Edit">
+            <mat-icon>edit_note</mat-icon>
           </button>
           <button mat-icon-button color="warn" (click)="deleteItem(element.id)" title="Delete">
             <mat-icon>delete</mat-icon>

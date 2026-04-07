@@ -366,6 +366,7 @@
     "actions": "Actions",
     "noData": "No course series available. Click \"Add Course Series\" to create one.",
     "assignedLecturer": "Assigned Lecturer",
+    "manageSchedule": "Manage Schedule",
     "statusPLANNED": "Planned",
     "statusACTIVE": "Active",
     "statusCOMPLETED": "Completed",
@@ -384,10 +385,35 @@
     "confirmDeleteMsg": "Are you sure you want to delete this course series?",
     "delete": "Delete",
     "deletedSuccessfully": "Deleted successfully",
-    "failedToDelete": "Failed to delete"
+    "failedToDelete": "Failed to delete",
+    "planningStatus": "Planning Status",
+    "planningComplete": "Course series planned successfully!",
+    "planningIncomplete": "Planning incomplete: {{hours}}h {{minutes}}m still missing.",
+    "noRoomsAvailable": "No rooms available for the selected time slot.",
+    "lecturerCollision": "Lecturer collision detected. This lecturer is already scheduled for another event during this period.",
+    "roomCollision": "Room collision detected. This room is already occupied during the selected period.",
+    "eventName": "Event Name",
+    "eventType": "Event Type",
+    "eventDate": "Date",
+    "eventTime": "Time",
+    "eventDuration": "Duration (mins)",
+    "eventRoom": "Room",
+    "addEvent": "Add New Event",
+    "editEvent": "Edit Event",
+    "noEvents": "No events found for this course series.",
+    "seriesDetails": "Series Details",
+    "lehrveranstaltung": "Lehrveranstaltung",
+    "klausur": "Klausur (Exam)",
+    "seats": "Seats",
+    "examSeats": "Exam Seats"
   },
   "common": {
     "success": "Action successful",
-    "close": "Close"
+    "close": "Close",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "add": "Add"
   }
 }

@@ -1,0 +1,214 @@
+    <div class="view-viewport" *ngIf="series()">
+      <div class="content-wrapper">
+        <div class="header-container">
+          <div class="title-row">
+            <button mat-icon-button (click)="goBack()">
+              <mat-icon>arrow_back</mat-icon>
+            </button>
+            <h1>{{ 'eventManagement.editCourseSeries' | translate }} - ID: {{ series()?.id }}</h1>
+          </div>
+        </div>
+
+        <mat-card class="status-banner" [class.success]="isPlanningComplete()" [class.warning]="!isPlanningComplete()">
+          <mat-card-content>
+            <div class="status-content">
+              <mat-icon>{{ isPlanningComplete() ? 'check_circle' : 'info' }}</mat-icon>
+              <span>{{ (isPlanningComplete() ? 'eventManagement.planningComplete' : 'eventManagement.planningIncomplete') | translate: { hours: missingHours(), minutes: missingMinutesDisplay() } }}</span>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <div class="details-layout">
+          <!-- Course Series Edit Form -->
+          <mat-card class="edit-card">
+            <mat-card-header>
+              <mat-card-title>{{ 'eventManagement.seriesDetails' | translate }}</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <form [formGroup]="seriesForm" #seriesFormDirective="ngForm" (ngSubmit)="saveSeries()" class="details-form">
+                
+                <div class="form-row">
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ 'eventManagement.module' | translate }}</mat-label>
+                    <mat-select formControlName="moduleId" required>
+                      <mat-option *ngFor="let m of modules()" [value]="m.id">{{ m.name }}</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ 'eventManagement.assignedLecturer' | translate }}</mat-label>
+                    <mat-select formControlName="assignedLecturerId" required>
+                      <mat-option *ngFor="let l of selectedModuleLecturers" [value]="l.id">
+                        {{ l.title ? l.title + ' ' : '' }}{{ l.firstName }} {{ l.lastName }}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+
+                <div class="form-row">
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ 'eventManagement.status' | translate }}</mat-label>
+                    <mat-select formControlName="status" required>
+                      <mat-option value="PLANNED">{{ 'eventManagement.statusPLANNED' | translate }}</mat-option>
+                      <mat-option value="ACTIVE" [disabled]="!isPlanningComplete()">{{ 'eventManagement.statusACTIVE' | translate }}</mat-option>
+                      <mat-option value="COMPLETED">{{ 'eventManagement.statusCOMPLETED' | translate }}</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ 'eventManagement.examTypeOptional' | translate }}</mat-label>
+                    <mat-select formControlName="selectedExamTypeId">
+                      <mat-option [value]="null">{{ 'eventManagement.none' | translate }}</mat-option>
+                      <mat-option *ngFor="let et of selectedModuleExamTypes" [value]="et.id">{{ et.nameDe }}</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+
+                @if (showSubmissionDates) {
+                  <div class="form-row">
+                    <mat-form-field appearance="outline">
+                      <mat-label>{{ 'eventManagement.submissionStartDate' | translate }}</mat-label>
+                      <input matInput [matDatepicker]="startPicker" formControlName="submissionStartDate" (click)="startPicker.open()" (focus)="startPicker.open()">
+                      <mat-datepicker-toggle matIconSuffix [for]="startPicker"></mat-datepicker-toggle>
+                      <mat-datepicker #startPicker></mat-datepicker>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                      <mat-label>{{ 'eventManagement.submissionDeadline' | translate }}</mat-label>
+                      <input matInput [matDatepicker]="endPicker" formControlName="submissionDeadline" (click)="endPicker.open()" (focus)="endPicker.open()">
+                      <mat-datepicker-toggle matIconSuffix [for]="endPicker"></mat-datepicker-toggle>
+                      <mat-datepicker #endPicker></mat-datepicker>
+                    </mat-form-field>
+                  </div>
+                }
+
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>{{ 'eventManagement.studyGroups' | translate }}</mat-label>
+                  <mat-select formControlName="studyGroupIds" multiple required>
+                    <mat-option *ngFor="let sg of filteredGroups()" [value]="sg.id">{{ sg.name }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                <div class="form-actions">
+                  <button mat-raised-button color="primary" type="submit" [disabled]="seriesForm.invalid">
+                    {{ 'eventManagement.save' | translate }}
+                  </button>
+                </div>
+              </form>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Events Schedule -->
+          <mat-card class="events-card">
+            <mat-card-header>
+              <mat-card-title>{{ 'eventManagement.manageSchedule' | translate }}</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <mat-table [dataSource]="events()" class="events-table mat-elevation-z1">
+                <ng-container matColumnDef="name">
+                  <mat-header-cell *matHeaderCellDef>{{ 'eventManagement.eventName' | translate }}</mat-header-cell>
+                  <mat-cell *matCellDef="let element"> {{element.name}} </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="eventType">
+                  <mat-header-cell *matHeaderCellDef>{{ 'eventManagement.eventType' | translate }}</mat-header-cell>
+                  <mat-cell *matCellDef="let element"> {{element.eventType}} </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="startTime">
+                  <mat-header-cell *matHeaderCellDef>{{ 'eventManagement.eventDate' | translate }} / {{ 'eventManagement.eventTime' | translate }}</mat-header-cell>
+                  <mat-cell *matCellDef="let element"> {{element.startTime | date:'dd.MM.yyyy HH:mm'}} </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="room">
+                  <mat-header-cell *matHeaderCellDef>{{ 'eventManagement.eventRoom' | translate }}</mat-header-cell>
+                  <mat-cell *matCellDef="let element"> {{element.roomName || '-'}} </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="actions">
+                  <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                  <mat-cell *matCellDef="let element" class="action-cell">
+                    <button mat-icon-button color="primary" (click)="editEvent(element)" type="button">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button mat-icon-button color="warn" (click)="deleteEvent(element.id)" type="button">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </mat-cell>
+                </ng-container>
+
+                <mat-header-row *matHeaderRowDef="eventColumns"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: eventColumns;"></mat-row>
+              </mat-table>
+
+              <div *ngIf="events().length === 0" class="no-data">
+                {{ 'eventManagement.noEvents' | translate }}
+              </div>
+
+              <mat-divider style="margin: 24px 0"></mat-divider>
+
+              <form [formGroup]="eventForm" #eventFormDirective="ngForm" (ngSubmit)="saveEvent()" class="details-form">
+                <h3>{{ (editingEventId ? 'eventManagement.editEvent' : 'eventManagement.addEvent') | translate }}</h3>
+                <div class="form-row">
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ 'eventManagement.eventName' | translate }}</mat-label>
+                    <input matInput formControlName="name" required>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ 'eventManagement.eventType' | translate }}</mat-label>
+                    <mat-select formControlName="eventType" required>
+                      <mat-option value="LEHRVERANSTALTUNG">{{ 'eventManagement.lehrveranstaltung' | translate }}</mat-option>
+                      <mat-option value="KLAUSUR">{{ 'eventManagement.klausur' | translate }}</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+
+                <div class="form-row">
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ 'eventManagement.eventDate' | translate }}</mat-label>
+                    <input matInput [matDatepicker]="datePicker" formControlName="startDate" (click)="datePicker.open()" (focus)="datePicker.open()" required>
+                    <mat-datepicker-toggle matIconSuffix [for]="datePicker"></mat-datepicker-toggle>
+                    <mat-datepicker #datePicker></mat-datepicker>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ 'eventManagement.eventTime' | translate }}</mat-label>
+                    <input matInput type="time" formControlName="startTime" required>
+                  </mat-form-field>
+                  
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ 'eventManagement.eventDuration' | translate }}</mat-label>
+                    <input matInput type="number" formControlName="durationMinutes" required>
+                  </mat-form-field>
+                </div>
+
+                <div class="form-row">
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>{{ 'eventManagement.eventRoom' | translate }}</mat-label>
+                    <mat-select formControlName="roomId">
+                      <mat-option [value]="null">{{ 'eventManagement.none' | translate }}</mat-option>
+                      <mat-option *ngFor="let rm of availableRooms()" [value]="rm.id">
+                        {{ rm.name }} ({{ (eventForm.get('eventType')?.value === 'KLAUSUR' ? rm.examSeats : rm.seats) }} {{ (eventForm.get('eventType')?.value === 'KLAUSUR' ? 'eventManagement.examSeats' : 'eventManagement.seats') | translate }})
+                      </mat-option>
+                    </mat-select>
+                    @if (availableRooms().length === 0 && (eventForm.get('startDate')?.value && eventForm.get('startTime')?.value)) {
+                      <mat-hint style="color: var(--mat-sys-error)">{{ 'eventManagement.noRoomsAvailable' | translate }}</mat-hint>
+                    }
+                  </mat-form-field>
+                </div>
+
+                <div class="form-actions">
+                  <button mat-button type="button" *ngIf="editingEventId" (click)="cancelEventEdit()">{{ 'common.cancel' | translate }}</button>
+                  <button mat-raised-button color="primary" type="submit" [disabled]="eventForm.invalid">
+                    {{ (editingEventId ? 'common.save' : 'common.add') | translate }}
+                  </button>
+                </div>
+              </form>
+
+            </mat-card-content>
+          </mat-card>
+
+        </div>
+      </div>
+    </div>
