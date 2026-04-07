@@ -9,6 +9,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { UserSettingsDialog } from '../settings/user-settings.dialog/user-settings.dialog';
 import { InstitutionInfo } from '../../../features/admin/admin.service';
 import {UserService} from '../../../core/user/user.service';
+import { PublicService } from '../../../core/public/public.service';
 
 export type NavLink = {
   path: string;
@@ -61,14 +62,10 @@ const NAVIGATION_CONFIG: Record<string, NavLink[]> = {
 export class Navigation implements OnInit {
   public auth = inject(Auth);
   private dialog = inject(MatDialog);
-  private userService = inject(UserService);
+  public publicService = inject(PublicService);
   hoveredItem = signal<string | null>(null);
-  universityName = signal<string>('');
 
   ngOnInit() {
-    this.userService.getInstitutionInfo().subscribe((info: InstitutionInfo) => {
-      this.universityName.set(info.universityName);
-    });
   }
 
   currentLinks = computed(() => {

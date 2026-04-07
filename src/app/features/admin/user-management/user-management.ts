@@ -23,6 +23,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { startWith, map, finalize } from 'rxjs/operators';
 import { combineLatest } from 'rxjs';
+import { TranslateService } from '@ngx-translate/core';
 import { AdminService, User, StudyGroup, InvitationPayload, CourseOfStudy, Specialization, DegreeType, InstitutionInfo, GroupMember } from '../admin.service';
 import { UserRole } from '../../../core/models/user-role';
 import { NotificationService } from '../../../core/services/notification.service';
@@ -64,6 +65,7 @@ export class UserManagement implements OnInit {
   private fb = inject(FormBuilder);
   private notificationService = inject(NotificationService);
   private dialog = inject(MatDialog);
+  private translate = inject(TranslateService);
 
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
   @ViewChild('compactTable') compactTable!: MatTable<any>;
@@ -84,6 +86,7 @@ export class UserManagement implements OnInit {
 
   // Onboarding Selection State
   onboardingMode = signal<'individual' | 'bulk' | 'csv'>('individual');
+  csvLanguageControl = new FormControl('de', Validators.required);
 
   // Creation State
   showAddGroupForm = signal(false);
@@ -93,8 +96,8 @@ export class UserManagement implements OnInit {
   institutionInfo = signal<InstitutionInfo | null>(null);
   private isNameManuallyEdited = false;
 
-  salutations = ['Mr.', 'Ms.', 'Mx.'];
-  academicTitles = ['Dr.', 'Prof.', 'Prof. Dr.', 'Dr. h.c.'];
+  salutations = ['MR', 'MS', 'MX'];
+  academicTitles = ['DR', 'PROF', 'PROF_DR'];
 
   // Forms
   inviteForm = this.fb.group({
@@ -102,14 +105,16 @@ export class UserManagement implements OnInit {
     role: [UserRole.Student, Validators.required],
     studentNumber: [''],
     courseOfStudy: [''],
-    specializationId: ['']
-  });
+    specialization: [''],
+    language: ['de', Validators.required]
+  }, { validators: this.studentFieldsValidator });
 
   bulkInviteForm = this.fb.group({
     emails: ['', Validators.required],
     role: [UserRole.Student, Validators.required],
     defaultCourse: [''],
-    defaultSpecialization: ['']
+    defaultSpecialization: [''],
+    defaultLanguage: ['de', Validators.required]
   });
 
   groupForm = this.fb.group({
@@ -188,12 +193,15 @@ export class UserManagement implements OnInit {
   });
 
   getProfileDisplayName(u: any) {
-    const parts = [u.salutation, u.title, u.firstName, u.lastName].filter(p => !!p);
+    const sal = u.salutation ? this.translate.instant('userManagement.salutations.' + u.salutation) : '';
+    const title = u.title ? this.translate.instant('userManagement.academicTitles.' + u.title) : '';
+    const parts = [sal, title, u.firstName, u.lastName].filter(p => !!p);
     return parts.join(' ');
   }
 
   getAssociationDisplayName(u: any) {
-    const parts = [u.title, u.firstName, u.lastName].filter(p => !!p);
+    const title = u.title ? this.translate.instant('userManagement.academicTitles.' + u.title) : '';
+    const parts = [title, u.firstName, u.lastName].filter(p => !!p);
     return parts.join(' ');
   }
 
@@ -227,7 +235,7 @@ export class UserManagement implements OnInit {
   availableSpecializationsForIndividual = computed(() => {
     const courseId = this.inviteCourseValue();
     if (!courseId) return [];
-    return this.allSpecializationsData().filter(f => f.courseId === courseId).map(f => f.name);
+    return this.allSpecializationsData().filter(f => f.courseId === courseId);
   });
 
   editCourseValue = toSignal(this.userEditForm.get('courseOfStudy')!.valueChanges.pipe(startWith('')), { initialValue: '' });
@@ -251,13 +259,14 @@ export class UserManagement implements OnInit {
   availableSpecializationsForBulk = computed(() => {
     const courseId = this.bulkCourseValue();
     if (!courseId) return [];
-    return this.allSpecializationsData().filter(f => f.courseId === courseId).map(f => f.name);
+    return this.allSpecializationsData().filter(f => f.courseId === courseId);
   });
 
   ngOnInit() {
     this.loadAllData();
     this.setupAutocomplete();
     this.setupGroupNameAutoGeneration();
+    this.setupDependentFieldsClearing();
   }
 
   setupGroupNameAutoGeneration() {
@@ -302,6 +311,41 @@ export class UserManagement implements OnInit {
     this.adminService.getCourses().subscribe(courses => this.coursesData.set(courses));
     this.adminService.getSpecializations().subscribe(specializations => this.specializationsData.set(specializations));
     this.userService.getInstitutionInfo().subscribe(info => this.institutionInfo.set(info));
+  }
+
+  // Validator to ensure Course and Specialization are selected for a Student
+  studentFieldsValidator(group: any) {
+    const role = group.get('role')?.value;
+    if (role === UserRole.Student) {
+      const course = group.get('courseOfStudy')?.value;
+      const spec = group.get('specialization')?.value;
+      if (!course || !spec) {
+        return { studentFieldsRequired: true };
+      }
+    }
+    return null;
+  }
+
+  setupDependentFieldsClearing() {
+    this.inviteForm.get('courseOfStudy')?.valueChanges.subscribe(() => {
+      this.inviteForm.patchValue({ specialization: '' }, { emitEvent: false });
+      this.inviteForm.get('specialization')?.markAsUntouched();
+    });
+
+    this.bulkInviteForm.get('defaultCourse')?.valueChanges.subscribe(() => {
+      this.bulkInviteForm.patchValue({ defaultSpecialization: '' }, { emitEvent: false });
+      this.bulkInviteForm.get('defaultSpecialization')?.markAsUntouched();
+    });
+
+    this.groupForm.get('courseOfStudy')?.valueChanges.subscribe(() => {
+      this.groupForm.patchValue({ specialization: '' }, { emitEvent: false });
+      this.groupForm.get('specialization')?.markAsUntouched();
+    });
+
+    this.userEditForm.get('courseOfStudy')?.valueChanges.subscribe(() => {
+      this.userEditForm.patchValue({ specializationId: '' }, { emitEvent: false });
+      this.userEditForm.get('specializationId')?.markAsUntouched();
+    });
   }
 
 
@@ -367,18 +411,29 @@ export class UserManagement implements OnInit {
   sendInvitation() {
     if (this.inviteForm.invalid || this.isInviting()) return;
     this.isInviting.set(true);
-    const invData = this.inviteForm.value as InvitationPayload;
+    const formVal = this.inviteForm.value;
+    
+    const invData: InvitationPayload = {
+      email: formVal.email!,
+      role: formVal.role!,
+      studentNumber: formVal.studentNumber || undefined,
+      // specialization is actually the ID now from the dropdown
+      specializationId: Number(formVal.specialization) || undefined,
+      startYear: new Date().getFullYear(), // Default current year
+      language: formVal.language || 'de'
+    };
+
     this.adminService.inviteUser(invData).pipe(
       finalize(() => this.isInviting.set(false))
     ).subscribe(() => {
-      this.notificationService.showSuccess('userManagement.invitationSuccess');
-      this.inviteForm.reset({ role: invData.role });
+      this.notificationService.showSuccess('userManagement.invitationSuccess', { email: invData.email });
+      this.inviteForm.reset({ role: formVal.role! });
     });
   }
 
   sendBulkInvitations() {
     if (this.bulkInviteForm.invalid || this.isInviting()) return;
-    const { emails, role, defaultCourse, defaultSpecialization } = this.bulkInviteForm.value;
+    const { emails, role, defaultCourse, defaultSpecialization, defaultLanguage } = this.bulkInviteForm.value;
     if (emails && role) {
       this.isInviting.set(true);
       const lines = emails.split('\n').filter(Boolean);
@@ -394,19 +449,22 @@ export class UserManagement implements OnInit {
         const normalizedRole = this.normalizeRole(csvRole);
         const selectedCourseName = defaultCourse ? this.allCoursesData().find(c => c.id === defaultCourse)?.name : undefined;
 
+        const csvLang = hasId ? parts[5] : parts[4];
+
         return {
           email: parts[0],
           studentNumber: hasId ? parts[1] : undefined,
           role: normalizedRole || (role as UserRole),
           courseOfStudy: csvCourse || selectedCourseName,
-          specialization: csvSpec || defaultSpecialization || undefined
+          specialization: csvSpec || defaultSpecialization || undefined,
+          language: csvLang || defaultLanguage || 'de'
         };
       });
 
       this.adminService.bulkInvite(invitations).pipe(
         finalize(() => this.isInviting.set(false))
       ).subscribe(() => {
-        this.notificationService.showSuccess('userManagement.invitationSuccess');
+        this.notificationService.showSuccess('userManagement.bulkInvitationSuccess');
         this.bulkInviteForm.reset({ role: UserRole.Student });
       });
     }
@@ -441,7 +499,8 @@ export class UserManagement implements OnInit {
             studentNumber: hasId ? parts[1] : undefined,
             role: role,
             courseOfStudy: hasId ? parts[3] : parts[2],
-            specialization: hasId ? parts[4] : parts[3]
+            specialization: hasId ? parts[4] : parts[3],
+            language: (hasId ? parts[5] : parts[4]) || this.csvLanguageControl.value || 'de'
           } as InvitationPayload;
         });
         this.csvInvitations.set(invs);
@@ -456,7 +515,7 @@ export class UserManagement implements OnInit {
       this.adminService.bulkInvite(this.csvInvitations()).pipe(
         finalize(() => this.isInviting.set(false))
       ).subscribe(() => {
-        this.notificationService.showSuccess('userManagement.invitationSuccess');
+        this.notificationService.showSuccess('userManagement.bulkInvitationSuccess');
         this.csvInvitations.set([]);
         this.csvFileName.set(null);
       });

@@ -63,7 +63,11 @@
           <div mat-card-avatar class="profile-avatar large">
             <mat-icon>account_circle</mat-icon>
           </div>
-          <mat-card-title>{{ getProfileDisplayName(user) }}</mat-card-title>
+          <mat-card-title>
+            @if (user.salutation) { {{ 'userManagement.salutations.' + user.salutation | translate }} }
+            @if (user.title) { {{ 'userManagement.academicTitles.' + user.title | translate }} }
+            {{ user.firstName }} {{ user.lastName }}
+          </mat-card-title>
           <mat-card-subtitle>{{ user.email }}</mat-card-subtitle>
         </mat-card-header>
 
@@ -77,11 +81,11 @@
             <div class="info-grid-modern">
               @if (user.salutation) {
               <div class="info-tile"><span class="label">{{ "userManagement.salutation" | translate }}</span><span
-                  class="value">{{ user.salutation }}</span></div>
+                  class="value">{{ 'userManagement.salutations.' + user.salutation | translate }}</span></div>
               }
               @if (user.title) {
               <div class="info-tile"><span class="label">{{ "userManagement.academicTitle" | translate }}</span><span
-                  class="value">{{ user.title }}</span></div>
+                  class="value">{{ 'userManagement.academicTitles.' + user.title | translate }}</span></div>
               }
               @if (user.role === 'STUDENT') {
               <div class="info-tile"><span class="label">{{ "userManagement.studentNumber" | translate }}</span><span
@@ -129,14 +133,14 @@
                 <mat-label>{{ "userManagement.salutation" | translate }}</mat-label>
                 <mat-select formControlName="salutation">
                   <mat-option [value]="undefined">{{ "userManagement.none" | translate }}</mat-option>
-                  @for (s of salutations; track s) { <mat-option [value]="s">{{ s }}</mat-option> }
+                  @for (s of salutations; track s) { <mat-option [value]="s">{{ 'userManagement.salutations.' + s | translate }}</mat-option> }
                 </mat-select>
               </mat-form-field>
               <mat-form-field appearance="outline">
                 <mat-label>{{ "userManagement.academicTitle" | translate }}</mat-label>
                 <mat-select formControlName="title">
                   <mat-option [value]="undefined">{{ "userManagement.none" | translate }}</mat-option>
-                  @for (t of academicTitles; track t) { <mat-option [value]="t">{{ t }}</mat-option> }
+                  @for (t of academicTitles; track t) { <mat-option [value]="t">{{ 'userManagement.academicTitles.' + t | translate }}</mat-option> }
                 </mat-select>
               </mat-form-field>
             </div>
@@ -370,7 +374,7 @@
                     <input matInput formControlName="studentNumber">
                   </mat-form-field>
                   <mat-form-field appearance="outline" subscriptSizing="dynamic">
-                    <mat-label>{{ "userManagement.course" | translate }}</mat-label>
+                    <mat-label>{{ "userManagement.courseOfStudy" | translate }}</mat-label>
                     <mat-select formControlName="courseOfStudy">
                       @for(c of allCoursesData(); track c.id) {
                       <mat-option [value]="c.id">
@@ -381,16 +385,31 @@
                   </mat-form-field>
                   <mat-form-field appearance="outline" class="col-span-2" subscriptSizing="dynamic">
                     <mat-label>{{ "userManagement.specialization" | translate }}</mat-label>
-                    <mat-select formControlName="specializationId" [disabled]="!inviteCourseValue()">
-                      @for(s of availableSpecializationsForIndividual(); track s) {
-                      <mat-option [value]="s">{{ s }}</mat-option>
+                    <mat-select formControlName="specialization" [disabled]="!inviteCourseValue()">
+                      @for(s of availableSpecializationsForIndividual(); track s.id) {
+                      <mat-option [value]="s.id">{{ s.name }}</mat-option>
                       }
                     </mat-select>
                   </mat-form-field>
                 </div>
               </div>
               }
+
+              <mat-form-field appearance="outline" [class.col-span-2]="inviteForm.get('role')?.value === 'STUDENT'" class="col-span-1" subscriptSizing="dynamic">
+               <mat-label>{{ "userManagement.standardLanguage" | translate }}</mat-label>
+                <mat-select formControlName="language">
+                  <mat-option value="de">Deutsch</mat-option>
+                  <mat-option value="en">English</mat-option>
+                </mat-select>
+              </mat-form-field>
             </div>
+
+            @if (inviteForm.hasError('studentFieldsRequired') && inviteForm.get('role')?.value === 'STUDENT' && inviteForm.get('specialization')?.touched) {
+              <div class="onboarding-error-msg animate-fade-in" style="display: flex; align-items: center; justify-content: center; gap: 8px; color: var(--mat-sys-error); margin: 0.5rem 0; font-size: 0.9rem; font-weight: 500;">
+                <mat-icon style="font-size: 1.25rem; width: 1.25rem; height: 1.25rem;">error_outline</mat-icon>
+                <span>{{ 'userManagement.studentFieldsRequired' | translate }}</span>
+              </div>
+            }
 
             <div class="onboarding-footer center-align">
               <button mat-flat-button color="primary" class="onboarding-submit"
@@ -425,9 +444,13 @@
                 <mat-form-field appearance="outline" class="full-width textarea-field">
                   <mat-label>{{ "userManagement.listData" | translate }}</mat-label>
                   <textarea matInput formControlName="emails" rows="8"
-                    placeholder="max@mustermann.de; 123456; STUDENT; Betriebswirtschaft; Finance"></textarea>
-                  <mat-hint>{{ "userManagement.batchFormat" | translate }}
-                    <code>{{ "userManagement.batchFormatValue" | translate }}</code></mat-hint>
+                    placeholder="max@mustermann.de; 123456; STUDENT; Betriebswirtschaft; Finance; en"></textarea>
+                  <mat-hint>
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                      <span>{{ "userManagement.batchFormat" | translate }} <code>{{ "userManagement.batchFormatValue" | translate }}</code></span>
+                      <span class="optional-hint-text">{{ "userManagement.optionalHint" | translate }}</span>
+                    </div>
+                  </mat-hint>
                 </mat-form-field>
               </div>
 
@@ -458,6 +481,14 @@
                     @for(s of availableSpecializationsForBulk(); track s) {
                     <mat-option [value]="s">{{ s }}</mat-option>
                     }
+                  </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                  <mat-label>{{ "userManagement.standardLanguage" | translate }}</mat-label>
+                  <mat-select formControlName="defaultLanguage">
+                    <mat-option value="de">Deutsch</mat-option>
+                    <mat-option value="en">English</mat-option>
                   </mat-select>
                 </mat-form-field>
               </div>
@@ -506,13 +537,26 @@
               <mat-icon>info</mat-icon>
               <span>{{ "userManagement.batchFormat" | translate }}</span>
             </div>
-            <code class="advice-code">{{ "userManagement.csvFormat" | translate }}</code>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+               <code class="advice-code">{{ "userManagement.csvFormat" | translate }}</code>
+               <span class="optional-hint-text center-text">{{ "userManagement.optionalHint" | translate }}</span>
+            </div>
           </div>
 
           @if (csvInvitations().length > 0) {
           <div class="compact-import-summary animate-fade-in">
             <mat-icon>check_circle</mat-icon>
             <span>{{ csvInvitations().length }} {{ "userManagement.studentsDetected" | translate }}</span>
+          </div>
+
+          <div class="center-align" style="margin-top: 16px;">
+            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+              <mat-label>{{ "userManagement.standardLanguage" | translate }}</mat-label>
+              <mat-select [formControl]="csvLanguageControl">
+                <mat-option value="de">Deutsch</mat-option>
+                <mat-option value="en">English</mat-option>
+              </mat-select>
+            </mat-form-field>
           </div>
           }
 
@@ -679,7 +723,10 @@
                 <mat-autocomplete #auto="matAutocomplete" (optionSelected)="addMember($event.option.value)"
                   [displayWith]="displayStudent">
                   @for (s of filteredStudentsAutoComplete(); track s.id) {
-                  <mat-option [value]="s">{{ getAssociationDisplayName(s) }} ({{ s.studentNumber }})</mat-option>
+                  <mat-option [value]="s">
+                    @if (s.title) { {{ 'userManagement.academicTitles.' + s.title | translate }} }
+                    {{ s.firstName }} {{ s.lastName }} ({{ s.studentNumber }})
+                  </mat-option>
                   } @empty {
                   <mat-option disabled class="no-results-option">{{ "userManagement.noStudentsFound" | translate
                     }}</mat-option>

@@ -265,6 +265,7 @@
 
 .view-viewport {
   padding: 0 48px;
+
   /* Remove top padding to fix 'flying' header gap, use after element for bottom padding */
   &::after {
     content: '';
@@ -272,6 +273,7 @@
     height: 48px;
     flex-shrink: 0;
   }
+
   flex: 1;
   overflow-y: auto;
   display: flex;
@@ -752,9 +754,8 @@
     display: flex;
     justify-content: flex-end;
     gap: 16px;
-    margin-top: 16px;
+    margin-top: 3rem;
     padding-top: 20px;
-    border-top: 1px solid var(--mat-sys-outline-variant);
 
     &.center-align {
       justify-content: center;
@@ -1270,7 +1271,7 @@
 
   .onboarding-header {
     margin-bottom: 32px;
-    
+
     .icon-orb {
       width: 64px;
       height: 64px;
@@ -1294,37 +1295,37 @@
     padding: 32px 32px 16px 32px !important; // More top padding to accommodate floating labels
     max-height: none !important;
     overflow: visible !important; // STOP label clipping!
-    
+
     .onboarding-form-compact {
       max-width: 100%;
       display: block !important;
       overflow: visible;
-      
-        .form-grid {
-          display: grid !important; 
-          grid-template-columns: 1fr 1fr; // Changed to equal columns for better balancing with full-width items
-          gap: 20px 24px !important;
-          margin-top: 12px;
-          overflow: visible;
+
+      .form-grid {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr; // Changed to equal columns for better balancing with full-width items
+        gap: 20px 24px !important;
+        margin-top: 12px;
+        overflow: visible;
+
+        .col-span-2 {
+          grid-column: span 2;
+        }
+
+        @media (max-width: 600px) {
+          grid-template-columns: 1fr;
+          gap: 16px !important;
 
           .col-span-2 {
-            grid-column: span 2;
-          }
-
-          @media (max-width: 600px) {
-            grid-template-columns: 1fr;
-            gap: 16px !important;
-
-            .col-span-2 {
-              grid-column: span 1;
-            }
+            grid-column: span 1;
           }
         }
+      }
 
       mat-form-field {
         margin-bottom: 0 !important;
         --mat-form-field-container-height: 56px;
-        
+
         ::ng-deep {
           .mat-mdc-form-field-infix {
             min-height: 56px !important;
@@ -1344,7 +1345,7 @@
       padding: 0 24px;
       border-radius: 14px;
       font-weight: 600;
-      
+
       mat-icon {
         margin-right: 8px;
       }
@@ -1392,5 +1393,18 @@
 
   to {
     opacity: 1;
+  }
+}
+
+.optional-hint-text {
+  font-size: 0.75rem;
+  color: var(--mat-sys-on-surface-variant);
+  opacity: 0.7;
+  font-weight: 500;
+  font-style: italic;
+
+  &.center-text {
+    display: block;
+    text-align: center;
   }
 }

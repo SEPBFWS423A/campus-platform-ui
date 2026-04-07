@@ -9,6 +9,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
 import { NotificationService } from '../../../core/services/notification.service';
 import { TranslateModule } from '@ngx-translate/core';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-change-password',
@@ -21,6 +22,7 @@ import { TranslateModule } from '@ngx-translate/core';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
+    MatIconModule,
     TranslateModule
   ]
 })
@@ -31,6 +33,7 @@ export class ChangePassword {
   private notificationService = inject(NotificationService);
 
   isLoading = signal(false);
+  message = signal<string | null>(null);
 
   form = this.fb.group({
     oldPassword: ['', Validators.required],
@@ -48,11 +51,17 @@ export class ChangePassword {
     this.userService.changePassword(oldPassword!, newPassword!).subscribe({
       next: () => {
         this.isLoading.set(false);
+        this.message.set(null);
         this.notificationService.showSuccess('navigation.profileAndSettings.passwordChangedSuccess');
         this.router.navigate(['/']);
       },
       error: (err) => {
         this.isLoading.set(false);
+        if (err.error?.message === 'error.password.invalidOld') {
+          this.message.set('error.password.invalidOld');
+        } else {
+          this.message.set('error.password.unknownError');
+        }
         console.error('Failed to change password:', err);
       }
     });

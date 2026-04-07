@@ -62,7 +62,7 @@ export class ThemeController {
 
   private saveSettings() {
     this.userService.updatePreferences(this.activeTheme(), this.activeBrightness(), this.activeLanguage()).subscribe({
-      next: () => this.notificationService.showSuccess('common.success')
+      next: () => this.notificationService.showSuccess('navigation.profileAndSettings.preferencesSaved')
     });
   }
 }

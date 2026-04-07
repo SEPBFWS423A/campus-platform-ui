@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnInit, signal, ViewChild, TemplateRef } from '@angular/core';
+import { Component, computed, inject, OnInit, OnDestroy, signal, ViewChild, TemplateRef } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators, FormControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -18,7 +18,10 @@ import { AdminService, CourseOfStudy, Specialization, Module, User, UserRole, De
 import { NotificationService } from '../../../core/services/notification.service';
 import { ConfirmationDialogComponent } from '../../../shared/components/confirmation-dialog/confirmation-dialog.component';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import {UserService} from '../../../core/user/user.service';
+import { UserService } from '../../../core/user/user.service';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { Editor, Toolbar, NgxEditorModule } from 'ngx-editor';
 
 @Component({
   selector: 'app-academic-structure',
@@ -40,17 +43,20 @@ import {UserService} from '../../../core/user/user.service';
     MatSidenavModule,
     MatListModule,
     TranslateModule,
+    MatTooltipModule,
+    NgxEditorModule
   ],
   templateUrl: './academic-structure.html',
-  styleUrls: ['./academic-structure.scss'],
+  styleUrls: ['./academic-structure.scss']
 })
-export class AcademicStructure implements OnInit {
+export class AcademicStructure implements OnInit, OnDestroy {
   private adminService = inject(AdminService);
   private userService = inject(UserService);
   private fb = inject(FormBuilder);
   private notificationService = inject(NotificationService);
   private dialog = inject(MatDialog);
   public translate = inject(TranslateService);
+  private sanitizer = inject(DomSanitizer);
 
   // Data signals
   courses = signal<CourseOfStudy[]>([]);
@@ -60,7 +66,7 @@ export class AcademicStructure implements OnInit {
   universityInfo = signal<InstitutionInfo | null>(null);
 
   // View state
-  activeView = signal<'structure' | 'modules' | 'university' | 'exam-types'>('university');
+  activeView = signal<'structure' | 'modules' | 'university' | 'exam-types' | 'emails'>('university');
   examTypes = signal<ModuleExam[]>([]);
   isDrawerOpen = signal(false);
   showAddCourseForm = signal(false);
@@ -90,6 +96,26 @@ export class AcademicStructure implements OnInit {
   moduleDegreeFilter = signal<DegreeType | ''>('');
   moduleSpecializationFilter = signal<string | ''>('');
   moduleSemesterFilter = signal<number | ''>('');
+
+  // Editors
+  editorInvitationDe!: Editor;
+  editorInvitationEn!: Editor;
+  editorResetDe!: Editor;
+  editorResetEn!: Editor;
+
+  toolbar: Toolbar = [
+    ['bold', 'italic'],
+    ['underline', 'strike'],
+    ['ordered_list', 'bullet_list'],
+    [{ heading: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] }],
+    ['link'],
+    ['align_left', 'align_center', 'align_right', 'align_justify'],
+  ];
+
+  floatingToolbar: Toolbar = [
+    ['bold', 'italic', 'underline'],
+    ['link'],
+  ];
 
   // Degree Types
   degreeTypes = Object.values(DegreeType);
@@ -140,7 +166,15 @@ export class AcademicStructure implements OnInit {
     websiteEmail: ['', [Validators.required, Validators.email]],
     bibliothekUrl: ['', Validators.required],
     mensaUrl: ['', Validators.required],
-    impressum: ['', Validators.required]
+    impressum: ['', Validators.required],
+    invitationEmailSubjectDe: [''],
+    invitationEmailBodyDe: [''],
+    invitationEmailSubjectEn: [''],
+    invitationEmailBodyEn: [''],
+    passwordResetEmailSubjectDe: [''],
+    passwordResetEmailBodyDe: [''],
+    passwordResetEmailSubjectEn: [''],
+    passwordResetEmailBodyEn: ['']
   });
 
   // Remove static examTypes list as we now load it from backend
@@ -197,6 +231,14 @@ export class AcademicStructure implements OnInit {
   });
 
   ngOnInit() {
+    const editorConfig = {
+      linkValidationPattern: '^(https?://.*|{url})'
+    };
+    this.editorInvitationDe = new Editor(editorConfig);
+    this.editorInvitationEn = new Editor(editorConfig);
+    this.editorResetDe = new Editor(editorConfig);
+    this.editorResetEn = new Editor(editorConfig);
+
     this.loadData();
 
     this.moduleForm.get('possibleExamTypes')?.valueChanges.subscribe(val => {
@@ -215,6 +257,13 @@ export class AcademicStructure implements OnInit {
     });
   }
 
+  ngOnDestroy(): void {
+    this.editorInvitationDe.destroy();
+    this.editorInvitationEn.destroy();
+    this.editorResetDe.destroy();
+    this.editorResetEn.destroy();
+  }
+
   loadData() {
     this.adminService.getCourses().subscribe(c => this.courses.set(c));
     this.adminService.getSpecializations().subscribe(s => this.specializations.set(s));
@@ -231,7 +280,7 @@ export class AcademicStructure implements OnInit {
 
 
 
-  switchView(view: 'structure' | 'modules' | 'university' | 'exam-types') {
+  switchView(view: 'structure' | 'modules' | 'university' | 'exam-types' | 'emails') {
     this.activeView.set(view);
     this.isDrawerOpen.set(false);
   }
@@ -242,7 +291,16 @@ export class AcademicStructure implements OnInit {
     const info = this.universityForm.value as InstitutionInfo;
     this.adminService.updateInstitutionInfo(info).subscribe(res => {
       this.universityInfo.set(res);
-      this.notificationService.showSuccess('academicStructure.updateUniversityInfoSuccess');
+      const msg = this.activeView() === 'emails' 
+        ? 'academicStructure.updateEmailTemplatesSuccess' 
+        : 'academicStructure.updateUniversityInfoSuccess';
+      this.notificationService.showSuccess(msg);
+    });
+  }
+
+  copyToClipboard(text: string): void {
+    navigator.clipboard.writeText(text).then(() => {
+      this.notificationService.showSuccess('academicStructure.copiedToClipboard');
     });
   }
 
