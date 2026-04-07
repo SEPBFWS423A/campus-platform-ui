@@ -61,6 +61,11 @@
 
     .login-button {
       margin-top: 1.5rem;
+      height: 48px;
+
+      mat-spinner {
+        margin: 0 auto;
+      }
 
       .content {
         display: flex;

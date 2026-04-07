@@ -10,6 +10,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { NotificationService } from '../../core/services/notification.service';
 import { PublicService } from '../../core/public/public.service';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-login',
@@ -21,7 +22,8 @@ import { PublicService } from '../../core/public/public.service';
     MatInputModule,
     MatIconModule,
     FormsModule,
-    RouterLink
+    RouterLink,
+    MatProgressSpinnerModule
   ],
   templateUrl: './login.html',
   styleUrl: './login.scss',
@@ -56,7 +58,6 @@ export class Login implements OnInit {
     this.isLoading.set(true);
     this.auth.login(this.email(), this.password(), this.returnUrl).subscribe({
       next: () => {
-        this.isLoading.set(false);
         this.notificationService.showSuccess('login.loginSuccess');
       },
       error: (err) => {

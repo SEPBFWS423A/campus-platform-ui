@@ -33,7 +33,7 @@
       <button mat-flat-button color="primary" class="login-button" type="submit"
         [disabled]="isLoading() || !email() || !password()">
         @if (isLoading()) {
-        <mat-icon fontIcon="autorenew"></mat-icon>
+        <mat-spinner diameter="24" color="accent"></mat-spinner>
         }
         @else {
         <div class="content">
