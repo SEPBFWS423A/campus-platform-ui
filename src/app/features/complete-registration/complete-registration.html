@@ -8,16 +8,36 @@
         @if (email) {
           <p>{{ 'completeRegistration.emailLabel' | translate }}: {{ email }}</p>
         }
-        <form [formGroup]="form" (ngSubmit)="completeRegistration()">
-          <mat-form-field appearance="fill">
-            <mat-label>{{ 'completeRegistration.firstNameLabel' | translate }}</mat-label>
-            <input matInput formControlName="firstName">
-          </mat-form-field>
+        <form [formGroup]="form" (ngSubmit)="completeRegistration()" class="registration-form">
+          <div class="profile-header-fields">
+            <mat-form-field appearance="fill">
+              <mat-label>{{ 'userManagement.salutation' | translate }}</mat-label>
+              <mat-select formControlName="salutation">
+                <mat-option [value]="undefined">{{ 'userManagement.none' | translate }}</mat-option>
+                @for (s of salutations; track s) { <mat-option [value]="s">{{ s }}</mat-option> }
+              </mat-select>
+            </mat-form-field>
 
-          <mat-form-field appearance="fill">
-            <mat-label>{{ 'completeRegistration.lastNameLabel' | translate }}</mat-label>
-            <input matInput formControlName="lastName">
-          </mat-form-field>
+            <mat-form-field appearance="fill">
+              <mat-label>{{ 'userManagement.academicTitle' | translate }}</mat-label>
+              <mat-select formControlName="title">
+                <mat-option [value]="undefined">{{ 'userManagement.none' | translate }}</mat-option>
+                @for (t of academicTitles; track t) { <mat-option [value]="t">{{ t }}</mat-option> }
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="name-fields">
+            <mat-form-field appearance="fill">
+              <mat-label>{{ 'completeRegistration.firstNameLabel' | translate }}</mat-label>
+              <input matInput formControlName="firstName">
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>{{ 'completeRegistration.lastNameLabel' | translate }}</mat-label>
+              <input matInput formControlName="lastName">
+            </mat-form-field>
+          </div>
 
           <mat-form-field appearance="fill">
             <mat-label>{{ 'completeRegistration.passwordLabel' | translate }}</mat-label>

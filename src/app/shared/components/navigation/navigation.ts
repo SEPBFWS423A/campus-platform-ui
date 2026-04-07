@@ -7,7 +7,8 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { MatButton } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { UserSettingsDialog } from '../settings/user-settings.dialog/user-settings.dialog';
-import { AdminService, InstitutionInfo } from '../../../features/admin/admin.service';
+import { InstitutionInfo } from '../../../features/admin/admin.service';
+import {UserService} from '../../../core/user/user.service';
 
 export type NavLink = {
   path: string;
@@ -60,12 +61,12 @@ const NAVIGATION_CONFIG: Record<string, NavLink[]> = {
 export class Navigation implements OnInit {
   public auth = inject(Auth);
   private dialog = inject(MatDialog);
-  private adminService = inject(AdminService);
+  private userService = inject(UserService);
   hoveredItem = signal<string | null>(null);
   universityName = signal<string>('');
 
   ngOnInit() {
-    this.adminService.getInstitutionInfo().subscribe((info: InstitutionInfo) => {
+    this.userService.getInstitutionInfo().subscribe((info: InstitutionInfo) => {
       this.universityName.set(info.universityName);
     });
   }

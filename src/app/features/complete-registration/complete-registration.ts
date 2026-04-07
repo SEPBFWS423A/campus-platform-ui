@@ -8,6 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCardModule } from '@angular/material/card';
+import { MatSelectModule } from '@angular/material/select';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NotificationService } from '../../core/services/notification.service';
 
@@ -23,6 +24,7 @@ import { NotificationService } from '../../core/services/notification.service';
     MatProgressSpinnerModule,
     MatCardModule,
     TranslateModule,
+    MatSelectModule
   ],
   templateUrl: './complete-registration.html',
   styleUrl: './complete-registration.scss',
@@ -41,7 +43,12 @@ export class CompleteRegistration implements OnInit {
   isRedirecting = signal(false);
   message = signal<string | null>(null);
 
+  salutations = ['Mr.', 'Ms.', 'Mx.'];
+  academicTitles = ['Dr.', 'Prof.', 'Prof. Dr.', 'Dr. h.c.'];
+
   form = this.fb.group({
+    salutation: [''],
+    title: [''],
     firstName: ['', Validators.required],
     lastName: ['', Validators.required],
     password: ['', [Validators.required, Validators.minLength(6)]],
@@ -71,9 +78,9 @@ export class CompleteRegistration implements OnInit {
 
     this.isLoading.set(true);
     this.message.set(null);
-    const { firstName, lastName, password } = this.form.getRawValue();
+    const { salutation, title, firstName, lastName, password } = this.form.getRawValue();
     
-    this.auth.completeRegistration(this.token, firstName!, lastName!, password!).subscribe({
+    this.auth.completeRegistration(this.token, salutation!, title!, firstName!, lastName!, password!).subscribe({
       next: () => {
         this.isLoading.set(false);
         this.isRedirecting.set(true);

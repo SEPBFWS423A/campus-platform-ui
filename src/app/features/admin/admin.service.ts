@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 export { UserRole } from '../../core/models/user-role';
@@ -8,7 +8,7 @@ import { UserRole } from '../../core/models/user-role';
 
 export interface User {
   id: string;
-  salutation?: string; // e.g. "Mr.", "Ms.", "Mx." 
+  salutation?: string; // e.g. "Mr.", "Ms.", "Mx."
   title?: string;      // e.g. "Dr.", "Prof."
   firstName: string;
   lastName: string;
@@ -203,6 +203,14 @@ export class AdminService {
     return this.http.post<StudyGroup>(`${this.apiUrl}/groups`, group);
   }
 
+  updateGroup(id: string, group: Partial<StudyGroup>): Observable<StudyGroup> {
+    return this.http.put<StudyGroup>(`${this.apiUrl}/groups/${id}`, group);
+  }
+
+  deleteGroup(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/groups/${id}`);
+  }
+
   addGroupMember(groupId: string, userId: string): Observable<void> {
     return this.http.post<void>(`${this.apiUrl}/groups/${groupId}/members/${userId}`, {});
   }
@@ -220,6 +228,10 @@ export class AdminService {
     return this.http.post<CourseOfStudy>(`${this.apiUrl}/courses`, course);
   }
 
+  updateCourse(id: string, course: Partial<CourseOfStudy>): Observable<CourseOfStudy> {
+    return this.http.put<CourseOfStudy>(`${this.apiUrl}/courses/${id}`, course);
+  }
+
   deleteCourse(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/courses/${id}`);
   }
@@ -231,6 +243,10 @@ export class AdminService {
 
   createSpecialization(specialization: Partial<Specialization>): Observable<Specialization> {
     return this.http.post<Specialization>(`${this.apiUrl}/specializations`, specialization);
+  }
+
+  updateSpecialization(id: string, specialization: Partial<Specialization>): Observable<Specialization> {
+    return this.http.put<Specialization>(`${this.apiUrl}/specializations/${id}`, specialization);
   }
 
   deleteSpecialization(id: string): Observable<void> {
@@ -252,12 +268,6 @@ export class AdminService {
 
   deleteModule(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/modules/${id}`);
-  }
-
-  // --- Institution Information ---
-  getInstitutionInfo(): Observable<InstitutionInfo> {
-    const userUrl = `${environment.apiUrl}/users`;
-    return this.http.get<InstitutionInfo>(`${userUrl}/institution`);
   }
 
   updateInstitutionInfo(info: InstitutionInfo): Observable<InstitutionInfo> {

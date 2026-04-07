@@ -1,0 +1,95 @@
+<mat-card class="card schedule-card">
+
+  <!-- Header mit View-Toggle -->
+  <div class="schedule-header">
+    <h3>Belegungsplan</h3>
+    <mat-button-toggle-group class="view-toggle" [value]="currentView()">
+      <mat-button-toggle value="kachel" (click)="currentView.set('kachel')">
+        <mat-icon>grid_view</mat-icon> Kacheln
+      </mat-button-toggle>
+      <mat-button-toggle value="kalender" (click)="currentView.set('kalender')">
+        <mat-icon>calendar_view_week</mat-icon> Kalender
+      </mat-button-toggle>
+    </mat-button-toggle-group>
+  </div>
+
+  <!-- Wochennavigation -->
+  <div class="week-nav">
+    <button mat-stroked-button class="nav-btn" (click)="prevWeek()">
+      <mat-icon>chevron_left</mat-icon> Vorige Woche
+    </button>
+    <span class="week-label">{{ weekData().label }}</span>
+    <button mat-stroked-button class="nav-btn" (click)="nextWeek()">
+      Nächste Woche <mat-icon>chevron_right</mat-icon>
+    </button>
+  </div>
+
+  <!-- ── Kachel-Ansicht ── -->
+  @if (currentView() === 'kachel') {
+    @if (rooms().length === 0) {
+      <div class="empty-state">
+        <mat-icon>meeting_room</mat-icon>
+        <p>Keine Räume vorhanden.</p>
+      </div>
+    } @else {
+      <div class="tiles-grid">
+        @for (room of rooms(); track room.id) {
+          <div class="room-tile">
+            <div class="tile-icon-row">
+              <span class="tile-icon"><mat-icon>meeting_room</mat-icon></span>
+              <span class="tile-name">{{ room.name }}</span>
+            </div>
+            <div class="tile-stats">
+              <div class="tile-stat">
+                <mat-icon>event_seat</mat-icon>
+                <span>{{ room.seats }} Plätze</span>
+              </div>
+              <div class="tile-stat">
+                <mat-icon>assignment</mat-icon>
+                <span>{{ room.examSeats }} Klausurplätze</span>
+              </div>
+            </div>
+            <div class="tile-footer">
+              <span class="no-booking-chip">
+                <mat-icon>event_busy</mat-icon> Keine Belegung
+              </span>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  }
+
+  <!-- ── Kalender-Ansicht ── -->
+  @if (currentView() === 'kalender') {
+    <div class="calendar-scroll-wrapper">
+      <div class="week-calendar">
+
+        <!-- Zeitspalte -->
+        <div class="time-col">
+          <div class="cal-corner"></div>
+          @for (h of hours; track h) {
+            <div class="time-cell">{{ h }}</div>
+          }
+        </div>
+
+        <!-- Tagesspalten -->
+        @for (day of weekData().days; track day.short) {
+          <div class="day-col">
+            <div class="day-header">{{ day.short }}</div>
+            <div class="day-body">
+              @for (h of hours; track h) {
+                <div class="hour-cell"></div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+    <div class="calendar-hint">
+      <mat-icon>info</mat-icon>
+      Belegungsdetails werden angezeigt, sobald das Buchungs-API verfügbar ist.
+    </div>
+  }
+
+</mat-card>
