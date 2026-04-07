@@ -105,4 +105,4 @@ export class InfoComponent implements OnInit {
   }
 }
 
-//optinoal erweitern: Mehrsprachige Fragen für autom. Übersetzung bei Sprachumstellung
+//Kommentare angehängt um durch Changes Pushen zu könnn, wird wieder entfernt
