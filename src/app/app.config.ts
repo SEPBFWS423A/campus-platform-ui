@@ -1,5 +1,6 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter } from '@angular/router';
+import { MAT_DATE_LOCALE } from '@angular/material/core';
 import {provideHttpClient, withInterceptors} from '@angular/common/http';
 import {provideTranslateService} from '@ngx-translate/core';
 import {provideTranslateHttpLoader} from '@ngx-translate/http-loader';
@@ -20,6 +21,7 @@ export const appConfig: ApplicationConfig = {
         prefix: '/i18n/',
         suffix: '.json'
       })
-    })
+    }),
+    { provide: MAT_DATE_LOCALE, useValue: 'de-DE' }
   ]
 };
