@@ -1,0 +1,39 @@
+<h2 mat-dialog-title>{{ 'eventManagement.addCourseSeries' | translate }}</h2>
+<mat-dialog-content>
+  <form [formGroup]="form" class="dialog-form">
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'eventManagement.module' | translate }}</mat-label>
+      <mat-select formControlName="moduleId" required>
+        <mat-option *ngFor="let m of modules()" [value]="m.id">{{ m.name }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'eventManagement.assignedLecturer' | translate }}</mat-label>
+      <mat-select formControlName="assignedLecturerId" required>
+        <mat-option *ngFor="let l of selectedModuleLecturers" [value]="l.id">
+          {{ l.title ? l.title + ' ' : '' }}{{ l.firstName }} {{ l.lastName }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'eventManagement.examTypeOptional' | translate }}</mat-label>
+      <mat-select formControlName="selectedExamTypeId">
+        <mat-option [value]="null">{{ 'eventManagement.none' | translate }}</mat-option>
+        <mat-option *ngFor="let et of selectedModuleExamTypes" [value]="et.id">{{ et.nameDe }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'eventManagement.studyGroups' | translate }}</mat-label>
+      <mat-select formControlName="studyGroupIds" multiple required>
+        <mat-option *ngFor="let sg of filteredGroups()" [value]="sg.id">{{ sg.name }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button type="button" mat-dialog-close>{{ 'eventManagement.cancel' | translate }}</button>
+  <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid" (click)="save()">{{ 'eventManagement.save' | translate }}</button>
+</mat-dialog-actions>
