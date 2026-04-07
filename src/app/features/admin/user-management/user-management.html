@@ -11,9 +11,7 @@
           <mat-icon matListItemIcon>hub</mat-icon>
           <div matListItemTitle>{{ "userManagement.studentGroups" | translate }}</div>
         </a>
-      </div>
 
-      <div class="nav-section">
         <a mat-list-item [class.active-link]="activeView() === 'onboarding'" (click)="switchView('onboarding')">
           <mat-icon matListItemIcon>group_add</mat-icon>
           <div matListItemTitle>{{ "userManagement.campusOnboarding" | translate }}</div>
@@ -431,7 +429,7 @@
         @if (onboardingMode() === 'bulk') {
         <div class="onboarding-action-card wide animate-fade-in">
           <div class="onboarding-header">
-            <div class="icon-orb accent"><mat-icon>content_paste_go</mat-icon></div>
+            <div class="icon-orb"><mat-icon>content_paste_go</mat-icon></div>
             <div class="header-text">
               <h2>{{ "userManagement.batchEntry" | translate }}</h2>
               <p>{{ "userManagement.batchEntryDesc" | translate }}</p>
@@ -495,9 +493,9 @@
             </div>
 
             <div class="onboarding-footer center-align">
-              <button mat-flat-button color="accent" class="onboarding-submit"
+              <button mat-flat-button color="primary" class="onboarding-submit"
                 [disabled]="bulkInviteForm.invalid || isInviting()" (click)="sendBulkInvitations()">
-                @if (isInviting()) { <mat-spinner diameter="20" class="white-spinner"></mat-spinner> }
+                @if (isInviting()) { <mat-spinner diameter="20"></mat-spinner> }
                 @else {
                 <span class="btn-content">
                   <span>{{ "userManagement.executeBatchInvitations" | translate }}</span>
@@ -514,7 +512,7 @@
         @if (onboardingMode() === 'csv') {
         <div class="onboarding-action-card animate-fade-in">
           <div class="onboarding-header center">
-            <div class="icon-orb large tertiary"><mat-icon>inventory_2</mat-icon></div>
+            <div class="icon-orb large"><mat-icon>inventory_2</mat-icon></div>
             <div class="header-text">
               <h2>{{ "userManagement.rosterLifecycleTransfer" | translate }}</h2>
               <p>{{ "userManagement.rosterLifecycleTransferDesc" | translate }}</p>
