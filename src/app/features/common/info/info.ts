@@ -104,3 +104,5 @@ export class InfoComponent implements OnInit {
     return this.openFaqId === id;
   }
 }
+
+//optinoal erweitern: Mehrsprachige Fragen für autom. Übersetzung bei Sprachumstellung
