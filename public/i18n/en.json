@@ -300,7 +300,19 @@
     "published": "Published",
     "draft": "Draft",
     "noFaqsFound": "No FAQs available.",
-    "saveChanges": "Save changes"
+    "saveChanges": "Save changes",
+    "translation": "Translation",
+    "languageCode": "Language code",
+    "languages": "Languages",
+    "addTranslation": "Add translation",
+    "addFaqSuccess": "FAQ was created successfully.",
+    "addFaqError": "FAQ could not be created.",
+    "updateFaqSuccess": "FAQ was updated successfully.",
+    "updateFaqError": "FAQ could not be updated.",
+    "deleteFaqTitle": "Delete FAQ",
+    "deleteFaqMessage": "Do you really want to delete this FAQ?",
+    "deleteFaqSuccess": "FAQ was deleted successfully.",
+    "deleteFaqError": "FAQ could not be deleted."
   },
   "user": {
     "firstname": "First Name",

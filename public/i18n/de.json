@@ -300,7 +300,19 @@
     "published": "Veröffentlicht",
     "draft": "Entwurf",
     "noFaqsFound": "Keine FAQs vorhanden.",
-    "saveChanges": "Änderungen speichern"
+    "saveChanges": "Änderungen speichern",
+    "translation": "Übersetzung",
+    "languageCode": "Sprachcode",
+    "languages": "Sprachen",
+    "addTranslation": "Übersetzung hinzufügen",
+    "addFaqSuccess": "FAQ wurde erfolgreich angelegt.",
+    "addFaqError": "FAQ konnte nicht angelegt werden.",
+    "updateFaqSuccess": "FAQ wurde erfolgreich aktualisiert.",
+    "updateFaqError": "FAQ konnte nicht aktualisiert werden.",
+    "deleteFaqTitle": "FAQ löschen",
+    "deleteFaqMessage": "Möchten Sie diese FAQ wirklich löschen?",
+    "deleteFaqSuccess": "FAQ wurde erfolgreich gelöscht.",
+    "deleteFaqError": "FAQ konnte nicht gelöscht werden."
   },
   "user": {
     "firstname": "Vorname",

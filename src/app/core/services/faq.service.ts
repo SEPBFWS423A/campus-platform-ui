@@ -1,25 +1,29 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { faqModel } from '../models/faq.model';
+import { FaqModel } from '../models/faqModel';
 import { environment } from '../../../environments/environment';
+import { TranslateService } from '@ngx-translate/core';
 
-export interface FaqUpsertRequest {
-  question: string;
-  answer: string;
-  category: string;
-  sortOrder: number;
-  published: boolean;
-}
+
 @Injectable({
   providedIn: 'root'
 })
 export class FaqService {
   private readonly apiUrl = environment.apiUrl;
-  constructor(private http: HttpClient) {}
+  private readonly http = inject(HttpClient);
+  private readonly translate = inject(TranslateService);
 
-  getVisibleFaqs(): Observable<faqModel[]> {
-    return this.http.get<faqModel[]>(`${this.apiUrl}/users/faqs`);
+  getVisibleFaqs(lang?: string): Observable<FaqModel[]> {
+    const resolvedLang = (
+      lang ||
+      this.translate.getCurrentLang() ||
+      this.translate.getFallbackLang() ||
+      'de'
+    ).toLowerCase().trim();
+
+    return this.http.get<FaqModel[]>(`${this.apiUrl}/users/faqs`, {
+      params: { lang: resolvedLang }
+    });
   }
-
 }

@@ -1,12 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import {faqModel} from '../../../core/models/faq.model';
-import {InstitutionInfo} from '../../../core/models/institution-info.model';
+import {FaqModel} from '../../../core/models/faqModel';
 import {FaqService} from '../../../core/services/faq.service';
 import  {InstitutionService} from '../../../core/services/insitution.service';
-import { TranslateModule } from '@ngx-translate/core';
-
+import { Subscription } from 'rxjs';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-info',
@@ -15,9 +14,9 @@ import { TranslateModule } from '@ngx-translate/core';
   templateUrl: './info.html',
   styleUrl: './info.scss'
 })
-export class InfoComponent implements OnInit {
-  faqs: faqModel[] = [];
-  institution: InstitutionInfo | null = null;
+export class InfoComponent implements OnInit, OnDestroy {
+  faqs: FaqModel[] = [];
+  institution: any | null = null;
 
   faqLoading = true;
   institutionLoading = true;
@@ -28,14 +27,26 @@ export class InfoComponent implements OnInit {
   searchTerm = '';
   openFaqId: number | null = null;
 
+  private langSubscription?: Subscription;
+
   constructor(
     private faqService: FaqService,
-    private institutionService: InstitutionService
+    private institutionService: InstitutionService,
+    private translate: TranslateService
   ) {}
 
   ngOnInit(): void {
     this.loadInstitution();
-    this.loadFaqs();
+    this.loadFaqs(this.translate.getCurrentLang() || this.translate.getFallbackLang() || 'de');
+
+    this.langSubscription = this.translate.onLangChange.subscribe((event) => {
+      this.openFaqId = null;
+      this.loadFaqs(event.lang);
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.langSubscription?.unsubscribe();
   }
 
   loadInstitution(): void {
@@ -55,11 +66,11 @@ export class InfoComponent implements OnInit {
     });
   }
 
-  loadFaqs(): void {
+  loadFaqs(lang?: string): void {
     this.faqLoading = true;
     this.faqError = null;
 
-    this.faqService.getVisibleFaqs().subscribe({
+    this.faqService.getVisibleFaqs(lang).subscribe({
       next: (faqs) => {
         this.faqs = [...faqs].sort((a, b) => a.sortOrder - b.sortOrder || a.id - b.id);
         this.faqLoading = false;
@@ -76,13 +87,7 @@ export class InfoComponent implements OnInit {
     return this.institution ? `${this.institution.universityName} Info` : 'Info';
   }
 
-  get pageSubtitle(): string {
-    return this.institution
-      ? this.institution.city
-      : '';
-  }
-
-  get filteredFaqs(): faqModel[] {
+  get filteredFaqs(): FaqModel[] {
     const term = this.searchTerm.trim().toLowerCase();
 
     if (!term) {

@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 export { UserRole } from '../../core/models/user-role';
 import { UserRole } from '../../core/models/user-role';
+import { FaqAdminResponse, FaqUpsertRequest } from '../../core/models/faqModel';
 
 export interface User {
   id: string;
@@ -114,22 +115,6 @@ export interface Room {
   examSeats: number;
 }
 
-export interface FaqModel {
-  id: number;
-  question: string;
-  answer: string;
-  category: string;
-  sortOrder: number;
-  published: boolean;
-}
-
-export interface FaqUpsertRequest {
-  question: string;
-  answer: string;
-  category: string;
-  sortOrder: number;
-  published: boolean;
-}
 
 @Injectable({
   providedIn: 'root'
@@ -264,16 +249,16 @@ export class AdminService {
   }
 
   // --- FAQ Management ---
-  getFaqs(): Observable<FaqModel[]> {
-    return this.http.get<FaqModel[]>(`${this.apiUrl}/faqs`);
+  getFaqs(): Observable<FaqAdminResponse[]> {
+    return this.http.get<FaqAdminResponse[]>(`${this.apiUrl}/faqs`);
   }
 
-  createFaq(payload: FaqUpsertRequest): Observable<FaqModel> {
-    return this.http.post<FaqModel>(`${this.apiUrl}/faqs`, payload);
+  createFaq(payload: FaqUpsertRequest): Observable<FaqAdminResponse> {
+    return this.http.post<FaqAdminResponse>(`${this.apiUrl}/faqs`, payload);
   }
 
-  updateFaq(id: number, payload: FaqUpsertRequest): Observable<FaqModel> {
-    return this.http.put<FaqModel>(`${this.apiUrl}/faqs/${id}`, payload);
+  updateFaq(id: number, payload: FaqUpsertRequest): Observable<FaqAdminResponse> {
+    return this.http.put<FaqAdminResponse>(`${this.apiUrl}/faqs/${id}`, payload);
   }
 
   deleteFaq(id: number): Observable<void> {

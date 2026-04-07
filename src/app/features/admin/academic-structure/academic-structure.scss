@@ -439,3 +439,22 @@
   align-items: center;
   justify-content: center;
 }
+
+.faq-translations {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.translation-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 56px;
+}
+
+.faq-extra-actions {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-start;
+}

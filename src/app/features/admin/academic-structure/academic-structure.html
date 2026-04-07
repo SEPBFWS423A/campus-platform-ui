@@ -291,7 +291,7 @@
 
                         @if (showAddSpecializationForm() && specializationForm.get('courseId')?.value === course.id) {
                         <div class="inline-add-field animate-slide-down">
-                           <mat-form-field appearance="outline" dense>
+                           <mat-form-field appearance="outline" >
                               <input matInput
                                  placeholder="{{ 'academicStructure.newSpecializationAreaPlaceholder' | translate }}"
                                  [formControl]="specializationNameFormControl">
@@ -536,107 +536,50 @@
          }
 
         <!-- FAQ MANAGEMENT VIEW -->
-        @if (activeView() === 'faqs') {
-          <div class="view-section animate-fade-in">
-            @if (showAddFaqForm()) {
-              <mat-card class="creation-overlay-card animate-slide-down">
-                <mat-card-header>
-                  <mat-card-title>
-                    {{ editingFaq() ? ("academicStructure.editFaq" | translate) : ("academicStructure.createFaq" | translate) }}
-                  </mat-card-title>
-                </mat-card-header>
-                <mat-card-content>
-                  <form [formGroup]="faqForm" class="module-form">
-                    <div class="form-row">
-                      <mat-form-field appearance="outline" class="flex-2">
-                        <mat-label>{{ "academicStructure.question" | translate }}</mat-label>
-                        <input matInput formControlName="question">
-                      </mat-form-field>
+        <div class="faq-translations">
+          @for (translationGroup of faqTranslations.controls; track $index) {
+            <mat-card class="config-card" [formGroup]="translationGroup">
+              <mat-card-header>
+                <mat-card-title>
+                  {{ "academicStructure.translation" | translate }} {{ $index + 1 }}
+                </mat-card-title>
+              </mat-card-header>
 
-                      <mat-form-field appearance="outline" class="flex-1">
-                        <mat-label>{{ "academicStructure.category" | translate }}</mat-label>
-                        <input matInput formControlName="category">
-                      </mat-form-field>
-                    </div>
+              <mat-card-content>
+                <div class="form-row">
+                  <mat-form-field appearance="outline" class="flex-1">
+                    <mat-label>{{ "academicStructure.languageCode" | translate }}</mat-label>
+                    <mat-select formControlName="languageCode">
+                      <mat-option value="de">Deutsch (de)</mat-option>
+                      <mat-option value="en">English (en)</mat-option>
+                    </mat-select>
+                  </mat-form-field>
 
-                    <div class="form-row">
-                      <mat-form-field appearance="outline" class="flex-1">
-                        <mat-label>{{ "academicStructure.order" | translate }}</mat-label>
-                        <input matInput type="number" formControlName="sortOrder">
-                      </mat-form-field>
+                  <div class="translation-actions">
+                    <button mat-icon-button color="warn" type="button" (click)="removeFaqTranslation($index)">
+                      <mat-icon>delete_outline</mat-icon>
+                    </button>
+                  </div>
+                </div>
 
-                      <mat-form-field appearance="outline" class="flex-1">
-                        <mat-label>{{ "academicStructure.status" | translate }}</mat-label>
-                        <mat-select formControlName="published">
-                          <mat-option [value]="true">{{ "academicStructure.published" | translate }}</mat-option>
-                          <mat-option [value]="false">{{ "academicStructure.draft" | translate }}</mat-option>
-                        </mat-select>
-                      </mat-form-field>
-                    </div>
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>{{ "academicStructure.question" | translate }}</mat-label>
+                  <input matInput formControlName="question">
+                </mat-form-field>
 
-                    <mat-form-field appearance="outline" class="full-width">
-                      <mat-label>{{ "academicStructure.answer" | translate }}</mat-label>
-                      <textarea matInput rows="6" formControlName="answer"></textarea>
-                    </mat-form-field>
-                  </form>
-                </mat-card-content>
-                <mat-card-actions align="end">
-                  <button mat-button (click)="cancelFaqEdit()">{{ "academicStructure.cancel" | translate }}</button>
-                  <button mat-flat-button color="primary"
-                          (click)="editingFaq() ? saveFaqEdit() : addFaq()"
-                          [disabled]="faqForm.invalid">
-                    {{ editingFaq() ? ("academicStructure.saveChanges" | translate) : ("academicStructure.createFaq" | translate) }}
-                  </button>
-                </mat-card-actions>
-              </mat-card>
-            }
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>{{ "academicStructure.category" | translate }}</mat-label>
+                  <input matInput formControlName="category">
+                </mat-form-field>
 
-            <mat-card class="data-view-card">
-              <table class="modern-table">
-                <thead>
-                <tr>
-                  <th>{{ "academicStructure.question" | translate }}</th>
-                  <th>{{ "academicStructure.category" | translate }}</th>
-                  <th>{{ "academicStructure.order" | translate }}</th>
-                  <th>{{ "academicStructure.status" | translate }}</th>
-                  <th class="actions-cell"></th>
-                </tr>
-                </thead>
-                <tbody>
-                  @for (faq of faqs(); track faq.id) {
-                    <tr class="module-row">
-                      <td>
-                        <div class="bold-text">{{ faq.question }}</div>
-                        <div style="margin-top: 6px; color: var(--mat-sys-on-surface-variant); font-size: 0.9rem;">
-                          {{ faq.answer }}
-                        </div>
-                      </td>
-                      <td>{{ faq.category }}</td>
-                      <td>{{ faq.sortOrder }}</td>
-                      <td>
-                  <span class="degree-badge" [class.bachelor]="faq.published" [class.master]="!faq.published">
-                     {{ faq.published ? ("academicStructure.published" | translate) : ("academicStructure.draft" | translate) }}
-                  </span>
-                      </td>
-                      <td class="actions-cell">
-                        <button mat-icon-button (click)="startEditFaq(faq)">
-                          <mat-icon>edit</mat-icon>
-                        </button>
-                        <button mat-icon-button color="warn" (click)="deleteFaq(faq.id)">
-                          <mat-icon>delete_outline</mat-icon>
-                        </button>
-                      </td>
-                    </tr>
-                  } @empty {
-                    <tr>
-                      <td colspan="5" class="empty-hint center">{{ "academicStructure.noFaqsFound" | translate }}</td>
-                    </tr>
-                  }
-                </tbody>
-              </table>
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>{{ "academicStructure.answer" | translate }}</mat-label>
+                  <textarea matInput rows="5" formControlName="answer"></textarea>
+                </mat-form-field>
+              </mat-card-content>
             </mat-card>
-          </div>
-        }
+          }
+        </div>
       </main>
    </mat-sidenav-content>
 </mat-sidenav-container>
