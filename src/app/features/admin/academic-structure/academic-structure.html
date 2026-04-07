@@ -7,6 +7,14 @@
                <mat-icon matListItemIcon>apartment</mat-icon>
                <div matListItemTitle>{{ "academicStructure.campusIdentity" | translate }}</div>
             </a>
+            <a mat-list-item [class.active-link]="activeView() === 'emails'" (click)="switchView('emails')">
+               <mat-icon matListItemIcon>mail</mat-icon>
+               <div matListItemTitle>{{ "academicStructure.emailTemplates" | translate }}</div>
+            </a>
+            <a mat-list-item [class.active-link]="activeView() === 'exam-types'" (click)="switchView('exam-types')">
+               <mat-icon matListItemIcon>assignment</mat-icon>
+               <div matListItemTitle>{{ "academicStructure.examTypes" | translate }}</div>
+            </a>
             <a mat-list-item [class.active-link]="activeView() === 'structure'" (click)="switchView('structure')">
                <mat-icon matListItemIcon>account_tree</mat-icon>
                <div matListItemTitle>{{ "academicStructure.foundationStructure" | translate }}</div>
@@ -14,10 +22,6 @@
             <a mat-list-item [class.active-link]="activeView() === 'modules'" (click)="switchView('modules')">
                <mat-icon matListItemIcon>view_module</mat-icon>
                <div matListItemTitle>{{ "academicStructure.moduleCatalog" | translate }}</div>
-            </a>
-            <a mat-list-item [class.active-link]="activeView() === 'exam-types'" (click)="switchView('exam-types')">
-               <mat-icon matListItemIcon>assignment</mat-icon>
-               <div matListItemTitle>{{ "academicStructure.examTypes" | translate }}</div>
             </a>
          </div>
       </mat-nav-list>
@@ -32,14 +36,25 @@
                   @if (activeView() === 'university') { {{ "academicStructure.campusAdministration" | translate }} }
                   @else if (activeView() === 'structure') { {{ "academicStructure.foundationStructure" | translate }} }
                   @else if (activeView() === 'exam-types') { {{ "academicStructure.manageExamTypes" | translate }} }
+                  @else if (activeView() === 'emails') { {{ "academicStructure.emailManagement" | translate }} }
                   @else { {{ "academicStructure.academicModuleCatalog" | translate }} }
                </h1>
                <p>
                   @if (activeView() === 'university') { {{ "academicStructure.configureUniversityInfo" | translate }} }
                   @else if (activeView() === 'structure') { {{ "academicStructure.configureCoursesAndSpecializations" | translate }} }
                   @else if (activeView() === 'exam-types') { {{ "academicStructure.manageAvailableExamTypes" | translate }} }
+                  @else if (activeView() === 'emails') { {{ "academicStructure.customizeEmailTemplates" | translate }} }
                   @else { {{ "academicStructure.manageModuleRosterAndQualifications" | translate }} }
                </p>
+               @if (activeView() === 'emails') {
+                  <div class="info-banner header-banner animate-slide-down">
+                     <mat-icon>info</mat-icon>
+                     <span>{{ "academicStructure.emailPlaceholderHint" | translate }} <code>{{ '{' }}url{{ '}' }}</code></span>
+                     <button mat-icon-button (click)="copyToClipboard('{url}')" [matTooltip]="'academicStructure.copyPlaceholder' | translate">
+                        <mat-icon style="font-size: 18px; width: 18px; height: 18px;">content_copy</mat-icon>
+                     </button>
+                  </div>
+                }
             </div>
 
             <div class="header-actions">
@@ -62,6 +77,11 @@
                <button mat-flat-button color="primary" class="high-button"
                   (click)="openAddExamType()">
                   <mat-icon>add</mat-icon> {{ "academicStructure.addExamType" | translate }}
+               </button>
+               } @else if (activeView() === 'emails') {
+               <button mat-flat-button color="primary" class="high-button" (click)="saveUniversityInfo()"
+                  [disabled]="universityForm.invalid">
+                  <mat-icon>save</mat-icon> {{ "academicStructure.syncTemplates" | translate }}
                </button>
                }
             </div>
@@ -339,11 +359,9 @@
          </div>
          }
 
-         <!-- EXAM TYPES VIEW -->
+          <!-- EXAM TYPES VIEW -->
          @if (activeView() === 'exam-types') {
          <div class="view-section animate-fade-in">
-            <!-- The Exam Type grid remains here, but we removed the inline creation card that was above it -->
-
             <div class="exam-type-grid"
                style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;">
                @for (et of examTypes(); track et.id) {
@@ -362,6 +380,115 @@
                </mat-card>
                }
             </div>
+         </div>
+         }
+
+         <!-- EMAIL TEMPLATES VIEW -->
+         @if (activeView() === 'emails') {
+         <div class="view-section animate-fade-in university-config">
+            <form [formGroup]="universityForm" class="university-form-grid">
+               
+                <!-- INVITATION EMAIL GROUP -->
+                <div class="full-span email-template-group">
+                   <div class="group-header">
+                      <mat-icon>person_add</mat-icon>
+                      <h3>{{ "academicStructure.invitationEmail" | translate }}</h3>
+                   </div>
+                   
+                   <div class="language-grid">
+                      <!-- GERMAN -->
+                      <div class="language-card">
+                         <div class="lang-header">
+                            <span class="lang-label">DE</span>
+                            <h4>Deutsch</h4>
+                         </div>
+                         <mat-form-field appearance="outline" class="subject-field">
+                            <mat-label>{{ "academicStructure.subject" | translate }}</mat-label>
+                            <input matInput formControlName="invitationEmailSubjectDe">
+                         </mat-form-field>
+                         <div class="editor-label">{{ "academicStructure.bodyHtml" | translate }}</div>
+                         <div class="NgxEditor__Wrapper">
+                            <ngx-editor-menu [editor]="editorInvitationDe" [toolbar]="toolbar"></ngx-editor-menu>
+                            <ngx-editor [editor]="editorInvitationDe" formControlName="invitationEmailBodyDe" [placeholder]="'academicStructure.bodyHtml' | translate"></ngx-editor>
+                            <ngx-editor-floating-menu [editor]="editorInvitationDe">
+                               <ngx-editor-menu [editor]="editorInvitationDe" [toolbar]="floatingToolbar"></ngx-editor-menu>
+                            </ngx-editor-floating-menu>
+                         </div>
+                      </div>
+
+                      <!-- ENGLISH -->
+                      <div class="language-card">
+                         <div class="lang-header">
+                            <span class="lang-label">EN</span>
+                            <h4>English</h4>
+                         </div>
+                         <mat-form-field appearance="outline" class="subject-field">
+                            <mat-label>{{ "academicStructure.subject" | translate }}</mat-label>
+                            <input matInput formControlName="invitationEmailSubjectEn">
+                         </mat-form-field>
+                         <div class="editor-label">{{ "academicStructure.bodyHtml" | translate }}</div>
+                         <div class="NgxEditor__Wrapper">
+                            <ngx-editor-menu [editor]="editorInvitationEn" [toolbar]="toolbar"></ngx-editor-menu>
+                            <ngx-editor [editor]="editorInvitationEn" formControlName="invitationEmailBodyEn" [placeholder]="'academicStructure.bodyHtml' | translate"></ngx-editor>
+                            <ngx-editor-floating-menu [editor]="editorInvitationEn">
+                               <ngx-editor-menu [editor]="editorInvitationEn" [toolbar]="floatingToolbar"></ngx-editor-menu>
+                            </ngx-editor-floating-menu>
+                         </div>
+                      </div>
+                   </div>
+                </div>
+
+                <!-- PASSWORD RESET EMAIL GROUP -->
+                <div class="full-span email-template-group">
+                   <div class="group-header">
+                      <mat-icon>lock_reset</mat-icon>
+                      <h3>{{ "academicStructure.passwordResetEmail" | translate }}</h3>
+                   </div>
+
+                   <div class="language-grid">
+                      <!-- GERMAN -->
+                      <div class="language-card">
+                         <div class="lang-header">
+                            <span class="lang-label">DE</span>
+                            <h4>Deutsch</h4>
+                         </div>
+                         <mat-form-field appearance="outline" class="subject-field">
+                            <mat-label>{{ "academicStructure.subject" | translate }}</mat-label>
+                            <input matInput formControlName="passwordResetEmailSubjectDe">
+                         </mat-form-field>
+                         <div class="editor-label">{{ "academicStructure.bodyHtml" | translate }}</div>
+                         <div class="NgxEditor__Wrapper">
+                            <ngx-editor-menu [editor]="editorResetDe" [toolbar]="toolbar"></ngx-editor-menu>
+                            <ngx-editor [editor]="editorResetDe" formControlName="passwordResetEmailBodyDe" [placeholder]="'academicStructure.bodyHtml' | translate"></ngx-editor>
+                            <ngx-editor-floating-menu [editor]="editorResetDe">
+                               <ngx-editor-menu [editor]="editorResetDe" [toolbar]="floatingToolbar"></ngx-editor-menu>
+                            </ngx-editor-floating-menu>
+                         </div>
+                      </div>
+
+                      <!-- ENGLISH -->
+                      <div class="language-card">
+                         <div class="lang-header">
+                            <span class="lang-label">EN</span>
+                            <h4>English</h4>
+                         </div>
+                         <mat-form-field appearance="outline" class="subject-field">
+                            <mat-label>{{ "academicStructure.subject" | translate }}</mat-label>
+                            <input matInput formControlName="passwordResetEmailSubjectEn">
+                         </mat-form-field>
+                         <div class="editor-label">{{ "academicStructure.bodyHtml" | translate }}</div>
+                         <div class="NgxEditor__Wrapper">
+                            <ngx-editor-menu [editor]="editorResetEn" [toolbar]="toolbar"></ngx-editor-menu>
+                            <ngx-editor [editor]="editorResetEn" formControlName="passwordResetEmailBodyEn" [placeholder]="'academicStructure.bodyHtml' | translate"></ngx-editor>
+                            <ngx-editor-floating-menu [editor]="editorResetEn">
+                               <ngx-editor-menu [editor]="editorResetEn" [toolbar]="floatingToolbar"></ngx-editor-menu>
+                            </ngx-editor-floating-menu>
+                         </div>
+                      </div>
+                   </div>
+                </div>
+
+            </form>
          </div>
          }
       </main>

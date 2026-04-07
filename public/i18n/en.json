@@ -1,5 +1,7 @@
 {
   "platformName": "CampusPlatform",
+  "error.password.invalidOld": "The current password you entered is incorrect.",
+  "error.password.unknownError": "An unexpected error occurred while changing your password. Please try again.",
   "login": {
     "welcome": "Welcome",
     "loginText": "Please log in with your credentials",
@@ -10,7 +12,9 @@
     "button": "login",
     "forgotPassword": "Forgot password?",
     "register": "Register",
-    "error": "Invalid username or password!"
+    "error": "Invalid username or password!",
+    "loginSuccess": "Login successful",
+    "backToLogin": "Back to Login"
   },
   "navigation": {
     "common": {
@@ -55,7 +59,8 @@
       "confirmPassword": "Confirm Password",
       "passwordLengthError": "Password must be at least 8 characters.",
       "passwordMismatchError": "Passwords do not match.",
-      "unknownUser": "Unknown User"
+      "unknownUser": "Unknown User",
+      "preferencesSaved": "Settings saved successfully"
     },
     "themeColors": {
       "theme-campus": "Campus",
@@ -106,7 +111,9 @@
     "userDeleteSuccess": "User deleted successfully.",
     "userDeleteFailure": "Failed to delete user.",
     "invitationSuccess": "Invitation sent successfully to {{email}}.",
+    "bulkInvitationSuccess": "All invitations sent successfully.",
     "invitationFailure": "Failed to send invitation.",
+    "studentFieldsRequired": "Course and specialization are required for students.",
     "userUpdateSuccess": "User updated successfully.",
     "userUpdateFailure": "Failed to update user.",
     "addGroupSuccess": "Study group created successfully.",
@@ -127,7 +134,17 @@
     "groupMembers": "Group Members",
     "noModulesFound": "No modules found matching your search criteria.",
     "salutation": "Salutation",
+    "salutations": {
+      "MR": "Mr.",
+      "MS": "Ms.",
+      "MX": "Mx."
+    },
     "academicTitle": "Title",
+    "academicTitles": {
+      "DR": "Dr.",
+      "PROF": "Prof.",
+      "PROF_DR": "Prof. Dr."
+    },
     "none": "- None -",
     "firstName": "First Name",
     "lastName": "Last Name",
@@ -156,7 +173,7 @@
     "batchEntry": "Batch Entry",
     "batchEntryDesc": "Paste dozens of records at once for high-efficiency provisioning.",
     "batchFormat": "Format:",
-    "batchFormatValue": "email ; [studentId] ; [role] ; [course] ; [specialization]",
+    "batchFormatValue": "email ; [studentId] ; [role] ; [course] ; [specialization] ; [language]",
     "listData": "List Data",
     "defaultValues": "Default Values",
     "defaultCourse": "Default Course",
@@ -185,7 +202,7 @@
     "exclude": "Exclude",
     "filters": "Filters",
     "cancelGroupCreation": "Cancel Creation",
-    "csvFormat": "email; [id]; role; course (if student); specialization (if student)",
+    "csvFormat": "email; [id]; role; course; specialization; language",
     "degreeType": {
       "BACHELOR": "Bachelor",
       "MASTER": "Master"
@@ -197,13 +214,17 @@
     "deleteGroupSuccess": "Study group deleted successfully.",
     "allYears": "All Years",
     "searchStudent": "Search Student",
-    "editGroupSubtitle": "Update the configuration and identifiers of this cohort."
+    "editGroupSubtitle": "Update the configuration and identifiers of this cohort.",
+    "standardLanguage": "Standard Language",
+    "defaultLanguage": "Default Language",
+    "optionalHint": "Fields in [ ] are optional and will use defaults if omitted."
   },
   "academicStructure": {
     "title": "Academic Structure",
     "campusIdentity": "Campus Identity",
     "moduleCatalog": "Module Catalog",
     "examTypes": "Exam Types",
+    "preview": "Preview",
     "campusAdministration": "Campus Administration",
     "foundationStructure": "Foundation Structure",
     "manageExamTypes": "Manage Exam Types",
@@ -216,6 +237,8 @@
     "manageAvailableExamTypes": "Manage available exam types for academic modules.",
     "manageModuleRosterAndQualifications": "Manage the course-specific module roster and teaching qualifications.",
     "defineModule": "Define Module",
+    "emailPreviewTitle": "Email Template Preview",
+    "close": "Close",
     "createCourse": "Create Course",
     "editCourseOfStudy": "Edit Course of Study",
     "updateCourse": "Update Course",
@@ -307,7 +330,19 @@
     "examTypeNameEn": "Name (EN)",
     "examTypeShortDe": "Short (DE)",
     "examTypeShortEn": "Short (EN)",
-    "addType": "Add Type"
+    "addType": "Add Type",
+    "emailTemplates": "Email Templates",
+    "emailManagement": "Email Management",
+    "customizeEmailTemplates": "Customize automated system email templates.",
+    "syncTemplates": "Sync Templates",
+    "emailPlaceholderHint": "You can use this placeholder for the registration/reset link:",
+    "invitationEmail": "Invitation Email",
+    "passwordResetEmail": "Password Reset Email",
+    "subject": "Subject",
+    "bodyHtml": "Body (HTML supported)",
+    "copiedToClipboard": "Placeholder copied to clipboard!",
+    "copyPlaceholder": "Copy placeholder",
+    "updateEmailTemplatesSuccess": "Email templates synchronized successfully!"
   },
   "user": {
     "firstname": "First Name",
@@ -328,8 +363,12 @@
     "title": "Complete Your Registration",
     "emailLabel": "Email",
     "firstNameLabel": "First Name",
+    "firstNameRequired": "First name is required.",
     "lastNameLabel": "Last Name",
+    "lastNameRequired": "Last name is required.",
     "passwordLabel": "Password",
+    "passwordRequired": "Password is required.",
+    "passwordMinLength": "Password must be at least 6 characters long.",
     "confirmPasswordLabel": "Confirm Password",
     "passwordMismatchError": "Passwords do not match",
     "completeButton": "Complete Registration",
@@ -344,7 +383,8 @@
     "sendButton": "Send Reset Link",
     "resendButton": "Resend Link",
     "successMessage": "If an account with that email exists, a password reset link has been sent.",
-    "failureMessage": "An error occurred. Please try again."
+    "failureMessage": "An error occurred. Please try again.",
+    "resendIn": "Resend in"
   },
   "resetPassword": {
     "title": "Reset Password",
@@ -360,13 +400,15 @@
       "alreadyCompleted": "This invitation has already been completed."
     },
     "user": {
-      "notFound": "The user was not found."
+      "notFound": "The user was not found.",
+      "alreadyExists": "A user with this email address already exists."
     },
     "password": {
       "invalidOld": "The old password you entered is incorrect."
     },
     "verification": {
-      "invalidToken": "The verification token is invalid."
+      "invalidToken": "The verification token is invalid.",
+      "tooManyRequests": "Please wait a moment before requesting another reset link."
     },
     "generic": "Something went wrong. Please try again later.",
     "no_connection": "Cannot connect to server. Please check your internet connection.",
@@ -482,7 +524,6 @@
     "examSeats": "Exam Seats"
   },
   "common": {
-    "success": "Action successful",
     "close": "Close",
     "save": "Save",
     "cancel": "Cancel",

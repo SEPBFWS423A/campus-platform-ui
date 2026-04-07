@@ -11,6 +11,9 @@ import { MatCardModule } from '@angular/material/card';
 import { MatSelectModule } from '@angular/material/select';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NotificationService } from '../../core/services/notification.service';
+import { UserService } from '../../core/user/user.service';
+import { PublicService } from '../../core/public/public.service';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-complete-registration',
@@ -24,7 +27,8 @@ import { NotificationService } from '../../core/services/notification.service';
     MatProgressSpinnerModule,
     MatCardModule,
     TranslateModule,
-    MatSelectModule
+    MatSelectModule,
+    MatIconModule,
   ],
   templateUrl: './complete-registration.html',
   styleUrl: './complete-registration.scss',
@@ -36,6 +40,8 @@ export class CompleteRegistration implements OnInit {
   private route = inject(ActivatedRoute);
   private translate = inject(TranslateService);
   private notificationService = inject(NotificationService);
+  private userService = inject(UserService);
+  public publicService = inject(PublicService);
 
   token: string | null = null;
   email: string | null = null;
@@ -43,8 +49,8 @@ export class CompleteRegistration implements OnInit {
   isRedirecting = signal(false);
   message = signal<string | null>(null);
 
-  salutations = ['Mr.', 'Ms.', 'Mx.'];
-  academicTitles = ['Dr.', 'Prof.', 'Prof. Dr.', 'Dr. h.c.'];
+  salutations = ['MR', 'MS', 'MX'];
+  academicTitles = ['DR', 'PROF', 'PROF_DR'];
 
   form = this.fb.group({
     salutation: [''],

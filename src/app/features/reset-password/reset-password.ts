@@ -10,6 +10,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCardModule } from '@angular/material/card';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NotificationService } from '../../core/services/notification.service';
+import { UserService } from '../../core/user/user.service';
+import { PublicService } from '../../core/public/public.service';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-reset-password',
@@ -25,6 +28,7 @@ import { NotificationService } from '../../core/services/notification.service';
     MatProgressSpinnerModule,
     MatCardModule,
     TranslateModule,
+    MatIconModule,
   ]
 })
 export class ResetPassword implements OnInit {
@@ -34,6 +38,8 @@ export class ResetPassword implements OnInit {
   private route = inject(ActivatedRoute);
   private translate = inject(TranslateService);
   private notificationService = inject(NotificationService);
+  private userService = inject(UserService);
+  public publicService = inject(PublicService);
 
   token: string | null = null;
   isLoading = signal(false);

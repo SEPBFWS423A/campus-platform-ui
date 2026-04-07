@@ -45,7 +45,9 @@ export interface InvitationPayload {
   role: UserRole;
   studentNumber?: string;
   courseOfStudy?: string;
-  specialization?: string;
+  specializationId?: number;
+  startYear?: number;
+  language?: string;
 }
 
 export interface StudyGroup {
@@ -107,6 +109,14 @@ export interface InstitutionInfo {
   bibliothekUrl: string;
   mensaUrl: string;
   impressum: string;
+  invitationEmailSubjectDe?: string;
+  invitationEmailBodyDe?: string;
+  invitationEmailSubjectEn?: string;
+  invitationEmailBodyEn?: string;
+  passwordResetEmailSubjectDe?: string;
+  passwordResetEmailBodyDe?: string;
+  passwordResetEmailSubjectEn?: string;
+  passwordResetEmailBodyEn?: string;
 }
 
 export interface Room {
