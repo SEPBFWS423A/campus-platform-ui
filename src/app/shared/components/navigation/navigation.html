@@ -1,5 +1,5 @@
 <nav class="nav-wrapper">
-  <a class="nav-header">
+  <a class="nav-header" [routerLink]="homePath()">
     <mat-icon class="nav-icon" fontIcon="school"></mat-icon>
     <span class="platform-name">{{ publicService.universityName() || ("platformName" | translate) }}</span>
   </a>

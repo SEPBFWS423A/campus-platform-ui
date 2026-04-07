@@ -68,6 +68,12 @@ export class Navigation implements OnInit {
   ngOnInit() {
   }
 
+  homePath = computed(() => {
+    const role = this.auth.userRole();
+    if (!role) return '/';
+    return `/${role.toLowerCase()}`;
+  });
+
   currentLinks = computed(() => {
     const role = this.auth.userRole();
     if (!role) return [];
