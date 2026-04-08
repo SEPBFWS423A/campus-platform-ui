@@ -26,6 +26,8 @@ import { combineLatest } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 import { AdminService, User, StudyGroup, InvitationPayload, CourseOfStudy, Specialization, DegreeType, InstitutionInfo, GroupMember } from '../admin.service';
 import { UserRole } from '../../../core/models/user-role';
+import { Salutation } from '../../../core/models/salutation';
+import { AcademicTitle } from '../../../core/models/academic-title';
 import { NotificationService } from '../../../core/services/notification.service';
 import { ConfirmationDialogComponent } from '../../../shared/components/confirmation-dialog/confirmation-dialog.component';
 import {UserService} from '../../../core/user/user.service';
@@ -96,8 +98,8 @@ export class UserManagement implements OnInit {
   institutionInfo = signal<InstitutionInfo | null>(null);
   private isNameManuallyEdited = false;
 
-  salutations = ['MR', 'MS', 'MX'];
-  academicTitles = ['DR', 'PROF', 'PROF_DR'];
+  salutations = Object.values(Salutation);
+  academicTitles = Object.values(AcademicTitle);
 
   // Forms
   inviteForm = this.fb.group({
@@ -126,8 +128,8 @@ export class UserManagement implements OnInit {
   });
 
   userEditForm: FormGroup = this.fb.group({
-    salutation: [''],
-    title: [''],
+    salutation: [null as Salutation | null],
+    title: [null as AcademicTitle | null],
     firstName: ['', Validators.required],
     lastName: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
@@ -193,8 +195,8 @@ export class UserManagement implements OnInit {
   });
 
   getProfileDisplayName(u: any) {
-    const sal = u.salutation ? this.translate.instant('userManagement.salutations.' + u.salutation) : '';
-    const title = u.title ? this.translate.instant('userManagement.academicTitles.' + u.title) : '';
+    const sal = u.salutation ? this.translate.instant('userManagement.salutations.' + u.salutation.toUpperCase()) : '';
+    const title = u.title ? this.translate.instant('userManagement.academicTitles.' + u.title.toUpperCase()) : '';
     const parts = [sal, title, u.firstName, u.lastName].filter(p => !!p);
     return parts.join(' ');
   }

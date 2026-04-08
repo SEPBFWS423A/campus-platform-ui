@@ -1,6 +1,8 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { UserRole } from '../models/user-role';
+import { Salutation } from '../models/salutation';
+import { AcademicTitle } from '../models/academic-title';
 import { environment } from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import {catchError, Observable, switchMap, tap} from 'rxjs';
@@ -82,7 +84,7 @@ export class Auth {
     this.router.navigate(['/login']);
   }
 
-  completeRegistration(token: string, salutation: string, title: string, firstName: string, lastName: string, password?: string): Observable<void> {
+  completeRegistration(token: string, salutation: Salutation, title: AcademicTitle, firstName: string, lastName: string, password?: string): Observable<void> {
     const payload = { token, salutation, title, firstName, lastName, password };
     return this.http.post<void>(`${this.authApiUrl}/complete-registration`, payload);
   }
