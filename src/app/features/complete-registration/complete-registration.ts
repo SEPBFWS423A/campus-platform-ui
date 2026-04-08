@@ -14,6 +14,8 @@ import { NotificationService } from '../../core/services/notification.service';
 import { UserService } from '../../core/user/user.service';
 import { PublicService } from '../../core/public/public.service';
 import { MatIconModule } from '@angular/material/icon';
+import { Salutation } from '../../core/models/salutation';
+import { AcademicTitle } from '../../core/models/academic-title';
 
 @Component({
   selector: 'app-complete-registration',
@@ -49,12 +51,12 @@ export class CompleteRegistration implements OnInit {
   isRedirecting = signal(false);
   message = signal<string | null>(null);
 
-  salutations = ['MR', 'MS', 'MX'];
-  academicTitles = ['DR', 'PROF', 'PROF_DR'];
+  salutations = Object.values(Salutation);
+  academicTitles = Object.values(AcademicTitle);
 
   form = this.fb.group({
-    salutation: [''],
-    title: [''],
+    salutation: [null as Salutation | null],
+    title: [null as AcademicTitle | null],
     firstName: ['', Validators.required],
     lastName: ['', Validators.required],
     password: ['', [Validators.required, Validators.minLength(6)]],
@@ -91,9 +93,16 @@ export class CompleteRegistration implements OnInit {
         this.isLoading.set(false);
         this.isRedirecting.set(true);
         this.notificationService.showSuccess('completeRegistration.successMessage');
-        setTimeout(() => this.router.navigate(['/login']), 3000);
+        
+        if (this.email && password) {
+          this.auth.login(this.email, password).subscribe({
+            error: () => this.router.navigate(['/login'])
+          });
+        } else {
+          setTimeout(() => this.router.navigate(['/login']), 2000);
+        }
       },
-      error: (err) => {
+      error: () => {
         this.isLoading.set(false);
       },
     });

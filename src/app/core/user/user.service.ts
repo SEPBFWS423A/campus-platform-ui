@@ -3,10 +3,14 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { Observable, tap } from 'rxjs';
 import { UserRole } from '../models/user-role';
+import { Salutation } from '../models/salutation';
+import { AcademicTitle } from '../models/academic-title';
 import {InstitutionInfo} from '../../features/admin/admin.service';
 
 export interface UserProfile {
   id: string;
+  salutation?: Salutation;
+  title?: AcademicTitle;
   email: string;
   firstName: string;
   lastName: string;

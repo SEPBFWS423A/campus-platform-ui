@@ -3,13 +3,14 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
-export { UserRole } from '../../core/models/user-role';
 import { UserRole } from '../../core/models/user-role';
+import { Salutation } from '../../core/models/salutation';
+import { AcademicTitle } from '../../core/models/academic-title';
 
 export interface User {
   id: string;
-  salutation?: string; // e.g. "Mr.", "Ms.", "Mx."
-  title?: string;      // e.g. "Dr.", "Prof."
+  salutation?: Salutation;
+  title?: AcademicTitle;
   firstName: string;
   lastName: string;
   email: string;
@@ -28,14 +29,14 @@ export interface User {
 export interface GroupMember {
   id: string;
   studentNumber: string;
-  title?: string;
+  title?: AcademicTitle;
   firstName: string;
   lastName: string;
 }
 
 export interface ModuleLecturer {
   id: string;
-  title?: string;
+  title?: AcademicTitle;
   firstName: string;
   lastName: string;
 }
