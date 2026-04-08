@@ -1,11 +1,16 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { BreakpointObserver } from '@angular/cdk/layout';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs';
 import { Auth } from '../../../core/auth/auth';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { UserRole } from '../../../core/models/user-role';
 import { TranslatePipe } from '@ngx-translate/core';
-import { MatButton } from '@angular/material/button';
+import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatMenuModule } from '@angular/material/menu';
 import { UserSettingsDialog } from '../settings/user-settings.dialog/user-settings.dialog';
 import { InstitutionInfo } from '../../../features/admin/admin.service';
 import {UserService} from '../../../core/user/user.service';
@@ -17,11 +22,12 @@ export type NavLink = {
   icon: string;
   activeIcon?: string;
   exact: boolean;
+  secondary?: boolean;
 };
 
 const COMMON_LINKS: NavLink[] = [
-  { path: '/common/downloads', label: 'navigation.common.downloads', icon: 'folder', exact: false },
-  { path: '/common/info', label: 'navigation.common.infoCenter', icon: 'info', exact: false }
+  { path: '/common/downloads', label: 'navigation.common.downloads', icon: 'folder', exact: false, secondary: true },
+  { path: '/common/info', label: 'navigation.common.infoCenter', icon: 'info', exact: false, secondary: true }
 ];
 
 const NAVIGATION_CONFIG: Record<string, NavLink[]> = {
@@ -54,7 +60,10 @@ const NAVIGATION_CONFIG: Record<string, NavLink[]> = {
     RouterLink,
     RouterLinkActive,
     TranslatePipe,
-    MatButton
+    MatButton,
+    MatIconButton,
+    MatTooltipModule,
+    MatMenuModule
   ],
   templateUrl: './navigation.html',
   styleUrl: './navigation.scss',
@@ -63,7 +72,14 @@ export class Navigation implements OnInit {
   public auth = inject(Auth);
   private dialog = inject(MatDialog);
   public publicService = inject(PublicService);
+  private breakpointObserver = inject(BreakpointObserver);
+  
   hoveredItem = signal<string | null>(null);
+
+  isCollapsed = toSignal(
+    this.breakpointObserver.observe('(max-width: 1150px)').pipe(map(result => result.matches)),
+    { initialValue: false }
+  );
 
   ngOnInit() {
   }
@@ -74,7 +90,15 @@ export class Navigation implements OnInit {
     return `/${role.toLowerCase()}`;
   });
 
-  currentLinks = computed(() => {
+  primaryLinks = computed(() => {
+    return this.allLinks().filter(link => !link.secondary);
+  });
+
+  secondaryLinks = computed(() => {
+    return this.allLinks().filter(link => !!link.secondary);
+  });
+
+  private allLinks = computed(() => {
     const role = this.auth.userRole();
     if (!role) return [];
 
