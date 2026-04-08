@@ -7,6 +7,8 @@ import { UserRole } from '../../core/models/user-role';
 import { Salutation } from '../../core/models/salutation';
 import { AcademicTitle } from '../../core/models/academic-title';
 
+export { UserRole, Salutation, AcademicTitle };
+
 export interface User {
   id: string;
   salutation?: Salutation;

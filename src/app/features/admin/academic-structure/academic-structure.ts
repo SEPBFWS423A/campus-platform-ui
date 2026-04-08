@@ -1,4 +1,14 @@
-import { Component, computed, inject, OnInit, OnDestroy, signal, ViewChild, TemplateRef } from '@angular/core';
+import {
+  Component,
+  computed,
+  inject,
+  OnInit,
+  OnDestroy,
+  signal,
+  ViewChild,
+  TemplateRef,
+  AfterViewInit
+} from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators, FormControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -21,6 +31,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UserService } from '../../../core/user/user.service';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Editor, Toolbar, NgxEditorModule } from 'ngx-editor';
 
 @Component({
@@ -49,7 +60,7 @@ import { Editor, Toolbar, NgxEditorModule } from 'ngx-editor';
   templateUrl: './academic-structure.html',
   styleUrls: ['./academic-structure.scss']
 })
-export class AcademicStructure implements OnInit, OnDestroy {
+export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
   private adminService = inject(AdminService);
   private userService = inject(UserService);
   private fb = inject(FormBuilder);
@@ -57,6 +68,19 @@ export class AcademicStructure implements OnInit, OnDestroy {
   private dialog = inject(MatDialog);
   public translate = inject(TranslateService);
   private sanitizer = inject(DomSanitizer);
+  private breakpointObserver = inject(BreakpointObserver);
+  isFirstLoad = signal(true);
+  sidebarCollapsed = signal(this.breakpointObserver.isMatched('(max-width: 1400px)'));
+
+  ngAfterViewInit() {
+    setTimeout(() => this.isFirstLoad.set(false), 150);
+  }
+
+  constructor() {
+    this.breakpointObserver.observe(['(max-width: 1400px)']).subscribe(result => {
+      this.sidebarCollapsed.set(result.matches);
+    });
+  }
 
   // Data signals
   courses = signal<CourseOfStudy[]>([]);
@@ -291,8 +315,8 @@ export class AcademicStructure implements OnInit, OnDestroy {
     const info = this.universityForm.value as InstitutionInfo;
     this.adminService.updateInstitutionInfo(info).subscribe(res => {
       this.universityInfo.set(res);
-      const msg = this.activeView() === 'emails' 
-        ? 'academicStructure.updateEmailTemplatesSuccess' 
+      const msg = this.activeView() === 'emails'
+        ? 'academicStructure.updateEmailTemplatesSuccess'
         : 'academicStructure.updateUniversityInfoSuccess';
       this.notificationService.showSuccess(msg);
     });
@@ -624,3 +648,4 @@ export class AcademicStructure implements OnInit, OnDestroy {
     return (first + last).toUpperCase() || '?';
   }
 }
+

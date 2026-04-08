@@ -1,4 +1,14 @@
-import { Component, computed, inject, OnInit, signal, ViewChild, ElementRef, TemplateRef } from '@angular/core';
+import {
+  Component,
+  computed,
+  inject,
+  OnInit,
+  signal,
+  ViewChild,
+  ElementRef,
+  TemplateRef,
+  AfterViewInit
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, FormControl, Validators, FormGroup } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -30,7 +40,8 @@ import { Salutation } from '../../../core/models/salutation';
 import { AcademicTitle } from '../../../core/models/academic-title';
 import { NotificationService } from '../../../core/services/notification.service';
 import { ConfirmationDialogComponent } from '../../../shared/components/confirmation-dialog/confirmation-dialog.component';
-import {UserService} from '../../../core/user/user.service';
+import { UserService } from '../../../core/user/user.service';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 @Component({
   selector: 'app-user-management',
@@ -61,7 +72,7 @@ import {UserService} from '../../../core/user/user.service';
   templateUrl: './user-management.html',
   styleUrls: ['./user-management.scss'],
 })
-export class UserManagement implements OnInit {
+export class UserManagement implements OnInit, AfterViewInit {
   private adminService = inject(AdminService);
   private userService = inject(UserService);
   private fb = inject(FormBuilder);
@@ -85,6 +96,8 @@ export class UserManagement implements OnInit {
   selectedGroup = signal<StudyGroup | null>(null);
   isDrawerOpen = signal(false);
   isEditingUser = signal(false);
+  private breakpointObserver = inject(BreakpointObserver);
+  sidebarCollapsed = signal(this.breakpointObserver.isMatched('(max-width: 1400px)'));
 
   // Onboarding Selection State
   onboardingMode = signal<'individual' | 'bulk' | 'csv'>('individual');
@@ -95,8 +108,20 @@ export class UserManagement implements OnInit {
   editingGroupId = signal<string | null>(null);
   isInviting = signal(false);
   isSavingGroup = signal(false);
+  isFirstLoad = signal(true);
   institutionInfo = signal<InstitutionInfo | null>(null);
   private isNameManuallyEdited = false;
+
+  ngAfterViewInit() {
+    setTimeout(() => this.isFirstLoad.set(false), 150);
+  }
+
+  constructor() {
+    // Reactive logic for sidebar minimized state
+    this.breakpointObserver.observe(['(max-width: 1400px)']).subscribe(result => {
+      this.sidebarCollapsed.set(result.matches);
+    });
+  }
 
   salutations = Object.values(Salutation);
   academicTitles = Object.values(AcademicTitle);
@@ -414,7 +439,7 @@ export class UserManagement implements OnInit {
     if (this.inviteForm.invalid || this.isInviting()) return;
     this.isInviting.set(true);
     const formVal = this.inviteForm.value;
-    
+
     const invData: InvitationPayload = {
       email: formVal.email!,
       role: formVal.role!,
@@ -742,3 +767,4 @@ export class UserManagement implements OnInit {
   getEnabledColor(enabled: boolean) { return enabled ? 'primary' : 'warn'; }
   getRoleColor(role: UserRole) { return role === UserRole.Admin ? 'accent' : role === UserRole.Lecturer ? 'primary' : ''; }
 }
+

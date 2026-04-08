@@ -1,30 +1,41 @@
-<mat-sidenav-container class="curriculum-sidenav-container">
+<mat-sidenav-container class="curriculum-sidenav-container" [class.side-collapsed]="sidebarCollapsed()" [class.no-transition]="isFirstLoad()">
    <!-- Unified Sidebar for Curriculum & Campus -->
-   <mat-sidenav mode="side" opened class="sidebar primary-sidebar">
+   <mat-sidenav mode="side" opened class="sidebar primary-sidebar" [class.collapsed]="sidebarCollapsed()">
       <mat-nav-list class="nav-list-modern">
          <div class="nav-section">
-            <a mat-list-item [class.active-link]="activeView() === 'university'" (click)="switchView('university')">
+            <a mat-list-item [class.active-link]="activeView() === 'university'" (click)="switchView('university')"
+               [matTooltip]="sidebarCollapsed() ? ( 'academicStructure.campusAdministration' | translate ) : ''" matTooltipPosition="right">
                <mat-icon matListItemIcon>apartment</mat-icon>
                <div matListItemTitle>{{ "academicStructure.campusIdentity" | translate }}</div>
             </a>
-            <a mat-list-item [class.active-link]="activeView() === 'emails'" (click)="switchView('emails')">
+            <a mat-list-item [class.active-link]="activeView() === 'emails'" (click)="switchView('emails')"
+               [matTooltip]="sidebarCollapsed() ? ( 'academicStructure.emailTemplates' | translate ) : ''" matTooltipPosition="right">
                <mat-icon matListItemIcon>mail</mat-icon>
                <div matListItemTitle>{{ "academicStructure.emailTemplates" | translate }}</div>
             </a>
-            <a mat-list-item [class.active-link]="activeView() === 'exam-types'" (click)="switchView('exam-types')">
+            <a mat-list-item [class.active-link]="activeView() === 'exam-types'" (click)="switchView('exam-types')"
+               [matTooltip]="sidebarCollapsed() ? ( 'academicStructure.examTypes' | translate ) : ''" matTooltipPosition="right">
                <mat-icon matListItemIcon>assignment</mat-icon>
                <div matListItemTitle>{{ "academicStructure.examTypes" | translate }}</div>
             </a>
-            <a mat-list-item [class.active-link]="activeView() === 'structure'" (click)="switchView('structure')">
+            <a mat-list-item [class.active-link]="activeView() === 'structure'" (click)="switchView('structure')"
+               [matTooltip]="sidebarCollapsed() ? ( 'academicStructure.foundationStructure' | translate ) : ''" matTooltipPosition="right">
                <mat-icon matListItemIcon>account_tree</mat-icon>
                <div matListItemTitle>{{ "academicStructure.foundationStructure" | translate }}</div>
             </a>
-            <a mat-list-item [class.active-link]="activeView() === 'modules'" (click)="switchView('modules')">
+            <a mat-list-item [class.active-link]="activeView() === 'modules'" (click)="switchView('modules')"
+               [matTooltip]="sidebarCollapsed() ? ( 'academicStructure.moduleCatalog' | translate ) : ''" matTooltipPosition="right">
                <mat-icon matListItemIcon>view_module</mat-icon>
                <div matListItemTitle>{{ "academicStructure.moduleCatalog" | translate }}</div>
             </a>
          </div>
       </mat-nav-list>
+
+      <div class="sidebar-footer">
+         <button mat-icon-button class="collapse-toggle" (click)="sidebarCollapsed.set(!sidebarCollapsed())">
+            <mat-icon>{{ sidebarCollapsed() ? 'last_page' : 'first_page' }}</mat-icon>
+         </button>
+      </div>
    </mat-sidenav>
 
    <mat-sidenav-content class="main-content">

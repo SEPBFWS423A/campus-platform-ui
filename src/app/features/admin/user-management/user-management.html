@@ -1,18 +1,21 @@
-<mat-sidenav-container class="dashboard-container">
+<mat-sidenav-container class="dashboard-container" [class.side-collapsed]="sidebarCollapsed()" [class.no-transition]="isFirstLoad()">
   <!-- Unified Sidebar with Nested Navigation -->
-  <mat-sidenav mode="side" opened class="sidebar primary-sidebar">
+  <mat-sidenav mode="side" opened class="sidebar primary-sidebar" [class.collapsed]="sidebarCollapsed()">
     <mat-nav-list class="nav-list-modern">
       <div class="nav-section">
-        <a mat-list-item [class.active-link]="activeView() === 'directory'" (click)="switchView('directory')">
+        <a mat-list-item [class.active-link]="activeView() === 'directory'" (click)="switchView('directory')"
+          [matTooltip]="sidebarCollapsed() ? ( 'userManagement.userDirectory' | translate ) : ''" matTooltipPosition="right">
           <mat-icon matListItemIcon>person_search</mat-icon>
           <div matListItemTitle>{{ "userManagement.userDirectory" | translate }}</div>
         </a>
-        <a mat-list-item [class.active-link]="activeView() === 'groups'" (click)="switchView('groups')">
+        <a mat-list-item [class.active-link]="activeView() === 'groups'" (click)="switchView('groups')"
+          [matTooltip]="sidebarCollapsed() ? ( 'userManagement.studentGroups' | translate ) : ''" matTooltipPosition="right">
           <mat-icon matListItemIcon>hub</mat-icon>
           <div matListItemTitle>{{ "userManagement.studentGroups" | translate }}</div>
         </a>
 
-        <a mat-list-item [class.active-link]="activeView() === 'onboarding'" (click)="switchView('onboarding')">
+        <a mat-list-item [class.active-link]="activeView() === 'onboarding'" (click)="switchView('onboarding')"
+          [matTooltip]="sidebarCollapsed() ? ( 'userManagement.campusOnboarding' | translate ) : ''" matTooltipPosition="right">
           <mat-icon matListItemIcon>group_add</mat-icon>
           <div matListItemTitle>{{ "userManagement.campusOnboarding" | translate }}</div>
         </a>
@@ -37,6 +40,12 @@
         }
       </div>
     </mat-nav-list>
+
+    <div class="sidebar-footer">
+      <button mat-icon-button class="collapse-toggle" (click)="sidebarCollapsed.set(!sidebarCollapsed())">
+        <mat-icon>{{ sidebarCollapsed() ? 'last_page' : 'first_page' }}</mat-icon>
+      </button>
+    </div>
   </mat-sidenav>
 
   <!-- Right Slide-out Profile Panel -->
@@ -94,31 +103,30 @@
                   '-' }}</span></div>
               <div class="info-tile"><span class="label">{{ "userManagement.startYear" | translate }}</span><span
                   class="value">{{ user.startYear || '-' }}</span></div>
+
+              @for (group of getUserGroups(user.id); track group.id) {
+              <div class="info-tile group-tile highlight">
+                <span class="label">{{ "userManagement.studyGroup" | translate }}</span>
+                <div class="value-with-action">
+                  <span class="value">{{ group.name }}</span>
+                  <button mat-icon-button color="warn" class="remove-action"
+                    (click)="removeUserFromGroup(user.id, group.id)"
+                    [matTooltip]="'userManagement.removeFromGroup' | translate">
+                    <mat-icon>remove_circle_outline</mat-icon>
+                  </button>
+                </div>
+              </div>
+              }
               }
             </div>
 
-            @if (user.role === 'STUDENT') {
-            <div class="groups-section-modern">
-              <h3>{{ "userManagement.studyGroups" | translate }}</h3>
-              <mat-list dense>
-                @for (group of getUserGroups(user.id); track group.id) {
-                <mat-list-item class="group-item-inline">
-                  <mat-icon matListItemIcon>group_work</mat-icon>
-                  <span matListItemTitle>{{ group.name }}</span>
-                  <button mat-icon-button
-                    (click)="removeUserFromGroup(user.id, group.id)"><mat-icon>remove_circle_outline</mat-icon></button>
-                </mat-list-item>
-                } @empty {
-                <p class="empty-state">{{ "userManagement.noGroupsFound" | translate }}</p>
-                }
-              </mat-list>
-            </div>
-            }
           </div>
         </mat-card-content>
-        <mat-card-actions align="end">
-          <button mat-button color="warn" (click)="deleteUser(user)">{{ "userManagement.deleteUser" | translate
-            }}</button>
+        <mat-card-actions>
+          <button mat-flat-button color="warn" class="delete-user-btn" (click)="deleteUser(user)">
+            <mat-icon>delete_forever</mat-icon>
+            {{ "userManagement.deleteUser" | translate }}
+          </button>
         </mat-card-actions>
         } @else {
         <!-- EDIT MODE -->
@@ -276,7 +284,8 @@
       <!-- DIRECTORY VIEW -->
       @if (activeView() === 'directory') {
       <mat-card class="data-view-card">
-        <mat-table [dataSource]="filteredUsers()" class="modern-table">
+        <div class="table-container">
+          <mat-table [dataSource]="filteredUsers()" class="modern-table">
 
           <ng-container matColumnDef="firstName">
             <th mat-header-cell *matHeaderCellDef>{{ "user.firstname" | translate }}</th>
@@ -331,6 +340,7 @@
             *matRowDef="let element; columns: ['firstName', 'lastName', 'id', 'email', 'role', 'enabled', 'actions']"
             (click)="selectUser(element)" class="clickable-row"></tr>
         </mat-table>
+        </div>
       </mat-card>
       }
 
