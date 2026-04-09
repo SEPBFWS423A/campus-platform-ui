@@ -22,10 +22,12 @@ export interface User {
   // Student Specific Fields
   studentNumber?: string;
   courseOfStudy?: string;
+  courseOfStudyId?: string;
   courseOfStudyName?: string;
   specializationId?: string;
   specializationName?: string;
   startYear?: number;
+  startQuartal?: number;
 }
 
 export interface GroupMember {
@@ -50,6 +52,7 @@ export interface InvitationPayload {
   courseOfStudy?: string;
   specializationId?: number;
   startYear?: number;
+  startQuartal?: number;
   language?: string;
 }
 
@@ -61,6 +64,8 @@ export interface StudyGroup {
   specializationId: string;
   specialization: string;
   memberCount: number;
+  startYear?: number;
+  startQuartal?: number;
   members: GroupMember[];
 }
 

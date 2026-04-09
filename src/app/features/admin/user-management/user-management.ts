@@ -1,6 +1,7 @@
 import {
   Component,
   computed,
+  effect,
   inject,
   OnInit,
   signal,
@@ -31,8 +32,8 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { startWith, map, finalize } from 'rxjs/operators';
-import { combineLatest } from 'rxjs';
+import { startWith, finalize } from 'rxjs/operators';
+import { forkJoin } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 import { AdminService, User, StudyGroup, InvitationPayload, CourseOfStudy, Specialization, DegreeType, InstitutionInfo, GroupMember } from '../admin.service';
 import { UserRole } from '../../../core/models/user-role';
@@ -41,7 +42,10 @@ import { AcademicTitle } from '../../../core/models/academic-title';
 import { NotificationService } from '../../../core/services/notification.service';
 import { ConfirmationDialogComponent } from '../../../shared/components/confirmation-dialog/confirmation-dialog.component';
 import { UserService } from '../../../core/user/user.service';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { BreakpointObserver } from '@angular/cdk/layout';
+import * as XLSX from 'xlsx';
+import * as mammoth from 'mammoth';
+import { UserProfileOverviewComponent } from '../../../shared/components/user-profile-overview/user-profile-overview';
 
 @Component({
   selector: 'app-user-management',
@@ -68,6 +72,7 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
     MatTabsModule,
     MatButtonToggleModule,
     MatTooltipModule,
+    UserProfileOverviewComponent
   ],
   templateUrl: './user-management.html',
   styleUrls: ['./user-management.scss'],
@@ -83,6 +88,7 @@ export class UserManagement implements OnInit, AfterViewInit {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
   @ViewChild('compactTable') compactTable!: MatTable<any>;
   @ViewChild('groupDialogTemplate') groupDialogTemplate!: TemplateRef<any>;
+  @ViewChild('addMemberDialogTemplate') addMemberDialogTemplate!: TemplateRef<any>;
 
   // --- Real Data ---
   private usersData = signal<User[]>([]);
@@ -100,8 +106,7 @@ export class UserManagement implements OnInit, AfterViewInit {
   sidebarCollapsed = signal(this.breakpointObserver.isMatched('(max-width: 1400px)'));
 
   // Onboarding Selection State
-  onboardingMode = signal<'individual' | 'bulk' | 'csv'>('individual');
-  csvLanguageControl = new FormControl('de', Validators.required);
+  onboardingMode = signal<'individual' | 'bulk'>('individual');
 
   // Creation State
   showAddGroupForm = signal(false);
@@ -121,6 +126,72 @@ export class UserManagement implements OnInit, AfterViewInit {
     this.breakpointObserver.observe(['(max-width: 1400px)']).subscribe(result => {
       this.sidebarCollapsed.set(result.matches);
     });
+
+    // Form field synchronization effects
+    this.setupFormStateEffects();
+  }
+
+  private setupFormStateEffects() {
+    // Individual Invite Specialization
+    effect(() => {
+      const courseId = this.inviteCourseValue();
+      const control = this.inviteForm.get('specialization');
+      if (courseId) control?.enable({ emitEvent: false });
+      else control?.disable({ emitEvent: false });
+    });
+
+    // Bulk Invite Specialization
+    effect(() => {
+      const courseId = this.bulkCourseValue();
+      const control = this.bulkInviteForm.get('defaultSpecialization');
+      if (courseId) control?.enable({ emitEvent: false });
+      else control?.disable({ emitEvent: false });
+    });
+
+    // Group Creation Specialization
+    effect(() => {
+      const courseId = this.groupCourseValue();
+      const control = this.groupForm.get('specialization');
+      if (courseId) control?.enable({ emitEvent: false });
+      else control?.disable({ emitEvent: false });
+    });
+
+    // User Edit Specialization
+    effect(() => {
+      const courseId = this.editCourseValue();
+      const control = this.userEditForm.get('specializationId');
+      if (courseId) control?.enable({ emitEvent: false });
+      else control?.disable({ emitEvent: false });
+    });
+
+    // Auto-fill state sync & lazy loading
+    effect(() => {
+      const allowed = this.canAutoFill();
+      const control = this.groupForm.get('autoFill');
+      if (allowed) {
+        control?.enable({ emitEvent: false });
+        this.ensureUsersLoaded();
+      } else {
+        control?.disable({ emitEvent: false });
+      }
+    });
+
+    // Directory view lazy loading
+    effect(() => {
+      if (this.activeView() === 'directory') {
+        this.ensureUsersLoaded();
+      }
+    });
+  }
+
+  private isUsersLoading = false;
+  private ensureUsersLoaded() {
+    if (this.usersData().length > 0 || this.isUsersLoading) return;
+
+    this.isUsersLoading = true;
+    this.adminService.getUsers().pipe(
+      finalize(() => this.isUsersLoading = false)
+    ).subscribe(users => this.usersData.set(users));
   }
 
   salutations = Object.values(Salutation);
@@ -133,6 +204,8 @@ export class UserManagement implements OnInit, AfterViewInit {
     studentNumber: [''],
     courseOfStudy: [''],
     specialization: [''],
+    startYear: [new Date().getFullYear(), [Validators.min(2000), Validators.max(2100)]],
+    startQuartal: [4, [Validators.min(1), Validators.max(4)]],
     language: ['de', Validators.required]
   }, { validators: this.studentFieldsValidator });
 
@@ -141,6 +214,8 @@ export class UserManagement implements OnInit, AfterViewInit {
     role: [UserRole.Student, Validators.required],
     defaultCourse: [''],
     defaultSpecialization: [''],
+    defaultStartYear: [new Date().getFullYear(), [Validators.min(2000), Validators.max(2100)]],
+    defaultStartQuartal: [4, [Validators.min(1), Validators.max(4)]],
     defaultLanguage: ['de', Validators.required]
   });
 
@@ -149,8 +224,65 @@ export class UserManagement implements OnInit, AfterViewInit {
     specialization: ['', Validators.required],
     startYear: [new Date().getFullYear(), [Validators.required, Validators.min(2000), Validators.max(2100)]],
     startQuartal: [4, [Validators.required, Validators.min(1), Validators.max(4)]],
-    name: ['', Validators.required]
+    name: ['', Validators.required],
+    autoFill: [false]
   });
+
+  private groupFormValue = toSignal(this.groupForm.valueChanges, { initialValue: this.groupForm.value });
+
+  excludedAutoFillIds = signal<Set<string>>(new Set());
+
+  matchingAutoFillStudents = computed(() => {
+    const val = this.groupFormValue();
+    if (!val || this.editingGroupId()) return [];
+
+    const course = this.allCoursesData().find(c => String(c.id) === String(val.courseOfStudy));
+    const spec = this.allSpecializationsData().find(s => s.name === val.specialization && String(s.courseId) === String(course?.id));
+
+    const users = this.usersData();
+    const matched = users.filter(u => {
+      if (u.role !== UserRole.Student) return false;
+
+      // Resolve course ID (prefer direct ID, fall back to specialization lookup)
+      let uCourseId = u.courseOfStudyId || u.courseOfStudy;
+      if (!uCourseId && u.specializationId) {
+        const sInfo = this.allSpecializationsData().find(s => String(s.id) === String(u.specializationId));
+        if (sInfo) uCourseId = sInfo.courseId;
+      }
+
+      const match =
+        String(uCourseId) === String(val.courseOfStudy) &&
+        u.specializationName === spec?.name &&
+        Number(u.startYear) === Number(val.startYear) &&
+        Number(u.startQuartal) === Number(val.startQuartal);
+
+      return match;
+    });
+
+    return matched;
+  });
+
+  finalAutoFillStudents = computed(() => {
+    const matching = this.matchingAutoFillStudents();
+    const excluded = this.excludedAutoFillIds();
+    return matching.filter(s => !excluded.has(s.id));
+  });
+
+  autoFillCount = computed(() => this.finalAutoFillStudents().length);
+
+  canAutoFill = computed(() => {
+    const val = this.groupFormValue();
+    return !!val?.courseOfStudy && !!val?.specialization && !!val?.startYear && !!val?.startQuartal;
+  });
+
+  toggleAutoFillExclusion(studentId: string) {
+    this.excludedAutoFillIds.update(set => {
+      const next = new Set(set);
+      if (next.has(studentId)) next.delete(studentId);
+      else next.add(studentId);
+      return next;
+    });
+  }
 
   userEditForm: FormGroup = this.fb.group({
     salutation: [null as Salutation | null],
@@ -165,7 +297,8 @@ export class UserManagement implements OnInit, AfterViewInit {
     courseOfStudyName: [''],
     specializationId: [''],
     specializationName: [''],
-    startYear: ['']
+    startYear: [''],
+    startQuartal: ['']
   });
 
   // Signals
@@ -181,14 +314,44 @@ export class UserManagement implements OnInit, AfterViewInit {
   yearFilter = signal<number | ''>('');
   specializationFilter = signal<string | ''>('');
 
-  // Auto-complete
+  // Student Search / Management
   addMemberControl = new FormControl('');
-  addMemberYearControl = new FormControl<number | null>(null);
-  filteredStudentsAutoComplete = signal<User[]>([]);
+
+  private addMemberSearchValue = toSignal(this.addMemberControl.valueChanges, { initialValue: '' });
+
+  filteredStudentsAutoComplete = computed(() => {
+    const search = (this.addMemberSearchValue() || '').toLowerCase().trim();
+    const users = this.allUsers();
+    const group = this.selectedGroup();
+
+    return users.filter(u => {
+      if (u.role !== UserRole.Student) return false;
+
+      // Automatically filter by group year and quartal if they exist
+      const matchesCohort = !group || (
+        (!group.startYear || u.startYear === group.startYear) &&
+        (!group.startQuartal || u.startQuartal === group.startQuartal)
+      );
+      const fullName = `${u.firstName || ''} ${u.lastName || ''}`.toLowerCase();
+      const matchesSearch = !search || (
+        fullName.includes(search) ||
+        (u.studentNumber || '').toLowerCase().includes(search)
+      );
+
+      // Exclude users already in the group and only show students from the same specialization if applicable
+      const notInGroup = !group || !group.members.some(m => m.id === u.id);
+      const matchesSpecialization = !group || u.specializationName === group.specialization;
+
+      return matchesCohort && matchesSearch && notInGroup && matchesSpecialization;
+    }).sort((a, b) => {
+      const idA = a.studentNumber || '';
+      const idB = b.studentNumber || '';
+      return idA.localeCompare(idB, undefined, { numeric: true });
+    });
+  });
 
   // CSV parsing
   csvFileName = signal<string | null>(null);
-  csvInvitations = signal<InvitationPayload[]>([]);
 
   // Derived signals
   filteredUsers = computed(() => {
@@ -291,7 +454,6 @@ export class UserManagement implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.loadAllData();
-    this.setupAutocomplete();
     this.setupGroupNameAutoGeneration();
     this.setupDependentFieldsClearing();
   }
@@ -332,8 +494,8 @@ export class UserManagement implements OnInit, AfterViewInit {
     this.groupForm.get('name')?.setValue(generatedName, { emitEvent: false });
   }
 
+
   loadAllData() {
-    this.adminService.getUsers().subscribe(users => this.usersData.set(users));
     this.adminService.getGroups().subscribe(groups => this.groupsData.set(groups));
     this.adminService.getCourses().subscribe(courses => this.coursesData.set(courses));
     this.adminService.getSpecializations().subscribe(specializations => this.specializationsData.set(specializations));
@@ -377,38 +539,24 @@ export class UserManagement implements OnInit, AfterViewInit {
 
 
 
-  setupAutocomplete() {
-    combineLatest([
-      this.addMemberControl.valueChanges.pipe(startWith('')),
-      this.addMemberYearControl.valueChanges.pipe(startWith(this.addMemberYearControl.value))
-    ]).pipe(
-      map(([val, filterYear]) => {
-        const str = (typeof val === 'string' ? val : '').toLowerCase();
-        const g = this.selectedGroup();
-        if (!g) return [];
-        const filtered = this.allUsers().filter(u =>
-          u.role === UserRole.Student &&
-          u.specializationName === g.specialization &&
-          (!filterYear || u.startYear === filterYear) &&
-          !g.members.some(m => m.id === u.id) &&
-          (this.getAssociationDisplayName(u).toLowerCase().includes(str) || u.studentNumber?.includes(str))
-        );
-        return filtered.sort((a, b) => {
-          const idA = a.studentNumber || '';
-          const idB = b.studentNumber || '';
-          return idA.localeCompare(idB, undefined, { numeric: true });
-        });
-      })
-    ).subscribe(students => this.filteredStudentsAutoComplete.set(students as User[]));
-  }
 
   switchView(view: 'directory' | 'groups' | 'onboarding') {
     this.activeView.set(view);
+    this.searchFilter.set('');
     this.selectedGroup.set(null);
     this.isDrawerOpen.set(false);
   }
 
   selectUser(user: User) { this.selectedUser.set(user); this.isDrawerOpen.set(true); this.isEditingUser.set(false); }
+
+  selectMember(member: any) {
+    this.ensureUsersLoaded();
+    const fullUser = this.allUsers().find(u => u.id === member.id);
+    if (fullUser) {
+      this.selectUser(fullUser);
+    }
+  }
+
   startEditing() {
     const user = this.selectedUser();
     if (user) {
@@ -444,9 +592,9 @@ export class UserManagement implements OnInit, AfterViewInit {
       email: formVal.email!,
       role: formVal.role!,
       studentNumber: formVal.studentNumber || undefined,
-      // specialization is actually the ID now from the dropdown
       specializationId: Number(formVal.specialization) || undefined,
-      startYear: new Date().getFullYear(), // Default current year
+      startYear: formVal.startYear || new Date().getFullYear(),
+      startQuartal: formVal.startQuartal || 4,
       language: formVal.language || 'de'
     };
 
@@ -460,7 +608,7 @@ export class UserManagement implements OnInit, AfterViewInit {
 
   sendBulkInvitations() {
     if (this.bulkInviteForm.invalid || this.isInviting()) return;
-    const { emails, role, defaultCourse, defaultSpecialization, defaultLanguage } = this.bulkInviteForm.value;
+    const { emails, role, defaultCourse, defaultSpecialization, defaultStartYear, defaultStartQuartal, defaultLanguage } = this.bulkInviteForm.value;
     if (emails && role) {
       this.isInviting.set(true);
       const lines = emails.split('\n').filter(Boolean);
@@ -468,24 +616,27 @@ export class UserManagement implements OnInit, AfterViewInit {
         const parts = line.split(';').map(p => p.trim());
         const hasId = parts[1] && /^\d+$/.test(parts[1]); // Check if 2nd col is ID
 
-        // Mapping: email; [id]; [role]; [course]; [spec]
+        // Mapping: email; [id]; [role]; [course]; [spec]; [year]; [quartal]; [lang]
         const csvRole = (hasId ? parts[2] : parts[1]);
         const csvCourse = (hasId ? parts[3] : parts[2]);
         const csvSpec = (hasId ? parts[4] : parts[3]);
+        const csvYear = (hasId ? parts[5] : parts[4]);
+        const csvQuartal = (hasId ? parts[6] : parts[5]);
+        const csvLang = hasId ? parts[7] : parts[6];
 
         const normalizedRole = this.normalizeRole(csvRole);
         const selectedCourseName = defaultCourse ? this.allCoursesData().find(c => c.id === defaultCourse)?.name : undefined;
-
-        const csvLang = hasId ? parts[5] : parts[4];
 
         return {
           email: parts[0],
           studentNumber: hasId ? parts[1] : undefined,
           role: normalizedRole || (role as UserRole),
           courseOfStudy: csvCourse || selectedCourseName,
-          specialization: csvSpec || defaultSpecialization || undefined,
+          specializationId: csvSpec ? Number(csvSpec) : (defaultSpecialization ? Number(defaultSpecialization) : undefined),
+          startYear: csvYear ? Number(csvYear) : (defaultStartYear || new Date().getFullYear()),
+          startQuartal: csvQuartal ? Number(csvQuartal) : (defaultStartQuartal || 4),
           language: csvLang || defaultLanguage || 'de'
-        };
+        } as InvitationPayload;
       });
 
       this.adminService.bulkInvite(invitations).pipe(
@@ -506,47 +657,73 @@ export class UserManagement implements OnInit, AfterViewInit {
     return null;
   }
 
-  onFileSelected(event: any) {
+  importBatchFromFile(event: any) {
     const file = event.target.files[0];
-    if (file) {
-      this.csvFileName.set(file.name);
-      const reader = new FileReader();
+    if (!file) return;
+
+    this.notificationService.showSuccess('userManagement.importRunning');
+    const reader = new FileReader();
+    const extension = file.name.split('.').pop()?.toLowerCase();
+
+    if (extension === 'csv' || extension === 'txt') {
       reader.onload = (e: any) => {
-        const text = e.target.result;
-        const lines = text.split('\n').filter((l: string) => l.trim().length > 0);
-        const invs = lines.map((l: string) => {
-          const parts = l.split(';').map(p => p.trim());
-          const hasId = parts[1] && /^\d+$/.test(parts[1]); // Intelligent Shift Helper
-
-          const rawRole = hasId ? parts[2] : parts[1];
-          const role = this.normalizeRole(rawRole) || UserRole.Student;
-
-          return {
-            email: parts[0],
-            studentNumber: hasId ? parts[1] : undefined,
-            role: role,
-            courseOfStudy: hasId ? parts[3] : parts[2],
-            specialization: hasId ? parts[4] : parts[3],
-            language: (hasId ? parts[5] : parts[4]) || this.csvLanguageControl.value || 'de'
-          } as InvitationPayload;
-        });
-        this.csvInvitations.set(invs);
+        this.appendBatchData(e.target.result);
       };
       reader.readAsText(file);
+    } else if (extension === 'xlsx' || extension === 'xls') {
+      reader.onload = (e: any) => {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const csv = XLSX.utils.sheet_to_csv(worksheet, { FS: ';' });
+        this.appendBatchData(csv);
+      };
+      reader.readAsArrayBuffer(file);
+    } else if (extension === 'docx') {
+      reader.onload = (e: any) => {
+        mammoth.extractRawText({ arrayBuffer: e.target.result })
+          .then((result) => {
+            this.appendBatchData(result.value);
+          })
+          .catch(err => {
+            console.error('Error parsing docx', err);
+            this.notificationService.showError('userManagement.wordReadError');
+          });
+      };
+      reader.readAsArrayBuffer(file);
+    } else {
+      this.notificationService.showError('userManagement.formatNotSupported');
     }
+
+    // Reset input so same file can be selected again
+    event.target.value = '';
   }
 
-  sendCsvInvitations() {
-    if (this.csvInvitations().length > 0 && !this.isInviting()) {
-      this.isInviting.set(true);
-      this.adminService.bulkInvite(this.csvInvitations()).pipe(
-        finalize(() => this.isInviting.set(false))
-      ).subscribe(() => {
-        this.notificationService.showSuccess('userManagement.bulkInvitationSuccess');
-        this.csvInvitations.set([]);
-        this.csvFileName.set(null);
-      });
+  private appendBatchData(newText: string) {
+    if (!newText) return;
+
+    let lines = newText.split(/\r?\n/).filter(line => line.trim().length > 0);
+    if (lines.length === 0) return;
+
+    // Detect and skip header row
+    // If the first line doesn't contain an '@' but contains a separator, it's highly likely a header
+    const firstLine = lines[0];
+    if (firstLine.includes(';') && !firstLine.includes('@')) {
+      lines.shift();
     }
+
+    if (lines.length === 0) return;
+
+    const cleanNewText = lines.join('\n');
+    const current = this.bulkInviteForm.get('emails')?.value || '';
+
+    const updated = current
+      ? (current.trim() + '\n' + cleanNewText)
+      : cleanNewText;
+
+    this.bulkInviteForm.patchValue({ emails: updated });
+    this.notificationService.showSuccess('userManagement.importSuccess');
   }
 
   saveGroup() {
@@ -562,7 +739,9 @@ export class UserManagement implements OnInit, AfterViewInit {
       courseOfStudyId: course?.id,
       courseOfStudyName: course?.name,
       specializationId: spec?.id,
-      specialization: spec?.name
+      specialization: spec?.name,
+      startYear: formVal.startYear,
+      startQuartal: formVal.startQuartal
     };
 
     const editingId = this.editingGroupId();
@@ -629,6 +808,19 @@ export class UserManagement implements OnInit, AfterViewInit {
 
           this.closeGroupDialog();
           this.notificationService.showSuccess('userManagement.addGroupSuccess');
+
+          // AUTO-FILL LOGIC: Add matching students (excluding manually deselected ones)
+          if (formVal.autoFill && newGroup) {
+            const matchingStudents = this.finalAutoFillStudents();
+
+            if (matchingStudents.length > 0) {
+              const addObs = matchingStudents.map(s => this.adminService.addGroupMember(String(newGroup.id), s.id));
+              forkJoin(addObs).subscribe(() => {
+                // Refresh to show absolute correct state
+                this.adminService.getGroups().subscribe(groups => this.groupsData.set(groups));
+              });
+            }
+          }
         },
         error: (err) => console.error('Error creating group:', err)
       });
@@ -658,27 +850,36 @@ export class UserManagement implements OnInit, AfterViewInit {
       startQuartal: group.name.match(/(\d)\d{2}/) ? parseInt(group.name.match(/(\d)\d{2}/)?.[1] || '4', 10) : 4
     });
 
-    this.dialog.open(this.groupDialogTemplate, {
-      width: '600px',
-      disableClose: true
+    const ref = this.dialog.open(this.groupDialogTemplate, {
+      width: 'auto',
+      maxWidth: '95vw',
+      disableClose: false
     });
+    ref.afterClosed().subscribe(() => this.resetGroupDialogState());
   }
 
   openCreateGroupDialog() {
     this.editingGroupId.set(null);
-    this.groupForm.reset({ startYear: new Date().getFullYear(), startQuartal: 4 });
+    this.excludedAutoFillIds.set(new Set());
+    this.groupForm.reset({ startYear: new Date().getFullYear(), startQuartal: 4, autoFill: false });
     this.isNameManuallyEdited = false;
-    this.dialog.open(this.groupDialogTemplate, {
-      width: '600px',
-      disableClose: true
+    const ref = this.dialog.open(this.groupDialogTemplate, {
+      width: 'auto',
+      maxWidth: '95vw',
+      disableClose: false
     });
+    ref.afterClosed().subscribe(() => this.resetGroupDialogState());
   }
 
   closeGroupDialog() {
-    this.editingGroupId.set(null);
-    this.groupForm.reset({ startYear: new Date().getFullYear(), startQuartal: 4 });
-    this.isNameManuallyEdited = false;
     this.dialog.closeAll();
+  }
+
+  private resetGroupDialogState() {
+    this.editingGroupId.set(null);
+    this.groupForm.reset({ startYear: new Date().getFullYear(), startQuartal: 4, autoFill: false });
+    this.excludedAutoFillIds.set(new Set());
+    this.isNameManuallyEdited = false;
   }
 
   cancelEditGroup() {
@@ -738,6 +939,14 @@ export class UserManagement implements OnInit, AfterViewInit {
       if (this.compactTable) this.compactTable.renderRows();
       this.addMemberControl.setValue('');
       this.notificationService.showSuccess('userManagement.addMemberSuccess');
+    });
+  }
+
+  openAddMemberDialog() {
+    this.addMemberControl.setValue('');
+    this.dialog.open(this.addMemberDialogTemplate, {
+      width: '600px',
+      disableClose: false
     });
   }
 
