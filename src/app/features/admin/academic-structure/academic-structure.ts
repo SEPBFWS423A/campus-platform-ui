@@ -33,6 +33,10 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Editor, Toolbar, NgxEditorModule } from 'ngx-editor';
+import { ModuleHandbookService } from './module-handbook.service';
+import { GenerateHandbookDialog } from './generate-handbook-dialog/generate-handbook-dialog.component';
+
+
 
 @Component({
   selector: 'app-academic-structure',
@@ -62,7 +66,9 @@ import { Editor, Toolbar, NgxEditorModule } from 'ngx-editor';
 })
 export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
   private adminService = inject(AdminService);
+  private handbookService = inject(ModuleHandbookService);
   private userService = inject(UserService);
+
   private fb = inject(FormBuilder);
   private notificationService = inject(NotificationService);
   private dialog = inject(MatDialog);
@@ -647,5 +653,48 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
     const last = (u.lastName || '').charAt(0);
     return (first + last).toUpperCase() || '?';
   }
+
+  generateHandbook() {
+    const dialogRef = this.dialog.open(GenerateHandbookDialog, {
+      width: '450px',
+      data: {
+        courses: this.courses(),
+        modules: this.modules()
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        const { course, degree, language } = result;
+        
+        const courseModules = this.modules().filter(m => m.courseOfStudyId === course.id);
+        if (courseModules.length === 0) {
+          this.notificationService.showInfo('academicStructure.noModulesForHandbook');
+          return;
+        }
+
+        const generationResult = this.handbookService.generateHandbook(
+          course,
+          courseModules,
+          this.universityInfo(),
+          this.specializations(),
+          this.examTypes(),
+          language
+        );
+
+        const url = URL.createObjectURL(generationResult.blob);
+        window.open(url, '_blank');
+        
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = generationResult.filename;
+        link.click();
+
+        this.notificationService.showSuccess('academicStructure.handbookGenerated');
+      }
+    });
+  }
+
 }
+
 

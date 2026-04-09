@@ -364,8 +364,11 @@
     "pleaseSelectCourseAndDegree": "Bitte wählen Sie einen Studiengang und einen Abschluss aus.",
     "courseNotFound": "Studiengang nicht gefunden.",
     "handbookGenerated": "Modulhandbuch wurde erfolgreich generiert.",
-    "noModulesForHandbook": "Für diesen Studiengang sind keine Module hinterlegt."
+    "noModulesForHandbook": "Für diesen Studiengang sind keine Module hinterlegt.",
+    "generateHandbookSubtitle": "Wählen Sie den Studiengang und die Sprache für die PDF-Generierung aus.",
+    "generate": "Generieren"
   },
+
 
   "user": {
     "firstname": "Vorname",
@@ -511,7 +514,9 @@
     "lehrveranstaltung": "Lehrveranstaltung",
     "klausur": "Klausur",
     "seats": "Plätze",
-    "examSeats": "Klausurplätze"
+    "examSeats": "Klausurplätze",
+    "hours": "Stunden"
+
   },
   "common": {
     "close": "Schließen",

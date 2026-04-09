@@ -364,8 +364,11 @@
     "pleaseSelectCourseAndDegree": "Please select a course of study and a degree.",
     "courseNotFound": "Course of study not found.",
     "handbookGenerated": "Module handbook successfully generated.",
-    "noModulesForHandbook": "No modules are stored for this course of study."
+    "noModulesForHandbook": "No modules are stored for this course of study.",
+    "generateHandbookSubtitle": "Select the course of study and the language for the PDF generation.",
+    "generate": "Generate"
   },
+
 
   "user": {
     "firstname": "First Name",
@@ -511,7 +514,9 @@
     "lehrveranstaltung": "Teaching Event",
     "klausur": "Exam (Klausur)",
     "seats": "Seats",
-    "examSeats": "Exam Seats"
+    "examSeats": "Exam Seats",
+    "hours": "hours"
+
   },
   "common": {
     "close": "Close",
