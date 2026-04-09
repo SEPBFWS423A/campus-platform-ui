@@ -1,0 +1,66 @@
+<div class="profile-overview-container">
+  <mat-card-header>
+    <div mat-card-avatar class="profile-avatar large">
+      <mat-icon>account_circle</mat-icon>
+    </div>
+    <mat-card-title>
+      {{ getProfileDisplayName(user) }}
+    </mat-card-title>
+    <mat-card-subtitle>{{ user.email }}</mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    <div class="profile-details">
+      <div class="status-chips">
+        <mat-chip [color]="getRoleColor(user.role)" selected>{{ 'userRole.' + user.role | translate }}</mat-chip>
+        <mat-chip [color]="getEnabledColor(user.enabled)" selected>{{ (user.enabled ? 'userManagement.enabled' :
+          'userManagement.disabled') | translate }}</mat-chip>
+      </div>
+      <div class="info-grid-modern">
+        @if (user.salutation) {
+        <div class="info-tile"><span class="label">{{ "userManagement.salutation" | translate }}</span><span
+            class="value">{{ 'userManagement.salutations.' + (user.salutation.toUpperCase()) | translate }}</span>
+        </div>
+        }
+        @if (user.title) {
+        <div class="info-tile"><span class="label">{{ "userManagement.academicTitle" | translate }}</span><span
+            class="value">{{ 'userManagement.academicTitles.' + user.title | translate }}</span></div>
+        }
+        @if (user.role === 'STUDENT') {
+        <div class="info-tile"><span class="label">{{ "userManagement.studentNumber" | translate }}</span><span
+            class="value">{{ user.studentNumber || '-' }}</span></div>
+        <div class="info-tile"><span class="label">{{ "userManagement.course" | translate }}</span><span
+            class="value">{{ user.courseOfStudyName || '-' }}</span>
+        </div>
+        <div class="info-tile"><span class="label">{{ "userManagement.specialization" | translate }}</span><span
+            class="value">{{ user.specializationName ||
+            '-' }}</span></div>
+        <div class="info-tile"><span class="label">{{ "userManagement.startYear" | translate }}</span><span
+            class="value">{{ user.startYear || '-' }}{{ user.startQuartal ? ' / ' + user.startQuartal : ''
+            }}</span></div>
+
+        @for (group of userGroups; track group.id) {
+        <div class="info-tile group-tile highlight">
+          <span class="label">{{ "userManagement.studyGroup" | translate }}</span>
+          <div class="value-with-action">
+            <span class="value">{{ group.name }}</span>
+            <button mat-icon-button color="warn" class="remove-action"
+              (click)="onRemoveFromGroup(group.id)"
+              [matTooltip]="'userManagement.removeFromGroup' | translate">
+              <mat-icon>remove_circle_outline</mat-icon>
+            </button>
+          </div>
+        </div>
+        }
+        }
+      </div>
+    </div>
+  </mat-card-content>
+
+  <mat-card-actions>
+    <button mat-flat-button color="warn" class="delete-user-btn" (click)="onDeleteUser()">
+      <mat-icon>delete_forever</mat-icon>
+      {{ "userManagement.deleteUser" | translate }}
+    </button>
+  </mat-card-actions>
+</div>
