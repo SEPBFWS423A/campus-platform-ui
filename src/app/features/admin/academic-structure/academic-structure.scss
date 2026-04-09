@@ -365,7 +365,7 @@
     padding: 4px 8px;
     border-radius: 6px;
     font-weight: 700;
-    font-family: \'JetBrains Mono\', monospace;
+    font-family: 'JetBrains Mono', monospace;
     color: var(--mat-sys-primary);
   }
 
@@ -454,15 +454,38 @@
      border-bottom: 2px solid var(--mat-sys-outline-variant);
   }
   
-  .module-row {
-     border-bottom: 1px solid var(--mat-sys-outline-variant);
-     transition: var(--transition-smooth);
-     &:hover { background-color: var(--mat-sys-surface-container-lowest); }
-     
-     td { padding: 24px; color: var(--mat-sys-on-surface); font-size: 0.95rem; }
+  tbody {
+    tr {
+      border-bottom: 1px solid var(--mat-sys-outline-variant);
+      transition: var(--transition-smooth);
+      &:hover { background-color: var(--mat-sys-surface-container-lowest); }
+      
+      td { 
+        padding: 24px; 
+        color: var(--mat-sys-on-surface); 
+        font-size: 0.95rem; 
+      }
+    }
   }
   
   .bold-text { font-weight: 700; color: var(--mat-sys-on-surface); font-size: 1.05rem; }
+  
+  .points-pill {
+    display: inline-flex;
+    align-items: center;
+    background-color: var(--mat-sys-secondary-container);
+    color: var(--mat-sys-on-secondary-container);
+    padding: 6px 14px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    border: 1px solid var(--mat-sys-outline-variant);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+
+    &::first-letter {
+      color: var(--mat-sys-primary);
+    }
+  }
   
   .course-specialization-ref {
      display: flex;
@@ -540,6 +563,27 @@
         .icon-avatar { background-color: var(--mat-sys-tertiary-container); color: var(--mat-sys-tertiary); }
         mat-card-title { font-size: 1.2rem; }
         mat-card-subtitle { font-family: monospace; font-size: 0.8rem; margin-top: 4px !important; }
+
+        .category-badge {
+            font-size: 0.7rem;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            
+            &.written {
+                background-color: var(--mat-sys-primary-container);
+                color: var(--mat-sys-on-primary-container);
+            }
+            
+            &.submission {
+                background-color: var(--mat-sys-tertiary-container);
+                color: var(--mat-sys-on-tertiary-container);
+            }
+        }
     }
 }
 

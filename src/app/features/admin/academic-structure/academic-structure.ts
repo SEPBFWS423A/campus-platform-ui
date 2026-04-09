@@ -24,7 +24,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
-import { AdminService, CourseOfStudy, Specialization, Module, User, UserRole, DegreeType, InstitutionInfo, ModuleExam, ModuleLecturer } from '../admin.service';
+import { AdminService, CourseOfStudy, Specialization, Module, User, UserRole, DegreeType, InstitutionInfo, ModuleExam, ModuleLecturer, ExamCategory } from '../admin.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { ConfirmationDialogComponent } from '../../../shared/components/confirmation-dialog/confirmation-dialog.component';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -96,22 +96,26 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
   universityInfo = signal<InstitutionInfo | null>(null);
 
   // View state
-  activeView = signal<'structure' | 'modules' | 'university' | 'exam-types' | 'emails'>('university');
+  activeView = signal<'structure' | 'modules' | 'university' | 'exam-types' | 'grade-scale' | 'emails'>('university');
   examTypes = signal<ModuleExam[]>([]);
+  gradeScaleEntries = signal<any[]>([]);
   isDrawerOpen = signal(false);
   showAddCourseForm = signal(false);
   showAddSpecializationForm = signal(false);
   showAddModuleForm = signal(false);
   showAddExamTypeForm = signal(false);
+  showAddGradeScaleForm = signal(false);
   selectedModule = signal<Module | null>(null);
   selectedCourse = signal<CourseOfStudy | null>(null);
   selectedSpecialization = signal<Specialization | null>(null);
   selectedExamType = signal<ModuleExam | null>(null);
+  selectedGradeScaleEntry = signal<any | null>(null);
 
   @ViewChild('courseDialogTemplate') courseDialogTemplate!: TemplateRef<any>;
   @ViewChild('specializationDialogTemplate') specializationDialogTemplate!: TemplateRef<any>;
   @ViewChild('examTypeDialogTemplate') examTypeDialogTemplate!: TemplateRef<any>;
   @ViewChild('moduleDialogTemplate') moduleDialogTemplate!: TemplateRef<any>;
+  @ViewChild('gradeScaleDialogTemplate') gradeScaleDialogTemplate!: TemplateRef<any>;
 
   isEditingCourse = computed(() => !!this.selectedCourse());
   isEditingSpecialization = computed(() => !!this.selectedSpecialization());
@@ -149,6 +153,7 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
 
   // Degree Types
   degreeTypes = Object.values(DegreeType);
+  examCategories = Object.values(ExamCategory);
 
   // Form Value Signals (to bridge Reactive Forms with Computed Signals)
   selectedCourseIdForModule = signal<string>('');
@@ -181,10 +186,17 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
 
   examTypeForm = this.fb.group({
     type: ['', Validators.required],
+    category: [ExamCategory.WRITTEN, Validators.required],
     nameDe: ['', Validators.required],
     nameEn: ['', Validators.required],
     shortDe: ['', Validators.required],
     shortEn: ['', Validators.required]
+  });
+
+  gradeScaleForm = this.fb.group({
+    grade: [null as number | null, [Validators.required, Validators.min(1.0), Validators.max(5.0)]],
+    minimumPoints: [null as number | null, [Validators.required, Validators.min(0), Validators.max(500)]],
+    label: ['']
   });
 
   universityForm = this.fb.group({
@@ -306,11 +318,12 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
       this.universityForm.patchValue(info);
     });
     this.adminService.getExamTypes().subscribe(et => this.examTypes.set(et));
+    this.adminService.getGradeScale().subscribe(gs => this.gradeScaleEntries.set(gs));
   }
 
 
 
-  switchView(view: 'structure' | 'modules' | 'university' | 'exam-types' | 'emails') {
+  switchView(view: 'structure' | 'modules' | 'university' | 'exam-types' | 'grade-scale' | 'emails') {
     this.activeView.set(view);
     this.isDrawerOpen.set(false);
   }
@@ -555,6 +568,7 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
     this.selectedExamType.set(et);
     this.examTypeForm.patchValue({
       type: et.type,
+      category: et.category,
       nameDe: et.nameDe,
       nameEn: et.nameEn,
       shortDe: et.shortDe,
@@ -644,6 +658,63 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
 
   getExamTypeShort(et: ModuleExam): string {
     return this.translate.getCurrentLang() === 'de' ? et.shortDe : et.shortEn;
+  }
+
+  // --- Grade Scale CRUD ---
+  openAddGradeScale() {
+    this.selectedGradeScaleEntry.set(null);
+    this.gradeScaleForm.reset();
+    this.dialog.open(this.gradeScaleDialogTemplate, { width: '400px', disableClose: true });
+  }
+
+  editGradeScaleEntry(entry: any) {
+    this.selectedGradeScaleEntry.set(entry);
+    this.gradeScaleForm.patchValue({
+      grade: entry.grade,
+      minimumPoints: entry.minimumPoints,
+      label: entry.label
+    });
+    this.dialog.open(this.gradeScaleDialogTemplate, { width: '400px', disableClose: true });
+  }
+
+  saveGradeScaleEntry() {
+    if (this.gradeScaleForm.invalid) return;
+    const value = this.gradeScaleForm.value as any;
+    const editingId = this.selectedGradeScaleEntry()?.id;
+    if (editingId) value.id = editingId;
+
+    this.adminService.saveGradeScaleEntry(value).subscribe(entry => {
+      if (editingId) {
+        this.gradeScaleEntries.update(list => list.map(item => item.id === editingId ? entry : item).sort((a,b) => b.minimumPoints - a.minimumPoints));
+      } else {
+        this.gradeScaleEntries.update(list => [...list, entry].sort((a,b) => b.minimumPoints - a.minimumPoints));
+      }
+      this.cancelGradeScaleEdit();
+      this.notificationService.showSuccess('academicStructure.saveGradeScaleSuccess');
+    });
+  }
+
+  cancelGradeScaleEdit() {
+    this.selectedGradeScaleEntry.set(null);
+    this.gradeScaleForm.reset();
+    this.dialog.closeAll();
+  }
+
+  deleteGradeScaleEntry(id: number) {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        title: 'academicStructure.deleteGradeScaleTitle',
+        message: 'academicStructure.deleteGradeScaleMessage'
+      }
+    });
+    dialogRef.afterClosed().subscribe(res => {
+      if (res) {
+        this.adminService.deleteGradeScaleEntry(id).subscribe(() => {
+          this.gradeScaleEntries.update(list => list.filter(item => item.id !== id));
+          this.notificationService.showSuccess('academicStructure.deleteGradeScaleSuccess');
+        });
+      }
+    });
   }
 
   updateModuleSearch(event: Event) { this.moduleSearchFilter.set((event.target as HTMLInputElement).value); }

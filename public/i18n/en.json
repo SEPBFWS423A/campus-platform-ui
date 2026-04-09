@@ -348,6 +348,11 @@
     "examTypeShortDe": "Short (DE)",
     "examTypeShortEn": "Short (EN)",
     "addType": "Add Type",
+    "examCategory": "Category",
+    "examCategories": {
+      "SUBMISSION": "Submission",
+      "WRITTEN": "Written"
+    },
     "emailTemplates": "Email Templates",
     "emailManagement": "Email Management",
     "customizeEmailTemplates": "Customize automated system email templates.",
@@ -366,10 +371,24 @@
     "handbookGenerated": "Module handbook successfully generated.",
     "noModulesForHandbook": "No modules are stored for this course of study.",
     "generateHandbookSubtitle": "Select the course of study and the language for the PDF generation.",
-    "generate": "Generate"
+    "generate": "Generate",
+    "gradeScale": "Grade Scale",
+    "gradingStandards": "Grading Standards",
+    "configurePointThresholds": "Configure point thresholds to automate academic grade calculations.",
+    "addThreshold": "Add Threshold",
+    "academicGrade": "Academic Grade",
+    "minPoints": "Min. Points",
+    "labelDescription": "Label / Description",
+    "noThresholdsDefined": "No grading thresholds defined. Click 'Add Threshold' to begin.",
+    "editGradeThreshold": "Edit Grade Threshold",
+    "addNewGradeThreshold": "Add New Grade Threshold",
+    "grade": "Grade",
+    "labelDescriptionOptional": "Label / Description (Optional)",
+    "saveGradeScaleSuccess": "Grade scale entry saved successfully.",
+    "deleteGradeScaleSuccess": "Grade scale entry deleted successfully.",
+    "deleteGradeScaleTitle": "Delete Threshold",
+    "deleteGradeScaleMessage": "Are you sure you want to delete this grading threshold?"
   },
-
-
   "user": {
     "firstname": "First Name",
     "lastname": "Last Name",
@@ -414,56 +433,56 @@
   },
   "resetPassword": {
     "title": "Reset Password",
-    "invalidToken": "Invalid or missing reset token.",
+    "invalidToken": "Reset Token missing.",
     "newPasswordLabel": "New Password",
     "resetButton": "Reset Password",
-    "successMessage": "Password has been reset successfully! Redirecting to login...",
+    "successMessage": "Password reset successful! Redirecting to login...",
     "failureMessage": "Failed to reset password."
   },
   "error": {
     "invitation": {
-      "invalidToken": "The invitation token is invalid.",
-      "alreadyCompleted": "This invitation has already been completed."
+      "invalidToken": "Invitation token is invalid.",
+      "alreadyCompleted": "Invitation already completed."
     },
     "user": {
-      "notFound": "The user was not found.",
-      "alreadyExists": "A user with this email address already exists."
+      "notFound": "User not found.",
+      "alreadyExists": "User already exists with this email."
     },
     "password": {
-      "invalidOld": "The old password you entered is incorrect."
+      "invalidOld": "Old password is incorrect."
     },
     "verification": {
-      "invalidToken": "The verification token is invalid.",
-      "tooManyRequests": "Please wait a moment before requesting another reset link."
+      "invalidToken": "Verification token invalid.",
+      "tooManyRequests": "Too many requests. Please wait."
     },
-    "generic": "Something went wrong. Please try again later.",
-    "no_connection": "Cannot connect to server. Please check your internet connection.",
-    "unauthorized": "You are not authorized to perform this operation.",
-    "forbidden": "Access denied.",
+    "generic": "Something went wrong.",
+    "no_connection": "No connection to server.",
+    "unauthorized": "Unauthorized access.",
+    "forbidden": "Forbidden action.",
     "server_error": "Internal server error.",
     "group": {
-      "alreadyExists": "A group with this name already exists.",
-      "notFound": "The selected study group could not be found.",
-      "referenced": "The group cannot be deleted because it is still referenced by active courses or users."
+      "alreadyExists": "Group already exists.",
+      "notFound": "Group not found.",
+      "referenced": "Group is referenced."
     },
     "module": {
-      "notFound": "The module could not be found.",
-      "referenced": "The module cannot be deleted because it is still referenced by a course series or student grades."
+      "notFound": "Module not found.",
+      "referenced": "Module is referenced."
     },
     "examType": {
-      "referenced": "This exam type cannot be deleted because it is still being used by one or more modules."
+      "referenced": "Exam type is referenced."
     },
     "course": {
-      "notFound": "The course of study could not be found.",
-      "referenced": "This course of study cannot be deleted because there is a module of this course of study."
+      "notFound": "Course not found.",
+      "referenced": "Course is referenced."
     },
     "specialization": {
-      "notFound": "The specialization could not be found.",
-      "referenced": "This specialization cannot be deleted because there is a module of this specialization."
+      "notFound": "Specialization not found.",
+      "referenced": "Specialization is referenced."
     }
   },
   "eventManagement": {
-    "title": "Event Management (Course Series)",
+    "title": "Event Management",
     "addCourseSeries": "Add Course Series",
     "editCourseSeries": "Edit Course Series",
     "id": "ID",
@@ -473,7 +492,7 @@
     "examType": "Exam Type",
     "studyGroups": "Study Groups",
     "actions": "Actions",
-    "noData": "No course series available. Click \"Add Course Series\" to create one.",
+    "noData": "No course series found.",
     "assignedLecturer": "Assigned Lecturer",
     "manageSchedule": "Manage Schedule",
     "statusPLANNED": "Planned",
@@ -485,38 +504,37 @@
     "submissionDeadline": "Submission Deadline",
     "cancel": "Cancel",
     "save": "Save",
-    "errorLoading": "Error loading course series",
-    "createdSuccessfully": "Created successfully",
-    "failedToCreate": "Failed to create",
-    "updatedSuccessfully": "Updated successfully",
-    "failedToUpdate": "Failed to update",
+    "errorLoading": "Error loading data.",
+    "createdSuccessfully": "Created successfully.",
+    "failedToCreate": "Creation failed.",
+    "updatedSuccessfully": "Updated successfully.",
+    "failedToUpdate": "Update failed.",
     "confirmAction": "Confirm Action",
-    "confirmDeleteMsg": "Are you sure you want to delete this course series?",
+    "confirmDeleteMsg": "Are you sure?",
     "delete": "Delete",
-    "deletedSuccessfully": "Deleted successfully",
-    "failedToDelete": "Failed to delete",
+    "deletedSuccessfully": "Deleted successfully.",
+    "failedToDelete": "Deletion failed.",
     "planningStatus": "Planning Status",
-    "planningComplete": "Course series planned successfully!",
-    "planningIncomplete": "Planning incomplete: {{hours}}h {{minutes}}m still missing.",
-    "noRoomsAvailable": "No rooms available for the selected time slot.",
-    "lecturerCollision": "Lecturer collision detected. This lecturer is already scheduled for another event during this period.",
-    "roomCollision": "Room collision detected. This room is already occupied during the selected period.",
+    "planningComplete": "Planning complete.",
+    "planningIncomplete": "Planning incomplete.",
+    "noRoomsAvailable": "No rooms available.",
+    "lecturerCollision": "Lecturer collision.",
+    "roomCollision": "Room collision.",
     "eventName": "Event Name",
     "eventType": "Event Type",
     "eventDate": "Date",
     "eventTime": "Time",
-    "eventDuration": "Duration (mins)",
+    "eventDuration": "Duration",
     "eventRoom": "Room",
-    "addEvent": "Add New Event",
+    "addEvent": "Add Event",
     "editEvent": "Edit Event",
-    "noEvents": "No events found for this course series.",
+    "noEvents": "No events found.",
     "seriesDetails": "Series Details",
     "lehrveranstaltung": "Teaching Event",
-    "klausur": "Exam (Klausur)",
+    "klausur": "Exam",
     "seats": "Seats",
     "examSeats": "Exam Seats",
     "hours": "hours"
-
   },
   "common": {
     "close": "Close",
@@ -524,6 +542,57 @@
     "cancel": "Cancel",
     "edit": "Edit",
     "delete": "Delete",
-    "add": "Add"
+    "add": "Add",
+    "saving": "Saving...",
+    "saved": "Changes saved"
+  },
+  "lecturerGrading": {
+    "title": "Lecturer Dashboard",
+    "subtitle": "Manage your exams, provide materials, and publish student grades.",
+    "totalCourses": "Total Courses",
+    "searchPlaceholder": "Search module or study group...",
+    "filterCategory": "Category",
+    "filterStatus": "Status Filter",
+    "filterExamType": "Exam Form",
+    "allCategories": "All Categories",
+    "allStatus": "All Status",
+    "allExamTypes": "All Forms",
+    "statusOPEN": "Open",
+    "statusPROVIDED": "Provided",
+    "statusGRADING": "Grading",
+    "statusCOMPLETED": "Published",
+    "categoryWRITTEN": "Written",
+    "categorySUBMISSION": "Submission",
+    "materials": "Materials",
+    "gradeNow": "Enter Grades",
+    "viewGrades": "View Grades",
+    "deadline": "Deadline",
+    "manageMaterials": "Manage Materials",
+    "examPaper": "Exam Paper",
+    "sampleSolution": "Sample Solution",
+    "chooseFile": "Choose File",
+    "changeFile": "Change File",
+    "supportedFormats": "Supported formats: PDF, Word (.doc, .docx), Text (.txt)",
+    "current": "Current",
+    "lecturerNotes": "Internal Lecturer Notes",
+    "saveAndProvide": "Save & Provide",
+    "gradingInterface": "Grading Interface",
+    "gradePublication": "Grades Publication",
+    "statusPENDING": "Pending",
+    "statusSUBMITTED": "Submitted",
+    "statusGRADED": "Graded",
+    "gradingHint": "Progress is automatically saved while you enter grades.",
+    "studentId": "Student ID",
+    "grade": "Grade",
+    "feedback": "Feedback",
+    "finalizeAndPublish": "Finalize & Publish",
+    "finalizeSuccess": "Grades published successfully",
+    "finalizeError": "Failed to publish grades",
+    "saveDraft": "Save Draft",
+    "examMaterialsSuccess": "Exam materials updated successfully",
+    "examMaterialsError": "Failed to update materials",
+    "gradesApplySuccess": "Grades applied successfully",
+    "gradesApplyError": "Failed to apply grades",
+    "points": "Points"
   }
 }
