@@ -23,13 +23,13 @@ export class ModuleHandbookService {
     if (!academicYear) {
       const now = new Date();
       const currentYear = now.getFullYear();
-      academicYear = now.getMonth() >= 8 
-        ? `${currentYear}/${currentYear + 1}` 
+      academicYear = now.getMonth() >= 8
+        ? `${currentYear}/${currentYear + 1}`
         : `${currentYear - 1}/${currentYear}`;
     }
 
     const doc = new jsPDF();
-    
+
     // --- Cover Page ---
     this.addCoverPage(doc, course, universityInfo, academicYear, lang);
 
@@ -46,8 +46,8 @@ export class ModuleHandbookService {
     // Add footer to all pages except cover
     const pageCount = (doc.internal as any).getNumberOfPages();
     for (let i = 2; i <= pageCount; i++) {
-        doc.setPage(i);
-        this.addHeaderFooter(doc, course, universityInfo, i, pageCount, lang);
+      doc.setPage(i);
+      this.addHeaderFooter(doc, course, universityInfo, i, pageCount, lang);
     }
 
     const titleBase = lang === 'de' ? 'Modulhandbuch' : 'ModuleHandbook';
@@ -62,7 +62,7 @@ export class ModuleHandbookService {
     const translations = (this.translate as any).translations?.[lang] || (this.translate as any).store?.translations?.[lang];
     if (!translations) return key;
 
-    
+
     // Support nested keys like 'academicStructure.title'
     const keys = key.split('.');
     let result = translations;
@@ -79,10 +79,10 @@ export class ModuleHandbookService {
   private addHeaderFooter(doc: jsPDF, course: CourseOfStudy, universityInfo: InstitutionInfo | null, pageNum: number, totalPages: number, lang: string) {
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
-    
+
     doc.setDrawColor(200, 200, 200);
     doc.line(15, 15, pageWidth - 15, 15);
-    
+
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(100, 100, 100);
@@ -95,24 +95,24 @@ export class ModuleHandbookService {
     const ofLabel = lang === 'de' ? 'von' : 'of';
     doc.text(`${pageLabel} ${pageNum} ${ofLabel} ${totalPages}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
     doc.text(new Date().toLocaleDateString(lang === 'de' ? 'de-DE' : 'en-US'), 15, pageHeight - 10);
-    
+
     doc.setTextColor(0, 0, 0);
   }
 
   private addCoverPage(doc: jsPDF, course: CourseOfStudy, universityInfo: InstitutionInfo | null, academicYear: string, lang: string) {
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
-    
+
     doc.setFillColor(37, 99, 235);
     doc.rect(0, 0, 5, pageHeight, 'F');
 
     const logoUrl = '/university-logo.png';
     try {
-        doc.addImage(logoUrl, 'PNG', pageWidth / 2 - 12.5, 20, 25, 25);
+      doc.addImage(logoUrl, 'PNG', pageWidth / 2 - 12.5, 20, 25, 25);
     } catch (e) {
-        doc.setDrawColor(37, 99, 235);
-        doc.setLineWidth(1);
-        doc.rect(pageWidth / 2 - 12.5, 20, 25, 25);
+      doc.setDrawColor(37, 99, 235);
+      doc.setLineWidth(1);
+      doc.rect(pageWidth / 2 - 12.5, 20, 25, 25);
     }
 
 
@@ -151,7 +151,7 @@ export class ModuleHandbookService {
 
     doc.setDrawColor(226, 232, 240);
     doc.line(pageWidth / 4, 240, (3 * pageWidth) / 4, 240);
-    
+
     doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(100, 116, 139);
@@ -162,7 +162,7 @@ export class ModuleHandbookService {
 
   private addTableOfContents(doc: jsPDF, course: CourseOfStudy, modules: Module[], lang: string) {
     const pageWidth = doc.internal.pageSize.getWidth();
-    
+
     doc.setFontSize(22);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(30, 41, 59);
@@ -170,7 +170,7 @@ export class ModuleHandbookService {
     doc.text(tocLabel, 15, 35);
 
     const sortedModules = [...modules].sort((a, b) => a.semester - b.semester || a.name.localeCompare(b.name));
-    
+
     let y = 50;
     doc.setFontSize(11);
     doc.setFont('helvetica', 'normal');
@@ -180,13 +180,13 @@ export class ModuleHandbookService {
       const text = `${m.name}`;
       const semesterLabel = lang === 'de' ? 'Semester' : 'Semester';
       const semesterText = `${semesterLabel} ${m.semester}`;
-      
+
       doc.setFont('helvetica', 'bold');
       doc.text(text, 15, y);
-      
+
       doc.setFont('helvetica', 'normal');
       doc.text(semesterText, pageWidth - 15, y, { align: 'right' });
-      
+
       y += 10;
       if (y > 270) {
         doc.addPage();
@@ -197,7 +197,7 @@ export class ModuleHandbookService {
 
   private addModuleDescription(doc: jsPDF, module: Module, course: CourseOfStudy, specializations: Specialization[], examTypes: ModuleExam[], lang: string) {
     const pageWidth = doc.internal.pageSize.getWidth();
-    
+
     doc.setFontSize(18);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(37, 99, 235);
@@ -205,21 +205,21 @@ export class ModuleHandbookService {
 
     const spec = specializations.find(s => s.id === module.specializationId);
     const preferredExam = examTypes.find(e => e.id === module.preferredExamTypeId);
-    
+
     const lecturers = module.lecturers.map(l => {
       const title = l.title ? this.instant('userManagement.academicTitles.' + l.title, lang) : '';
       return `${title} ${l.firstName} ${l.lastName}`.trim();
     }).filter(s => !!s).join(', ');
 
     const preferredLabel = lang === 'de' ? ' (empfohlen)' : ' (preferred)';
-    
-    const examText = module.possibleExamTypes?.length > 0 
+
+    const examText = module.possibleExamTypes?.length > 0
       ? module.possibleExamTypes.map(e => {
-          const name = lang === 'de' ? e.nameDe : e.nameEn;
-          return e.id === module.preferredExamTypeId ? `**${name}**${preferredLabel}` : name;
-        }).join(', ')
-      : preferredExam 
-        ? `**${lang === 'de' ? preferredExam.nameDe : preferredExam.nameEn}**${preferredLabel}`
+        const name = lang === 'de' ? e.nameDe : e.nameEn;
+        return e.id === module.preferredExamTypeId ? `${name}${preferredLabel}` : name;
+      }).join(', ')
+      : preferredExam
+        ? `${lang === 'de' ? preferredExam.nameDe : preferredExam.nameEn}${preferredLabel}`
         : this.instant('academicStructure.none', lang);
 
     const hoursLabel = this.instant('eventManagement.hours', lang) || (lang === 'de' ? 'Stunden' : 'hours');
