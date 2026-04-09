@@ -70,11 +70,16 @@
 
             <div class="header-actions">
                @if (activeView() === 'modules') {
+                <button mat-stroked-button color="primary" class="high-button" style="margin-right: 12px;"
+                   (click)="generateHandbook()">
+                   <mat-icon>description</mat-icon> {{ "academicStructure.generateHandbook" | translate }}
+                </button>
                 <button mat-flat-button color="primary" class="high-button"
                    (click)="openAddModule()">
                    <mat-icon>add</mat-icon> {{ "academicStructure.defineModule" | translate }}
                 </button>
                } @else if (activeView() === 'structure') {
+
                 <button mat-flat-button color="primary" class="high-button"
                    (click)="openAddCourse()">
                    <mat-icon>add</mat-icon> {{ "academicStructure.createCourse" | translate }}
