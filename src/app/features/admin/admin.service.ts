@@ -86,6 +86,11 @@ export interface Specialization {
   courseId: string;
 }
 
+export enum ExamCategory {
+  SUBMISSION = 'SUBMISSION',
+  WRITTEN = 'WRITTEN'
+}
+
 export interface ModuleExam {
   id: string;
   type: string;
@@ -93,6 +98,7 @@ export interface ModuleExam {
   nameEn: string;
   shortDe: string;
   shortEn: string;
+  category?: ExamCategory;
 }
 
 export interface Module {
@@ -369,5 +375,18 @@ export class AdminService {
 
   deleteEvent(eventId: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/events/${eventId}`);
+  }
+
+  // --- Grade Scale ---
+  getGradeScale(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/grade-scale`);
+  }
+
+  saveGradeScaleEntry(entry: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/grade-scale`, entry);
+  }
+
+  deleteGradeScaleEntry(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/grade-scale/${id}`);
   }
 }
