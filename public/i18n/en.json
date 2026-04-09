@@ -112,12 +112,10 @@
     "userDeleteSuccess": "User deleted successfully.",
     "userDeleteFailure": "Failed to delete user.",
     "invitationSuccess": "Invitation sent successfully to {{email}}.",
-    "bulkInvitationSuccess": "All invitations sent successfully.",
     "invitationFailure": "Failed to send invitation.",
     "studentFieldsRequired": "Course and specialization are required for students.",
     "userUpdateSuccess": "User updated successfully.",
     "userUpdateFailure": "Failed to update user.",
-    "addGroupSuccess": "Study group created successfully.",
     "addMemberSuccess": "Member added successfully.",
     "userDirectory": "User Directory",
     "studentGroups": "Student Groups",
@@ -175,8 +173,14 @@
     "inviteNewMember": "Invite New Member",
     "batchEntry": "Batch Entry",
     "batchEntryDesc": "Paste dozens of records at once for high-efficiency provisioning.",
+    "importFile": "Import File",
+    "importRunning": "Import running...",
+    "wordReadError": "Error reading Word file",
+    "formatNotSupported": "Format not supported. Please use CSV, TXT, Excel or Word.",
+    "supportedFormats": "Supported formats: CSV, TXT, Excel (.xlsx, .xls), Word (.docx)",
+    "importSuccess": "Data imported successfully",
     "batchFormat": "Format:",
-    "batchFormatValue": "email ; [studentId] ; [role] ; [course] ; [specialization] ; [language]",
+    "batchFormatValue": "email ; [id] ; [role] ; [course] ; [specialization] ; [year] ; [quartal] ; [language]",
     "listData": "List Data",
     "defaultValues": "Default Values",
     "defaultCourse": "Default Course",
@@ -205,7 +209,7 @@
     "exclude": "Exclude",
     "filters": "Filters",
     "cancelGroupCreation": "Cancel Creation",
-    "csvFormat": "email; [id]; role; course; specialization; language",
+    "csvFormat": "email; [id]; role; course; specialization; year; quartal; language",
     "degreeType": {
       "BACHELOR": "Bachelor",
       "MASTER": "Master"
@@ -220,7 +224,17 @@
     "editGroupSubtitle": "Update the configuration and identifiers of this cohort.",
     "standardLanguage": "Standard Language",
     "defaultLanguage": "Default Language",
-    "optionalHint": "Fields in [ ] are optional and will use defaults if omitted."
+    "optionalHint": "Fields in [ ] are optional and will use defaults if omitted.",
+    "autoFillStudents": "Automatically fill group with matching students",
+    "studyyear": "Study Year",
+    "searchPlaceholder": "Name or student number...",
+    "addToGroup": "Add to group",
+    "addStudent": "Add Student",
+    "studentsToAssign": "Students to Assign",
+    "noMatchingStudents": "No matching students found.",
+    "autoFilteringCohorts": "Students are automatically filtered by year and quartal.",
+    "bulkInvitationSuccess": "Batch invitations sent successfully!",
+    "addGroupSuccess": "Study group created successfully."
   },
   "academicStructure": {
     "title": "Academic Structure",
@@ -345,8 +359,14 @@
     "bodyHtml": "Body (HTML supported)",
     "copiedToClipboard": "Placeholder copied to clipboard!",
     "copyPlaceholder": "Copy placeholder",
-    "updateEmailTemplatesSuccess": "Email templates synchronized successfully!"
+    "updateEmailTemplatesSuccess": "Email templates synchronized successfully!",
+    "generateHandbook": "Generate Module Handbook",
+    "pleaseSelectCourseAndDegree": "Please select a course of study and a degree.",
+    "courseNotFound": "Course of study not found.",
+    "handbookGenerated": "Module handbook successfully generated.",
+    "noModulesForHandbook": "No modules are stored for this course of study."
   },
+
   "user": {
     "firstname": "First Name",
     "lastname": "Last Name",

@@ -112,12 +112,10 @@
     "userDeleteSuccess": "Benutzer erfolgreich gelöscht.",
     "userDeleteFailure": "Löschen des Benutzers fehlgeschlagen.",
     "invitationSuccess": "Einladung erfolgreich an {{email}} gesendet.",
-    "bulkInvitationSuccess": "Alle Einladungen wurden erfolgreich versendet.",
     "invitationFailure": "Senden der Einladung fehlgeschlagen.",
     "studentFieldsRequired": "Studiengang und Vertiefung sind für Studenten erforderlich.",
     "userUpdateSuccess": "Benutzer erfolgreich aktualisiert.",
     "userUpdateFailure": "Aktualisierung des Benutzers fehlgeschlagen.",
-    "addGroupSuccess": "Studiengruppe erfolgreich erstellt.",
     "addMemberSuccess": "Mitglied erfolgreich hinzugefügt.",
     "userDirectory": "Benutzerverzeichnis",
     "studentGroups": "Studiengruppen",
@@ -175,8 +173,14 @@
     "inviteNewMember": "Neues Mitglied einladen",
     "batchEntry": "Stapelerfassung",
     "batchEntryDesc": "Fügen Sie Dutzende von Datensätzen gleichzeitig ein.",
+    "importFile": "Datei importieren",
+    "importRunning": "Import läuft...",
+    "wordReadError": "Fehler beim Lesen der Word-Datei",
+    "formatNotSupported": "Dateiformat nicht unterstützt. Bitte CSV, TXT, Excel oder Word verwenden.",
+    "supportedFormats": "Unterstützte Formate: CSV, TXT, Excel (.xlsx, .xls), Word (.docx)",
+    "importSuccess": "Daten erfolgreich importiert",
     "batchFormat": "Format:",
-    "batchFormatValue": "E-Mail ; [Matrikelnr.] ; [Rolle] ; [Studiengang] ; [Vertiefung] ; [Sprache]",
+    "batchFormatValue": "E-Mail ; [Matrikelnr.] ; [Rolle] ; [Studiengang] ; [Vertiefung] ; [Jahr] ; [Quartal] ; [Sprache]",
     "listData": "Listendaten",
     "defaultValues": "Standardwerte",
     "defaultCourse": "Standard-Studiengang",
@@ -205,7 +209,7 @@
     "exclude": "Ausschließen",
     "filters": "Filter",
     "cancelGroupCreation": "Erstellung abbrechen",
-    "csvFormat": "E-Mail; [Matrikelnr.]; Rolle; Studiengang; Vertiefung; Sprache",
+    "csvFormat": "E-Mail; [Matrikelnr.]; Rolle; Studiengang; Vertiefung; Jahr; Quartal; Sprache",
     "degreeType": {
       "BACHELOR": "Bachelor",
       "MASTER": "Master"
@@ -220,7 +224,17 @@
     "editGroupSubtitle": "Aktualisieren Sie die Konfiguration und Kennungen dieser Kohorte.",
     "standardLanguage": "Standard-Sprache",
     "defaultLanguage": "Standard-Sprache",
-    "optionalHint": "Felder in [ ] sind optional und verwenden Standardwerte, falls sie fehlen."
+    "optionalHint": "Felder in [ ] sind optional und verwenden Standardwerte, falls sie fehlen.",
+    "autoFillStudents": "Gruppe automatisch mit passenden Studenten füllen",
+    "studyyear": "Studienjahr",
+    "searchPlaceholder": "Name oder Matrikelnummer...",
+    "addToGroup": "Zur Gruppe hinzufügen",
+    "addStudent": "Student hinzufügen",
+    "studentsToAssign": "Zuzuweisende Studierende",
+    "noMatchingStudents": "Keine passenden Studierenden gefunden.",
+    "autoFilteringCohorts": "Studierende werden automatisch nach Jahrgang und Quartal gefiltert.",
+    "bulkInvitationSuccess": "Stapel-Einladungen erfolgreich versendet!",
+    "addGroupSuccess": "Studiengruppe erfolgreich erstellt."
   },
   "academicStructure": {
     "title": "Akademische Struktur",
@@ -345,8 +359,14 @@
     "bodyHtml": "Inhalt (HTML unterstützt)",
     "copiedToClipboard": "Platzhalter in die Zwischenablage kopiert!",
     "copyPlaceholder": "Platzhalter kopieren",
-    "updateEmailTemplatesSuccess": "E-Mail-Vorlagen erfolgreich synchronisiert!"
+    "updateEmailTemplatesSuccess": "E-Mail-Vorlagen erfolgreich synchronisiert!",
+    "generateHandbook": "Modulhandbuch generieren",
+    "pleaseSelectCourseAndDegree": "Bitte wählen Sie einen Studiengang und einen Abschluss aus.",
+    "courseNotFound": "Studiengang nicht gefunden.",
+    "handbookGenerated": "Modulhandbuch wurde erfolgreich generiert.",
+    "noModulesForHandbook": "Für diesen Studiengang sind keine Module hinterlegt."
   },
+
   "user": {
     "firstname": "Vorname",
     "lastname": "Nachname",
