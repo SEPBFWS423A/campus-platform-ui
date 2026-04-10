@@ -33,6 +33,10 @@
                <mat-icon matListItemIcon>trending_up</mat-icon>
                <div matListItemTitle>{{ "academicStructure.gradeScale" | translate }}</div>
             </a>
+            <a mat-list-item [class.active-link]="activeView() === 'faqs'" (click)="switchView('faqs')">
+               <mat-icon matListItemIcon>quiz</mat-icon>
+               <div matListItemTitle>{{ "academicStructure.faqManagement" | translate }}</div>
+            </a>
          </div>
       </mat-nav-list>
 
@@ -52,6 +56,7 @@
                   @if (activeView() === 'university') { {{ "academicStructure.campusAdministration" | translate }} }
                   @else if (activeView() === 'structure') { {{ "academicStructure.foundationStructure" | translate }} }
                   @else if (activeView() === 'exam-types') { {{ "academicStructure.manageExamTypes" | translate }} }
+                  @else if (activeView() === 'faqs') { {{ "academicStructure.faqManagement" | translate }} }
                   @else if (activeView() === 'grade-scale') { {{ "academicStructure.gradingStandards" | translate }} }
                   @else if (activeView() === 'emails') { {{ "academicStructure.emailManagement" | translate }} }
                   @else { {{ "academicStructure.academicModuleCatalog" | translate }} }
@@ -60,6 +65,7 @@
                   @if (activeView() === 'university') { {{ "academicStructure.configureUniversityInfo" | translate }} }
                   @else if (activeView() === 'structure') { {{ "academicStructure.configureCoursesAndSpecializations" | translate }} }
                   @else if (activeView() === 'exam-types') { {{ "academicStructure.manageAvailableExamTypes" | translate }} }
+                @else if (activeView() === 'faqs') { {{ "academicStructure.manageFaqsDescription" | translate }} }
                   @else if (activeView() === 'grade-scale') { {{ "academicStructure.configurePointThresholds" | translate }} }
                   @else if (activeView() === 'emails') { {{ "academicStructure.customizeEmailTemplates" | translate }} }
                   @else { {{ "academicStructure.manageModuleRosterAndQualifications" | translate }} }
@@ -111,7 +117,12 @@
                   [disabled]="universityForm.invalid">
                   <mat-icon>save</mat-icon> {{ "academicStructure.syncTemplates" | translate }}
                </button>
-               }
+               } @else if (activeView() === 'faqs') {
+               <button mat-flat-button color="primary" class="high-button"
+                   (click)="editingFaq() ? saveFaqEdit() : showAddFaqForm.set(!showAddFaqForm())">
+                   <mat-icon>{{ editingFaq() ? 'save' : (showAddFaqForm() ? 'close' : 'add') }}</mat-icon> {{ editingFaq() ? ("academicStructure.saveChanges" | translate) : ((showAddFaqForm() ? "academicStructure.cancel" : "academicStructure.addFaq") | translate) }}
+              </button>
+            }
             </div>
          </div>
 
@@ -418,6 +429,54 @@
          </div>
          }
 
+        <!-- FAQ MANAGEMENT VIEW -->
+        <div class="faq-translations">
+          @for (translationGroup of faqTranslations.controls; track $index) {
+            <mat-card class="config-card" [formGroup]="translationGroup">
+              <mat-card-header>
+                <mat-card-title>
+                  {{ "academicStructure.translation" | translate }} {{ $index + 1 }}
+                </mat-card-title>
+              </mat-card-header>
+
+              <mat-card-content>
+                <div class="form-row">
+                  <mat-form-field appearance="outline" class="flex-1">
+                    <mat-label>{{ "academicStructure.languageCode" | translate }}</mat-label>
+                    <mat-select formControlName="languageCode">
+                      <mat-option value="de">Deutsch (de)</mat-option>
+                      <mat-option value="en">English (en)</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+
+                  <div class="translation-actions">
+                    <button mat-icon-button color="warn" type="button" (click)="removeFaqTranslation($index)">
+                      <mat-icon>delete_outline</mat-icon>
+                    </button>
+                  </div>
+                </div>
+
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>{{ "academicStructure.question" | translate }}</mat-label>
+                  <input matInput formControlName="question">
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>{{ "academicStructure.category" | translate }}</mat-label>
+                  <input matInput formControlName="category">
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>{{ "academicStructure.answer" | translate }}</mat-label>
+                  <textarea matInput rows="5" formControlName="answer"></textarea>
+                </mat-form-field>
+              </mat-card-content>
+            </mat-card>
+          }
+        </div>
+      </main>
+   </mat-sidenav-content>
+</mat-sidenav-container>
          <!-- GRADE SCALE VIEW -->
          @if (activeView() === 'grade-scale') {
          <div class="view-section animate-fade-in">

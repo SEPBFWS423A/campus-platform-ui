@@ -81,7 +81,7 @@
       padding: 32px 16px;
       flex: 1;
     }
-    
+
     .nav-section { margin-bottom: 32px; }
 
     a.mat-mdc-list-item {
@@ -108,12 +108,12 @@
 
       &.active-link {
         background-color: var(--mat-sys-primary-container) !important;
-        
-        mat-icon { 
+
+        mat-icon {
           color: var(--mat-sys-primary);
           font-variation-settings: 'FILL' 1;
         }
-        
+
         ::ng-deep .mdc-list-item__primary-text {
           color: var(--mat-sys-on-primary-container);
           font-weight: 700;
@@ -296,11 +296,11 @@
       width: fit-content;
       background-color: var(--mat-sys-surface-container-low);
       color: var(--mat-sys-on-surface-variant);
-      
+
       &.bachelor { background-color: var(--mat-sys-secondary-container); color: var(--mat-sys-on-secondary-container); }
       &.master { background-color: var(--mat-sys-tertiary-container); color: var(--mat-sys-on-tertiary-container); }
     }
-    
+
     .header-actions {
        display: flex;
        align-items: center;
@@ -330,7 +330,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    
+
     .modern-chip {
       background-color: var(--mat-sys-surface-container-low);
       border: 1px solid var(--mat-sys-outline-variant);
@@ -340,10 +340,10 @@
       border-radius: 10px;
       color: var(--mat-sys-on-surface);
       transition: var(--transition-smooth);
-      
+
       &:hover { border-color: var(--mat-sys-primary); color: var(--mat-sys-primary); }
     }
-    
+
     .empty-hint { font-style: italic; color: var(--mat-sys-on-surface-variant); font-size: 0.9rem; margin: 8px 0; display: block; opacity: 0.6; }
   }
 }
@@ -398,7 +398,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 32px;
-  
+
   .full-span { grid-column: 1 / -1; }
 }
 
@@ -411,20 +411,20 @@
 
   mat-card-header {
     padding: 24px 24px 20px !important;
-    mat-icon { 
-      background-color: var(--mat-sys-primary-container); 
-      color: var(--mat-sys-on-primary-container); 
-      border-radius: 16px; 
-      width: 44px; 
-      height: 44px; 
-      line-height: 44px; 
-      text-align: center; 
+    mat-icon {
+      background-color: var(--mat-sys-primary-container);
+      color: var(--mat-sys-on-primary-container);
+      border-radius: 16px;
+      width: 44px;
+      height: 44px;
+      line-height: 44px;
+      text-align: center;
     }
     mat-card-title { font-weight: 900; font-size: 1.4rem; letter-spacing: -0.5px; color: var(--mat-sys-on-surface); }
   }
-  
-  mat-card-content { 
-    padding: 0 24px 24px !important; 
+
+  mat-card-content {
+    padding: 0 24px 24px !important;
     .form-column { display: flex; flex-direction: column; gap: 12px; }
   }
 }
@@ -441,7 +441,7 @@
 .modern-table {
   width: 100%;
   border-collapse: collapse;
-  
+
   th {
      background-color: var(--mat-sys-surface-container-low);
      padding: 24px;
@@ -467,7 +467,7 @@
       }
     }
   }
-  
+
   .bold-text { font-weight: 700; color: var(--mat-sys-on-surface); font-size: 1.05rem; }
   
   .points-pill {
@@ -492,17 +492,17 @@
      flex-direction: column;
      gap: 4px;
      .c-name { font-weight: 600; color: var(--mat-sys-on-surface-variant); font-size: 0.9rem; }
-     .f-tag { 
-        font-size: 0.75rem; 
-        color: var(--mat-sys-primary); 
-        background-color: var(--mat-sys-primary-container); 
-        padding: 2px 8px; 
-        border-radius: 6px; 
-        width: fit-content; 
-        font-weight: 700; 
+     .f-tag {
+        font-size: 0.75rem;
+        color: var(--mat-sys-primary);
+        background-color: var(--mat-sys-primary-container);
+        padding: 2px 8px;
+        border-radius: 6px;
+        width: fit-content;
+        font-weight: 700;
      }
   }
-  
+
   .staff-stack {
      display: flex;
      margin-left: 8px;
@@ -525,7 +525,7 @@
         &:hover { transform: scale(1.15); z-index: 2; border-color: var(--mat-sys-primary); }
      }
   }
-  
+
   .exam-badge-container {
      display: flex;
      flex-wrap: wrap;
@@ -541,11 +541,11 @@
         align-items: center;
         gap: 4px;
         border: 1px solid transparent;
-        
-        &.preferred { 
-          background-color: var(--mat-sys-secondary-container); 
-          color: var(--mat-sys-on-secondary-container); 
-          border-color: var(--mat-sys-secondary); 
+
+        &.preferred {
+          background-color: var(--mat-sys-secondary-container);
+          color: var(--mat-sys-on-secondary-container);
+          border-color: var(--mat-sys-secondary);
         }
         .pref-star { font-size: 12px; width: 12px; height: 12px; }
      }
@@ -557,7 +557,7 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 24px;
-    
+
     .modern-card {
         padding: 8px;
         .icon-avatar { background-color: var(--mat-sys-tertiary-container); color: var(--mat-sys-tertiary); }
@@ -594,18 +594,18 @@
   background-color: var(--mat-sys-surface);
   border: 1px solid var(--mat-sys-outline-variant);
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
-  
+
   mat-card-header {
      padding: 40px 48px 24px !important;
      mat-card-title { font-size: 1.8rem; font-weight: 900; letter-spacing: -1px; color: var(--mat-sys-on-surface); }
   }
   mat-card-content { padding: 0 48px 32px !important; }
-  mat-card-actions { 
-    padding: 24px 48px 40px !important; 
-    background-color: var(--mat-sys-surface-container-low); 
-    border-radius: 0 0 32px 32px; 
+  mat-card-actions {
+    padding: 24px 48px 40px !important;
+    background-color: var(--mat-sys-surface-container-low);
+    border-radius: 0 0 32px 32px;
   }
-  
+
   .form-row { display: flex; gap: 24px; margin-bottom: 16px; .flex-2 { flex: 2; } .flex-1 { flex: 1; } }
 }
 
@@ -617,6 +617,45 @@
 .animate-fade-in { animation: fadeIn 0.6s ease-out; }
 .animate-slide-down { animation: slideDown 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
 
+.actions-cell {
+  width: 120px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.center {
+  text-align: center;
+}
+
+/* Optional: bessere Darstellung langer FAQ-Antworten in der Tabelle */
+.modern-table .module-row td {
+  vertical-align: top;
+}
+
+/* Optional: damit veröffentlichte / Entwurf-Badges auch bei FAQs sauber wirken */
+.modern-table .degree-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.faq-translations {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.translation-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 56px;
+}
+
+.faq-extra-actions {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-start;
 /* --- Rich Text Editor Styling --- */
 .editor-label {
   font-size: 0.85rem;

@@ -1,1 +1,197 @@
-<p>info works!</p>
+<section class="info-page">
+  <div class="info-hero">
+    <h1>
+      @if (institution?.universityName) {
+        {{ institution.universityName }} {{ 'info.pageTitleSuffix' | translate }}
+      } @else {
+        {{ 'info.pageTitle' | translate }}
+      }
+    </h1>
+
+    <p>
+      {{ 'info.subtitle' | translate }}
+      @if (institution?.city) {
+        {{ 'info.subtitleCitySuffix' | translate:{ city: institution.city } }}
+      }
+    </p>
+  </div>
+
+  @if (institutionLoading) {
+    <div class="top-state">
+      <h2>{{ 'info.loadingInstitutionTitle' | translate }}</h2>
+      <p>{{ 'info.pleaseWait' | translate }}</p>
+    </div>
+  } @else if (institutionError) {
+    <div class="top-state top-state--error">
+      <h2>{{ 'info.errorTitle' | translate }}</h2>
+      <p>{{ institutionError | translate }}</p>
+    </div>
+  } @else if (institution) {
+    <div class="info-grid">
+      <article class="info-card">
+        <div class="info-card__header">
+          <span class="info-card__icon">✉</span>
+          <h2>{{ 'info.contactTitle' | translate }}</h2>
+        </div>
+
+        <h3>{{ institution.universityName }}</h3>
+
+        <ul class="info-list">
+          <li>
+            <span class="label">{{ 'info.emailLabel' | translate }}</span>
+            <a class="inline-link" [href]="'mailto:' + institution.sekretariatEmail">
+              {{ institution.sekretariatEmail }}
+            </a>
+          </li>
+          <li>
+            <span class="label">{{ 'info.phoneLabel' | translate }}</span>
+            <a class="inline-link" [href]="'tel:' + institution.sekretariatPhone">
+              {{ institution.sekretariatPhone }}
+            </a>
+          </li>
+          <li>
+            <span class="label">{{ 'info.openingHoursLabel' | translate }}</span>
+            <span>{{ institution.sekretariatOpeningTimes }}</span>
+          </li>
+          <li>
+            <span class="label">{{ 'info.locationLabel' | translate }}</span>
+            <span>{{ institution.city }}</span>
+          </li>
+        </ul>
+      </article>
+
+      <article class="info-card">
+        <div class="info-card__header">
+          <span class="info-card__icon">⌂</span>
+          <h2>{{ 'info.campusTitle' | translate }}</h2>
+        </div>
+
+        <div class="map-placeholder">
+          <div class="map-placeholder__icon">⌘</div>
+          <p>{{ institution.city }}</p>
+          <small>{{ institution.universityName }}</small>
+        </div>
+      </article>
+
+      <article class="info-card">
+        <div class="info-card__header">
+          <span class="info-card__icon">🔗</span>
+          <h2>{{ 'info.linksTitle' | translate }}</h2>
+        </div>
+
+        <ul class="info-list info-list--links">
+          <li>
+            <a [href]="institution.bibliothekUrl" target="_blank" rel="noopener noreferrer">
+              {{ 'info.libraryLink' | translate }}
+            </a>
+          </li>
+          <li>
+            <a [href]="institution.mensaUrl" target="_blank" rel="noopener noreferrer">
+              {{ 'info.cafeteriaLink' | translate }}
+            </a>
+          </li>
+          <li>
+            <a [href]="'mailto:' + institution.websiteEmail">
+              {{ 'info.websiteContactLink' | translate }}
+            </a>
+          </li>
+        </ul>
+      </article>
+
+      <article class="info-card">
+        <div class="info-card__header">
+          <span class="info-card__icon">🛡</span>
+          <h2>{{ 'info.securityTitle' | translate }}</h2>
+        </div>
+
+        <ul class="info-list">
+          <li>{{ 'info.securityLine1' | translate }}</li>
+          <li>{{ 'info.securityLine2' | translate }}</li>
+          <li>
+            <span class="label">{{ 'info.imprintLabel' | translate }}</span>
+            <span>{{ institution.impressum }}</span>
+          </li>
+          <li>
+            <span class="label">{{ 'info.websiteContactLabel' | translate }}</span>
+            <a class="inline-link" [href]="'mailto:' + institution.websiteEmail">
+              {{ institution.websiteEmail }}
+            </a>
+          </li>
+        </ul>
+
+        <div class="badge-list">
+          <span class="badge">TLS</span>
+          <span class="badge">RBAC</span>
+          <span class="badge">{{ institution.city }}</span>
+        </div>
+      </article>
+    </div>
+  }
+
+  <section class="faq-section">
+    <div class="faq-section__header">
+      <div>
+        <span class="faq-section__badge">{{ 'info.faqBadge' | translate }}</span>
+        <h2>{{ 'info.faqTitle' | translate }}</h2>
+        <p>{{ 'info.faqSubtitle' | translate }}</p>
+      </div>
+    </div>
+
+    <div class="faq-toolbar">
+      <div class="faq-search">
+        <input
+          type="text"
+          [placeholder]="'info.searchPlaceholder' | translate"
+          [(ngModel)]="searchTerm"
+        />
+      </div>
+    </div>
+
+    @if (faqLoading) {
+      <div class="faq-empty">
+        <h3>{{ 'info.loadingFaqTitle' | translate }}</h3>
+        <p>{{ 'info.pleaseWait' | translate }}</p>
+      </div>
+    } @else if (faqError) {
+      <div class="faq-empty">
+        <h3>{{ 'info.errorTitle' | translate }}</h3>
+        <p>{{ faqError | translate }}</p>
+      </div>
+    } @else if (filteredFaqs.length === 0) {
+      <div class="faq-empty">
+        <h3>{{ 'info.noResultsTitle' | translate }}</h3>
+        <p>{{ 'info.noResultsText' | translate }}</p>
+      </div>
+    } @else {
+      <div class="faq-list-scroll">
+        <div class="faq-list">
+          @for (faq of filteredFaqs; track faq.id) {
+            <article class="faq-card" [class.faq-card--open]="isOpen(faq.id)">
+              <button
+                type="button"
+                class="faq-card__question"
+                (click)="toggleFaq(faq.id)"
+                [attr.aria-expanded]="isOpen(faq.id)"
+              >
+                <div class="faq-card__question-text">
+                  <span class="faq-card__category">{{ faq.category }}</span>
+                  <h3>{{ faq.question }}</h3>
+                </div>
+
+                <span class="faq-card__icon">
+                  {{ isOpen(faq.id) ? '−' : '+' }}
+                </span>
+              </button>
+
+              @if (isOpen(faq.id)) {
+                <div class="faq-card__answer">
+                  <p>{{ faq.answer }}</p>
+                </div>
+              }
+            </article>
+          }
+        </div>
+      </div>
+    }
+  </section>
+</section>

@@ -25,6 +25,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { AdminService, CourseOfStudy, Specialization, Module, User, UserRole, DegreeType, InstitutionInfo, ModuleExam, ModuleLecturer, ExamCategory } from '../admin.service';
+import {FaqAdminResponse, FaqTranslationModel, FaqUpsertRequest} from '../../../core/models/faqModel';
 import { NotificationService } from '../../../core/services/notification.service';
 import { ConfirmationDialogComponent } from '../../../shared/components/confirmation-dialog/confirmation-dialog.component';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -88,15 +89,19 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
+  supportedFaqLanguages = ['de', 'en'];
+
   // Data signals
   courses = signal<CourseOfStudy[]>([]);
   specializations = signal<Specialization[]>([]);
   modules = signal<Module[]>([]);
   lecturers = signal<User[]>([]);
   universityInfo = signal<InstitutionInfo | null>(null);
+  examTypes = signal<ModuleExam[]>([]);
+  faqs = signal<FaqAdminResponse[]>([]);
 
   // View state
-  activeView = signal<'structure' | 'modules' | 'university' | 'exam-types' | 'grade-scale' | 'emails'>('university');
+  activeView = signal<'structure' | 'modules' | 'university' | 'exam-types' | 'grade-scale' | 'emails' | 'faqs'>('university');
   examTypes = signal<ModuleExam[]>([]);
   gradeScaleEntries = signal<any[]>([]);
   isDrawerOpen = signal(false);
@@ -104,6 +109,8 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
   showAddSpecializationForm = signal(false);
   showAddModuleForm = signal(false);
   showAddExamTypeForm = signal(false);
+  showAddFaqForm = signal(false);
+  editingFaq = signal<FaqAdminResponse | null>(null);
   showAddGradeScaleForm = signal(false);
   selectedModule = signal<Module | null>(null);
   selectedCourse = signal<CourseOfStudy | null>(null);
@@ -155,7 +162,6 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
   degreeTypes = Object.values(DegreeType);
   examCategories = Object.values(ExamCategory);
 
-  // Form Value Signals (to bridge Reactive Forms with Computed Signals)
   selectedCourseIdForModule = signal<string>('');
 
   // Forms
@@ -164,14 +170,10 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
     degreeType: [DegreeType.Bachelor, Validators.required]
   });
 
-  get courseNameFormControl() { return this.courseForm.get('name') as FormControl; }
-
   specializationForm = this.fb.group({
     name: ['', Validators.required],
     courseId: ['', Validators.required]
   });
-
-  get specializationNameFormControl() { return this.specializationForm.get('name') as FormControl; }
 
   moduleForm = this.fb.group({
     name: ['', Validators.required],
@@ -219,13 +221,10 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
     passwordResetEmailBodyEn: ['']
   });
 
-  // Remove static examTypes list as we now load it from backend
-  // examTypes = Object.values(ExamType).map(type => ({ type, name: type.replace('_', ' ') } as ModuleExam));
-
   // Computed
-  semesters = computed(() => {
-    return Array.from(new Set(this.modules().map(m => m.semester))).sort((a, b) => a - b);
-  });
+  semesters = computed(() =>
+    Array.from(new Set(this.modules().map(m => m.semester))).sort((a, b) => a - b)
+  );
 
   uniqueCourseNames = computed(() => {
     const names = this.courses().map(c => c.name);
@@ -272,6 +271,18 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
     return this.specializations().filter(f => courseIds.includes(f.courseId));
   });
 
+  get courseNameFormControl() {
+    return this.courseForm.get('name') as FormControl;
+  }
+
+  get specializationNameFormControl() {
+    return this.specializationForm.get('name') as FormControl;
+  }
+
+  get faqTranslations(): FormArray<FormGroup> {
+    return this.faqForm.get('translations') as FormArray<FormGroup>;
+  }
+
   ngOnInit() {
     const editorConfig = {
       linkValidationPattern: '^(https?://.*|{url})'
@@ -282,6 +293,7 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
     this.editorResetEn = new Editor(editorConfig);
 
     this.loadData();
+    this.resetFaqForm();
 
     this.moduleForm.get('possibleExamTypes')?.valueChanges.subscribe(val => {
       const selected = val || [];
@@ -318,10 +330,9 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
       this.universityForm.patchValue(info);
     });
     this.adminService.getExamTypes().subscribe(et => this.examTypes.set(et));
+    this.adminService.getFaqs().subscribe(f => this.faqs.set(f));
     this.adminService.getGradeScale().subscribe(gs => this.gradeScaleEntries.set(gs));
   }
-
-
 
   switchView(view: 'structure' | 'modules' | 'university' | 'exam-types' | 'grade-scale' | 'emails') {
     this.activeView.set(view);
@@ -331,6 +342,7 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
   // --- University CRUD ---
   saveUniversityInfo() {
     if (this.universityForm.invalid) return;
+
     const info = this.universityForm.value as InstitutionInfo;
     this.adminService.updateInstitutionInfo(info).subscribe(res => {
       this.universityInfo.set(res);
@@ -397,6 +409,7 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
         message: 'academicStructure.deleteCourseMessage'
       }
     });
+
     dialogRef.afterClosed().subscribe(res => {
       if (res) {
         this.adminService.deleteCourse(id).subscribe(() => {
@@ -459,6 +472,7 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
         message: 'academicStructure.deleteSpecializationMessage'
       }
     });
+
     dialogRef.afterClosed().subscribe(res => {
       if (res) {
         this.adminService.deleteSpecialization(id).subscribe(() => {
@@ -493,6 +507,7 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
 
   addModule() {
     if (this.moduleForm.invalid) return;
+
     const formValue = this.moduleForm.value;
     const editingId = this.selectedModule()?.id;
 
@@ -547,6 +562,7 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
         message: 'academicStructure.deleteModuleMessage'
       }
     });
+
     dialogRef.afterClosed().subscribe(res => {
       if (res) {
         this.adminService.deleteModule(id).subscribe(() => {
@@ -611,6 +627,7 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
         message: 'academicStructure.deleteExamTypeMessage'
       }
     });
+
     dialogRef.afterClosed().subscribe(res => {
       if (res) {
         this.adminService.deleteExamType(id).subscribe(() => {
@@ -619,6 +636,143 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
         });
       }
     });
+  }
+
+  // --- FAQ CRUD ---
+  addFaq() {
+    if (this.faqForm.invalid) return;
+
+    const payload = this.toFaqPayload();
+
+    this.adminService.createFaq(payload).subscribe({
+      next: faq => {
+        this.faqs.update(list => [...list, faq].sort((a, b) => a.sortOrder - b.sortOrder || a.id - b.id));
+        this.resetFaqForm();
+        this.showAddFaqForm.set(false);
+        this.notificationService.showSuccess('academicStructure.addFaqSuccess');
+      },
+      error: () => this.notificationService.showError('academicStructure.addFaqError')
+    });
+  }
+
+  startEditFaq(faq: FaqAdminResponse) {
+    this.editingFaq.set(faq);
+    this.showAddFaqForm.set(true);
+    this.patchFaqForm(faq);
+  }
+
+  saveFaqEdit() {
+    const editing = this.editingFaq();
+    if (!editing || this.faqForm.invalid) return;
+
+    const payload = this.toFaqPayload();
+
+    this.adminService.updateFaq(editing.id, payload).subscribe({
+      next: updatedFaq => {
+        this.faqs.update(list =>
+          list
+            .map(f => (f.id === updatedFaq.id ? updatedFaq : f))
+            .sort((a, b) => a.sortOrder - b.sortOrder || a.id - b.id)
+        );
+        this.cancelFaqEdit();
+        this.notificationService.showSuccess('academicStructure.updateFaqSuccess');
+      },
+      error: () => this.notificationService.showError('academicStructure.updateFaqError')
+    });
+  }
+
+  deleteFaq(id: number) {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        title: 'academicStructure.deleteFaqTitle',
+        message: 'academicStructure.deleteFaqMessage'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(res => {
+      if (res) {
+        this.adminService.deleteFaq(id).subscribe({
+          next: () => {
+            this.faqs.update(list => list.filter(f => f.id !== id));
+            this.notificationService.showSuccess('academicStructure.deleteFaqSuccess');
+          },
+          error: () => this.notificationService.showError('academicStructure.deleteFaqError')
+        });
+      }
+    });
+  }
+
+  cancelFaqEdit() {
+    this.editingFaq.set(null);
+    this.showAddFaqForm.set(false);
+    this.resetFaqForm();
+  }
+
+  addFaqTranslation(languageCode: string = '') {
+    this.faqTranslations.push(this.createFaqTranslationGroup(languageCode));
+  }
+
+  removeFaqTranslation(index: number) {
+    if (this.faqTranslations.length <= 1) return;
+    this.faqTranslations.removeAt(index);
+  }
+
+  private createFaqTranslationGroup(languageCode: string, data?: Partial<FaqTranslationModel>): FormGroup {
+    return this.fb.group({
+      id: [data?.id ?? null],
+      languageCode: [data?.languageCode ?? languageCode, [Validators.required]],
+      question: [data?.question ?? '', [Validators.required, Validators.maxLength(255)]],
+      answer: [data?.answer ?? '', [Validators.required]],
+      category: [data?.category ?? '', [Validators.required, Validators.maxLength(100)]]
+    });
+  }
+
+  private resetFaqForm() {
+    this.faqForm.reset({
+      sortOrder: this.getNextFaqSortOrder(),
+      published: true
+    });
+
+    this.faqTranslations.clear();
+
+    for (const lang of this.supportedFaqLanguages) {
+      this.faqTranslations.push(this.createFaqTranslationGroup(lang));
+    }
+  }
+
+  private patchFaqForm(faq: FaqAdminResponse) {
+    this.faqForm.patchValue({
+      sortOrder: faq.sortOrder,
+      published: faq.published
+    });
+
+    this.faqTranslations.clear();
+
+    for (const translation of faq.translations) {
+      this.faqTranslations.push(this.createFaqTranslationGroup(translation.languageCode, translation));
+    }
+  }
+
+  private toFaqPayload(): FaqUpsertRequest {
+    const raw = this.faqForm.getRawValue();
+
+    return {
+      sortOrder: raw.sortOrder ?? 0,
+      published: raw.published ?? true,
+      translations: (raw.translations ?? []).map(t => ({
+        id: t["id"] ?? undefined,
+        languageCode: (t["languageCode"] ?? '').trim().toLowerCase(),
+        question: (t["question"] ?? '').trim(),
+        answer: (t["answer"] ?? '').trim(),
+        category: (t["category"] ?? '').trim()
+      }))
+    };
+  }
+
+  getNextFaqSortOrder(): number {
+    const currentFaqs = this.faqs();
+    if (currentFaqs.length === 0) return 1;
+    return Math.max(...currentFaqs.map(f => f.sortOrder)) + 1;
   }
 
   // Helpers

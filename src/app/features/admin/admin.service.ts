@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 import { UserRole } from '../../core/models/user-role';
+import { FaqAdminResponse, FaqUpsertRequest } from '../../core/models/faqModel';
 import { Salutation } from '../../core/models/salutation';
 import { AcademicTitle } from '../../core/models/academic-title';
 
@@ -331,6 +332,23 @@ export class AdminService {
     return this.http.delete<void>(`${this.apiUrl}/rooms/${id}`);
   }
 
+  // --- FAQ Management ---
+  getFaqs(): Observable<FaqAdminResponse[]> {
+    return this.http.get<FaqAdminResponse[]>(`${this.apiUrl}/faqs`);
+  }
+
+  createFaq(payload: FaqUpsertRequest): Observable<FaqAdminResponse> {
+    return this.http.post<FaqAdminResponse>(`${this.apiUrl}/faqs`, payload);
+  }
+
+  updateFaq(id: number, payload: FaqUpsertRequest): Observable<FaqAdminResponse> {
+    return this.http.put<FaqAdminResponse>(`${this.apiUrl}/faqs/${id}`, payload);
+  }
+
+  deleteFaq(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/faqs/${id}`);
+  }
+  
   getAvailableRooms(startTime?: string, durationMinutes?: number, excludeEventId?: number): Observable<Room[]> {
     let params: any = {};
     if (startTime) params.startTime = startTime;
