@@ -1,52 +1,101 @@
-<div class="registration-container">
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>{{ 'completeRegistration.title' | translate }}</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      @if (token) {
-        @if (email) {
-          <p>{{ 'completeRegistration.emailLabel' | translate }}: {{ email }}</p>
-        }
-        <form [formGroup]="form" (ngSubmit)="completeRegistration()">
-          <mat-form-field appearance="fill">
-            <mat-label>{{ 'completeRegistration.firstNameLabel' | translate }}</mat-label>
-            <input matInput formControlName="firstName">
-          </mat-form-field>
-
-          <mat-form-field appearance="fill">
-            <mat-label>{{ 'completeRegistration.lastNameLabel' | translate }}</mat-label>
-            <input matInput formControlName="lastName">
-          </mat-form-field>
-
-          <mat-form-field appearance="fill">
-            <mat-label>{{ 'completeRegistration.passwordLabel' | translate }}</mat-label>
-            <input matInput type="password" formControlName="password">
-          </mat-form-field>
-
-          <mat-form-field appearance="fill">
-            <mat-label>{{ 'completeRegistration.confirmPasswordLabel' | translate }}</mat-label>
-            <input matInput type="password" formControlName="confirmPassword">
-            @if (form.hasError('mismatch')) {
-              <mat-error>{{ 'completeRegistration.passwordMismatchError' | translate }}</mat-error>
-            }
-          </mat-form-field>
-
-          <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || isLoading() || isRedirecting()">
-            @if (isLoading() || isRedirecting()) {
-              <mat-spinner diameter="24"></mat-spinner>
-            } @else {
-              <span>{{ 'completeRegistration.completeButton' | translate }}</span>
-            }
-          </button>
-        </form>
-      }
-
-      @if (message()) {
-        <div class="message" [class.success]="isRedirecting()" [class.error]="!isRedirecting() && message()">
-          {{ message() }}
+<div class="outer-wrapper">
+  <div class="registration-card">
+    <div class="header">
+      <div class="branding">
+        <mat-icon fontIcon="school"></mat-icon>
+        <span class="university-name">{{ publicService.universityName() || ("platformName" | translate) }}</span>
+      </div>
+      <h1>{{ 'completeRegistration.title' | translate }}</h1>
+      @if (email) {
+        <div class="email-badge">
+          <mat-icon fontIcon="alternate_email"></mat-icon>
+          <span>{{ email }}</span>
         </div>
       }
-    </mat-card-content>
-  </mat-card>
+    </div>
+
+    @if (token) {
+      <form [formGroup]="form" (ngSubmit)="completeRegistration()" class="form">
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'userManagement.salutation' | translate }}</mat-label>
+            <mat-select formControlName="salutation">
+              <mat-option [value]="undefined">{{ 'userManagement.none' | translate }}</mat-option>
+              @for (s of salutations; track s) { <mat-option [value]="s">{{ 'userManagement.salutations.' + s | translate }}</mat-option> }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'userManagement.academicTitle' | translate }}</mat-label>
+            <mat-select formControlName="title">
+              <mat-option [value]="undefined">{{ 'userManagement.none' | translate }}</mat-option>
+              @for (t of academicTitles; track t) { <mat-option [value]="t">{{ 'userManagement.academicTitles.' + t | translate }}</mat-option> }
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'completeRegistration.firstNameLabel' | translate }}</mat-label>
+            <input matInput formControlName="firstName">
+            @if (form.get('firstName')?.invalid && form.get('firstName')?.touched) {
+              <mat-error>{{ 'completeRegistration.firstNameRequired' | translate }}</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'completeRegistration.lastNameLabel' | translate }}</mat-label>
+            <input matInput formControlName="lastName">
+            @if (form.get('lastName')?.invalid && form.get('lastName')?.touched) {
+              <mat-error>{{ 'completeRegistration.lastNameRequired' | translate }}</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'completeRegistration.passwordLabel' | translate }}</mat-label>
+          <input matInput type="password" formControlName="password">
+          <mat-icon matPrefix fontIcon="lock"></mat-icon>
+          @if (form.get('password')?.hasError('required')) {
+            <mat-error>{{ 'completeRegistration.passwordRequired' | translate }}</mat-error>
+          }
+          @if (form.get('password')?.hasError('minlength')) {
+            <mat-error>{{ 'completeRegistration.passwordMinLength' | translate }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'completeRegistration.confirmPasswordLabel' | translate }}</mat-label>
+          <input matInput type="password" formControlName="confirmPassword">
+          <mat-icon matPrefix fontIcon="lock_reset"></mat-icon>
+          @if (form.hasError('mismatch')) {
+            <mat-error>{{ 'completeRegistration.passwordMismatchError' | translate }}</mat-error>
+          }
+        </mat-form-field>
+
+        <button mat-flat-button color="primary" type="submit" class="submit-button" [disabled]="form.invalid || isLoading() || isRedirecting()">
+          @if (isLoading() || isRedirecting()) {
+            <mat-spinner diameter="24"></mat-spinner>
+          } @else {
+            <div class="button-content">
+              <span>{{ 'completeRegistration.completeButton' | translate }}</span>
+              <mat-icon fontIcon="how_to_reg"></mat-icon>
+            </div>
+          }
+        </button>
+      </form>
+    } @else if (message()) {
+      <div class="message-container error">
+        <mat-icon fontIcon="error"></mat-icon>
+        <span>{{ message()! | translate }}</span>
+      </div>
+    }
+
+    @if (isRedirecting()) {
+      <div class="message-container success">
+        <mat-icon fontIcon="check_circle"></mat-icon>
+        <span>{{ 'completeRegistration.successMessage' | translate }}</span>
+      </div>
+    }
+  </div>
 </div>

@@ -10,15 +10,7 @@
 
   .content {
     flex: 1;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-
-    & > * {
-      display: block;
-      height: 100%;
-      flex: 1;
-      /* removed overflow: hidden here to let components manage their own scrolling */
-    }
+    overflow-y: auto;
+    min-height: 0;
   }
 }

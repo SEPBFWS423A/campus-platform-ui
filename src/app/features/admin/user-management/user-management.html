@@ -1,20 +1,25 @@
-<mat-sidenav-container class="dashboard-container">
+<mat-sidenav-container class="dashboard-container" [class.side-collapsed]="sidebarCollapsed()"
+  [class.no-transition]="isFirstLoad()">
   <!-- Unified Sidebar with Nested Navigation -->
-  <mat-sidenav mode="side" opened class="sidebar primary-sidebar">
+  <mat-sidenav mode="side" opened class="sidebar primary-sidebar" [class.collapsed]="sidebarCollapsed()">
     <mat-nav-list class="nav-list-modern">
       <div class="nav-section">
-        <a mat-list-item [class.active-link]="activeView() === 'directory'" (click)="switchView('directory')">
+        <a mat-list-item [class.active-link]="activeView() === 'directory'" (click)="switchView('directory')"
+          [matTooltip]="sidebarCollapsed() ? ( 'userManagement.userDirectory' | translate ) : ''"
+          matTooltipPosition="right">
           <mat-icon matListItemIcon>person_search</mat-icon>
           <div matListItemTitle>{{ "userManagement.userDirectory" | translate }}</div>
         </a>
-        <a mat-list-item [class.active-link]="activeView() === 'groups'" (click)="switchView('groups')">
+        <a mat-list-item [class.active-link]="activeView() === 'groups'" (click)="switchView('groups')"
+          [matTooltip]="sidebarCollapsed() ? ( 'userManagement.studentGroups' | translate ) : ''"
+          matTooltipPosition="right">
           <mat-icon matListItemIcon>hub</mat-icon>
           <div matListItemTitle>{{ "userManagement.studentGroups" | translate }}</div>
         </a>
-      </div>
 
-      <div class="nav-section">
-        <a mat-list-item [class.active-link]="activeView() === 'onboarding'" (click)="switchView('onboarding')">
+        <a mat-list-item [class.active-link]="activeView() === 'onboarding'" (click)="switchView('onboarding')"
+          [matTooltip]="sidebarCollapsed() ? ( 'userManagement.campusOnboarding' | translate ) : ''"
+          matTooltipPosition="right">
           <mat-icon matListItemIcon>group_add</mat-icon>
           <div matListItemTitle>{{ "userManagement.campusOnboarding" | translate }}</div>
         </a>
@@ -23,22 +28,28 @@
         @if (activeView() === 'onboarding') {
         <div class="sub-nav-group animate-slide-down">
           <a mat-list-item [class.active-sub-link]="onboardingMode() === 'individual'"
-            (click)="onboardingMode.set('individual')">
+            (click)="onboardingMode.set('individual')"
+            [matTooltip]="sidebarCollapsed() ? ( 'userManagement.singleIntake' | translate ) : ''"
+            matTooltipPosition="right">
             <mat-icon matListItemIcon class="small-icon">person_add</mat-icon>
             <div matListItemTitle>{{ "userManagement.singleIntake" | translate }}</div>
           </a>
-          <a mat-list-item [class.active-sub-link]="onboardingMode() === 'bulk'" (click)="onboardingMode.set('bulk')">
+          <a mat-list-item [class.active-sub-link]="onboardingMode() === 'bulk'" (click)="onboardingMode.set('bulk')"
+            [matTooltip]="sidebarCollapsed() ? ( 'userManagement.batchPaste' | translate ) : ''"
+            matTooltipPosition="right">
             <mat-icon matListItemIcon class="small-icon">content_paste_go</mat-icon>
             <div matListItemTitle>{{ "userManagement.batchPaste" | translate }}</div>
-          </a>
-          <a mat-list-item [class.active-sub-link]="onboardingMode() === 'csv'" (click)="onboardingMode.set('csv')">
-            <mat-icon matListItemIcon class="small-icon">file_upload</mat-icon>
-            <div matListItemTitle>{{ "userManagement.rosterImport" | translate }}</div>
           </a>
         </div>
         }
       </div>
     </mat-nav-list>
+
+    <div class="sidebar-footer">
+      <button mat-icon-button class="collapse-toggle" (click)="sidebarCollapsed.set(!sidebarCollapsed())">
+        <mat-icon>{{ sidebarCollapsed() ? 'last_page' : 'first_page' }}</mat-icon>
+      </button>
+    </div>
   </mat-sidenav>
 
   <!-- Right Slide-out Profile Panel -->
@@ -59,67 +70,12 @@
       <mat-card class="profile-card modern-card">
         @if (!isEditingUser()) {
         <!-- VIEW MODE -->
-        <mat-card-header>
-          <div mat-card-avatar class="profile-avatar large">
-            <mat-icon>account_circle</mat-icon>
-          </div>
-          <mat-card-title>{{ getProfileDisplayName(user) }}</mat-card-title>
-          <mat-card-subtitle>{{ user.email }}</mat-card-subtitle>
-        </mat-card-header>
-
-        <mat-card-content>
-          <div class="profile-details">
-            <div class="status-chips">
-              <mat-chip [color]="getRoleColor(user.role)" selected>{{ 'userRole.' + user.role | translate }}</mat-chip>
-              <mat-chip [color]="getEnabledColor(user.enabled)" selected>{{ (user.enabled ? 'userManagement.enabled' :
-                'userManagement.disabled') | translate }}</mat-chip>
-            </div>
-            <div class="info-grid-modern">
-              @if (user.salutation) {
-              <div class="info-tile"><span class="label">{{ "userManagement.salutation" | translate }}</span><span
-                  class="value">{{ user.salutation }}</span></div>
-              }
-              @if (user.title) {
-              <div class="info-tile"><span class="label">{{ "userManagement.academicTitle" | translate }}</span><span
-                  class="value">{{ user.title }}</span></div>
-              }
-              @if (user.role === 'STUDENT') {
-              <div class="info-tile"><span class="label">{{ "userManagement.studentNumber" | translate }}</span><span
-                  class="value">{{ user.studentNumber || '-' }}</span></div>
-              <div class="info-tile"><span class="label">{{ "userManagement.course" | translate }}</span><span
-                  class="value">{{ user.courseOfStudyName || '-' }}</span>
-              </div>
-              <div class="info-tile"><span class="label">{{ "userManagement.specialization" | translate }}</span><span
-                  class="value">{{ user.specializationName ||
-                  '-' }}</span></div>
-              <div class="info-tile"><span class="label">{{ "userManagement.startYear" | translate }}</span><span
-                  class="value">{{ user.startYear || '-' }}</span></div>
-              }
-            </div>
-
-            @if (user.role === 'STUDENT') {
-            <div class="groups-section-modern">
-              <h3>{{ "userManagement.studyGroups" | translate }}</h3>
-              <mat-list dense>
-                @for (group of getUserGroups(user.id); track group.id) {
-                <mat-list-item class="group-item-inline">
-                  <mat-icon matListItemIcon>group_work</mat-icon>
-                  <span matListItemTitle>{{ group.name }}</span>
-                  <button mat-icon-button
-                    (click)="removeUserFromGroup(user.id, group.id)"><mat-icon>remove_circle_outline</mat-icon></button>
-                </mat-list-item>
-                } @empty {
-                <p class="empty-state">{{ "userManagement.noGroupsFound" | translate }}</p>
-                }
-              </mat-list>
-            </div>
-            }
-          </div>
-        </mat-card-content>
-        <mat-card-actions align="end">
-          <button mat-button color="warn" (click)="deleteUser(user)">{{ "userManagement.deleteUser" | translate
-            }}</button>
-        </mat-card-actions>
+        <app-user-profile-overview 
+          [user]="user" 
+          [userGroups]="getUserGroups(user.id)"
+          (deleteUser)="deleteUser($event)"
+          (removeUserFromGroup)="removeUserFromGroup($event.userId, $event.groupId)">
+        </app-user-profile-overview>
         } @else {
         <!-- EDIT MODE -->
         <mat-card-content>
@@ -129,14 +85,16 @@
                 <mat-label>{{ "userManagement.salutation" | translate }}</mat-label>
                 <mat-select formControlName="salutation">
                   <mat-option [value]="undefined">{{ "userManagement.none" | translate }}</mat-option>
-                  @for (s of salutations; track s) { <mat-option [value]="s">{{ s }}</mat-option> }
+                  @for (s of salutations; track s) { <mat-option [value]="s">{{ 'userManagement.salutations.' + s |
+                    translate }}</mat-option> }
                 </mat-select>
               </mat-form-field>
               <mat-form-field appearance="outline">
                 <mat-label>{{ "userManagement.academicTitle" | translate }}</mat-label>
                 <mat-select formControlName="title">
                   <mat-option [value]="undefined">{{ "userManagement.none" | translate }}</mat-option>
-                  @for (t of academicTitles; track t) { <mat-option [value]="t">{{ t }}</mat-option> }
+                  @for (t of academicTitles; track t) { <mat-option [value]="t">{{ 'userManagement.academicTitles.' + t
+                    | translate }}</mat-option> }
                 </mat-select>
               </mat-form-field>
             </div>
@@ -183,7 +141,8 @@
                 <mat-label>{{ "userManagement.courseOfStudy" | translate }}</mat-label>
                 <mat-select formControlName="courseOfStudy">
                   @for(c of allCoursesData(); track c.id) {
-                  <mat-option [value]="c.name">{{ c.name }}</mat-option>
+                  <mat-option [value]="c.id">{{ c.name }} ({{ 'userManagement.degreeType.' + c.degreeType | translate
+                    }})</mat-option>
                   }
                 </mat-select>
               </mat-form-field>
@@ -192,7 +151,7 @@
               <mat-form-field appearance="outline">
                 <mat-label>{{ "userManagement.specialization" | translate }}</mat-label>
                 <mat-select formControlName="specializationId">
-                  @for(s of allSpecializationsData(); track s.id) {
+                  @for(s of availableSpecializationsForEdit(); track s.id) {
                   <mat-option [value]="s.id">{{ s.name }}</mat-option>
                   }
                 </mat-select>
@@ -200,6 +159,10 @@
               <mat-form-field appearance="outline">
                 <mat-label>{{ "userManagement.startYear" | translate }}</mat-label>
                 <input matInput type="number" formControlName="startYear">
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>{{ "userManagement.startQuartal" | translate }}</mat-label>
+                <input matInput type="number" formControlName="startQuartal" min="1" max="4">
               </mat-form-field>
             </div>
             }
@@ -218,7 +181,7 @@
 
   <mat-sidenav-content class="main-content">
     <!-- Context-aware Header -->
-    @if (activeView() !== 'onboarding') {
+    @if (activeView() !== 'onboarding' && !selectedGroup()) {
     <header class="dashboard-header animate-fade-in">
       <div class="search-and-actions">
         <mat-form-field appearance="outline" class="mega-search">
@@ -229,10 +192,9 @@
 
         <div class="action-buttons">
           @if (activeView() === 'groups') {
-          <button mat-flat-button color="primary" (click)="showAddGroupForm.set(!showAddGroupForm())">
-            <mat-icon>{{ showAddGroupForm() ? 'close' : 'add' }}</mat-icon>
-            <span>{{ (showAddGroupForm() ? 'userManagement.cancelGroupCreation' : 'userManagement.createGroup') |
-              translate }}</span>
+          <button mat-flat-button color="primary" (click)="openCreateGroupDialog()">
+            <mat-icon>add</mat-icon>
+            <span>{{ "userManagement.createGroup" | translate }}</span>
           </button>
           }
         </div>
@@ -244,9 +206,12 @@
 
         <mat-form-field appearance="outline" dense>
           <mat-label>{{ "userManagement.course" | translate }}</mat-label>
-          <mat-select [value]="courseFilter()" (selectionChange)="courseFilter.set($event.value)">
+          <mat-select [value]="courseIdFilter()" (selectionChange)="courseIdFilter.set($event.value)">
             <mat-option value="">{{ "userManagement.allCourses" | translate }}</mat-option>
-            @for (c of courses(); track c) { <mat-option [value]="c">{{ c }}</mat-option> }
+            @for (c of courses(); track c.id) {
+            <mat-option [value]="c.id">{{ c.name }} ({{ 'userManagement.degreeType.' + c.degreeType | translate
+              }})</mat-option>
+            }
           </mat-select>
         </mat-form-field>
 
@@ -275,61 +240,64 @@
       <!-- DIRECTORY VIEW -->
       @if (activeView() === 'directory') {
       <mat-card class="data-view-card">
-        <mat-table [dataSource]="filteredUsers()" class="modern-table">
+        <div class="table-container">
+          <mat-table [dataSource]="filteredUsers()" class="modern-table">
 
-          <ng-container matColumnDef="firstName">
-            <th mat-header-cell *matHeaderCellDef>{{ "user.firstname" | translate }}</th>
-            <td mat-cell *matCellDef="let element" class="bold-text">{{ element.firstName }}</td>
-          </ng-container>
-          <ng-container matColumnDef="lastName">
-            <th mat-header-cell *matHeaderCellDef>{{ "user.lastname" | translate }}</th>
-            <td mat-cell *matCellDef="let element" class="bold-text">{{ element.lastName }}</td>
-          </ng-container>
-          <ng-container matColumnDef="id">
-            <th mat-header-cell *matHeaderCellDef>{{ "userManagement.userId" | translate }}</th>
-            <td mat-cell *matCellDef="let element">{{ element.studentNumber || '-' }}</td>
-          </ng-container>
-          <ng-container matColumnDef="email">
-            <th mat-header-cell *matHeaderCellDef>{{ "user.email" | translate }}</th>
-            <td mat-cell *matCellDef="let element" class="dimmed-text">{{ element.email }}</td>
-          </ng-container>
-          <ng-container matColumnDef="role">
-            <th mat-header-cell *matHeaderCellDef>{{ "user.role" | translate }}</th>
-            <td mat-cell *matCellDef="let element">
-              <mat-chip [color]="getRoleColor(element.role)" selected>{{ 'userRole.' + element.role | translate
-                }}</mat-chip>
-            </td>
-          </ng-container>
+            <ng-container matColumnDef="firstName">
+              <th mat-header-cell *matHeaderCellDef>{{ "user.firstname" | translate }}</th>
+              <td mat-cell *matCellDef="let element" class="bold-text">{{ element.firstName }}</td>
+            </ng-container>
+            <ng-container matColumnDef="lastName">
+              <th mat-header-cell *matHeaderCellDef>{{ "user.lastname" | translate }}</th>
+              <td mat-cell *matCellDef="let element" class="bold-text">{{ element.lastName }}</td>
+            </ng-container>
+            <ng-container matColumnDef="id">
+              <th mat-header-cell *matHeaderCellDef>{{ "userManagement.userId" | translate }}</th>
+              <td mat-cell *matCellDef="let element">{{ element.studentNumber || '-' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="email">
+              <th mat-header-cell *matHeaderCellDef>{{ "user.email" | translate }}</th>
+              <td mat-cell *matCellDef="let element" class="dimmed-text">{{ element.email }}</td>
+            </ng-container>
+            <ng-container matColumnDef="role">
+              <th mat-header-cell *matHeaderCellDef>{{ "user.role" | translate }}</th>
+              <td mat-cell *matCellDef="let element">
+                <mat-chip [color]="getRoleColor(element.role)" selected>{{ 'userRole.' + element.role | translate
+                  }}</mat-chip>
+              </td>
+            </ng-container>
 
-          <ng-container matColumnDef="enabled">
-            <th mat-header-cell *matHeaderCellDef>{{ "userManagement.status" | translate }}</th>
-            <td mat-cell *matCellDef="let element">
-              <span class="status-indicator" [class.enabled]="element.enabled" [class.disabled]="!element.enabled">
-                {{ (element.enabled ? 'userManagement.enabled' : 'userManagement.disabled') | translate }}
-              </span>
-            </td>
-          </ng-container>
-          <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef></th>
-            <td mat-cell *matCellDef="let element" (click)="$event.stopPropagation()" class="align-right">
-              <button mat-icon-button [matMenuTriggerFor]="menu"><mat-icon>more_vert</mat-icon></button>
-              <mat-menu #menu="matMenu">
-                <button mat-menu-item (click)="selectUser(element)"><mat-icon>visibility</mat-icon> {{
-                  "userManagement.viewProfile" | translate }}</button>
-                <button mat-menu-item
-                  (click)="selectedUser.set(element); startEditing(); isDrawerOpen.set(true)"><mat-icon>edit</mat-icon>
-                  {{ "userManagement.editUser" | translate }}</button>
-                <button mat-menu-item color="warn" (click)="deleteUser(element)"><mat-icon>delete</mat-icon> {{
-                  "userManagement.remove" | translate }}</button>
-              </mat-menu>
-            </td>
-          </ng-container>
-          <tr mat-header-row *matHeaderRowDef="['firstName', 'lastName', 'id', 'email', 'role', 'enabled', 'actions']">
-          </tr>
-          <tr mat-row
-            *matRowDef="let element; columns: ['firstName', 'lastName', 'id', 'email', 'role', 'enabled', 'actions']"
-            (click)="selectUser(element)" class="clickable-row"></tr>
-        </mat-table>
+            <ng-container matColumnDef="enabled">
+              <th mat-header-cell *matHeaderCellDef>{{ "userManagement.status" | translate }}</th>
+              <td mat-cell *matCellDef="let element">
+                <span class="status-indicator" [class.enabled]="element.enabled" [class.disabled]="!element.enabled">
+                  {{ (element.enabled ? 'userManagement.enabled' : 'userManagement.disabled') | translate }}
+                </span>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef></th>
+              <td mat-cell *matCellDef="let element" (click)="$event.stopPropagation()" class="align-right">
+                <button mat-icon-button [matMenuTriggerFor]="menu"><mat-icon>more_vert</mat-icon></button>
+                <mat-menu #menu="matMenu">
+                  <button mat-menu-item (click)="selectUser(element)"><mat-icon>visibility</mat-icon> {{
+                    "userManagement.viewProfile" | translate }}</button>
+                  <button mat-menu-item
+                    (click)="selectedUser.set(element); startEditing(); isDrawerOpen.set(true)"><mat-icon>edit</mat-icon>
+                    {{ "userManagement.editUser" | translate }}</button>
+                  <button mat-menu-item color="warn" (click)="deleteUser(element)"><mat-icon>delete</mat-icon> {{
+                    "userManagement.remove" | translate }}</button>
+                </mat-menu>
+              </td>
+            </ng-container>
+            <tr mat-header-row
+              *matHeaderRowDef="['firstName', 'lastName', 'id', 'email', 'role', 'enabled', 'actions']">
+            </tr>
+            <tr mat-row
+              *matRowDef="let element; columns: ['firstName', 'lastName', 'id', 'email', 'role', 'enabled', 'actions']"
+              (click)="selectUser(element)" class="clickable-row"></tr>
+          </mat-table>
+        </div>
       </mat-card>
       }
 
@@ -349,25 +317,11 @@
 
           <form [formGroup]="inviteForm" class="onboarding-form-compact">
             <div class="form-grid">
-              <mat-form-field appearance="outline" subscriptSizing="dynamic">
-                <mat-label>{{ "userManagement.salutation" | translate }}</mat-label>
-                <mat-select formControlName="salutation">
-                  <mat-option [value]="undefined">{{ "userManagement.none" | translate }}</mat-option>
-                  @for (s of salutations; track s) { <mat-option [value]="s">{{ s }}</mat-option> }
-                </mat-select>
-              </mat-form-field>
-              <mat-form-field appearance="outline" subscriptSizing="dynamic">
-                <mat-label>{{ "userManagement.academicTitle" | translate }}</mat-label>
-                <mat-select formControlName="title">
-                  <mat-option [value]="undefined">{{ "userManagement.none" | translate }}</mat-option>
-                  @for (t of academicTitles; track t) { <mat-option [value]="t">{{ t }}</mat-option> }
-                </mat-select>
-              </mat-form-field>
-              <mat-form-field appearance="outline" class="col-span-2" subscriptSizing="dynamic">
+              <mat-form-field appearance="outline" class="col-span-1" subscriptSizing="dynamic">
                 <mat-label>{{ "userManagement.emailAddress" | translate }}</mat-label>
-                <input matInput formControlName="email">
+                <input matInput formControlName="email" type="email">
               </mat-form-field>
-              <mat-form-field appearance="outline" class="col-span-2" subscriptSizing="dynamic">
+              <mat-form-field appearance="outline" class="col-span-1" subscriptSizing="dynamic">
                 <mat-label>{{ "user.role" | translate }}</mat-label>
                 <mat-select formControlName="role">
                   @for (r of roles; track r) { <mat-option [value]="r">{{ 'userRole.' + r | translate }}</mat-option> }
@@ -383,10 +337,10 @@
                     <input matInput formControlName="studentNumber">
                   </mat-form-field>
                   <mat-form-field appearance="outline" subscriptSizing="dynamic">
-                    <mat-label>{{ "userManagement.course" | translate }}</mat-label>
+                    <mat-label>{{ "userManagement.courseOfStudy" | translate }}</mat-label>
                     <mat-select formControlName="courseOfStudy">
                       @for(c of allCoursesData(); track c.id) {
-                      <mat-option [value]="c.name">
+                      <mat-option [value]="c.id">
                         {{ c.name }} ({{ 'userManagement.degreeType.' + c.degreeType | translate }})
                       </mat-option>
                       }
@@ -394,16 +348,49 @@
                   </mat-form-field>
                   <mat-form-field appearance="outline" class="col-span-2" subscriptSizing="dynamic">
                     <mat-label>{{ "userManagement.specialization" | translate }}</mat-label>
-                    <mat-select formControlName="specializationId">
-                      @for(s of specializationsByCourse(); track s) {
-                      <mat-option [value]="s">{{ s }}</mat-option>
+                    <mat-select formControlName="specialization">
+                      @for(s of availableSpecializationsForIndividual(); track s.id) {
+                      <mat-option [value]="s.id">{{ s.name }}</mat-option>
                       }
+                    </mat-select>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                    <mat-label>{{ "userManagement.startYear" | translate }}</mat-label>
+                    <input matInput type="number" formControlName="startYear">
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                    <mat-label>{{ "userManagement.startQuartal" | translate }}</mat-label>
+                    <mat-select formControlName="startQuartal">
+                      <mat-option [value]="1">{{ "userManagement.quartal1" | translate }}</mat-option>
+                      <mat-option [value]="2">{{ "userManagement.quartal2" | translate }}</mat-option>
+                      <mat-option [value]="3">{{ "userManagement.quartal3" | translate }}</mat-option>
+                      <mat-option [value]="4">{{ "userManagement.quartal4" | translate }}</mat-option>
                     </mat-select>
                   </mat-form-field>
                 </div>
               </div>
               }
+
+              <mat-form-field appearance="outline" [class.col-span-2]="inviteForm.get('role')?.value === 'STUDENT'"
+                class="col-span-1" subscriptSizing="dynamic">
+                <mat-label>{{ "userManagement.standardLanguage" | translate }}</mat-label>
+                <mat-select formControlName="language">
+                  <mat-option value="de">Deutsch</mat-option>
+                  <mat-option value="en">English</mat-option>
+                </mat-select>
+              </mat-form-field>
             </div>
+
+            @if (inviteForm.hasError('studentFieldsRequired') && inviteForm.get('role')?.value === 'STUDENT' &&
+            inviteForm.get('specialization')?.touched) {
+            <div class="onboarding-error-msg animate-fade-in"
+              style="display: flex; align-items: center; justify-content: center; gap: 8px; color: var(--mat-sys-error); margin: 0.5rem 0; font-size: 0.9rem; font-weight: 500;">
+              <mat-icon style="font-size: 1.25rem; width: 1.25rem; height: 1.25rem;">error_outline</mat-icon>
+              <span>{{ 'userManagement.studentFieldsRequired' | translate }}</span>
+            </div>
+            }
 
             <div class="onboarding-footer center-align">
               <button mat-flat-button color="primary" class="onboarding-submit"
@@ -425,10 +412,19 @@
         @if (onboardingMode() === 'bulk') {
         <div class="onboarding-action-card wide animate-fade-in">
           <div class="onboarding-header">
-            <div class="icon-orb accent"><mat-icon>content_paste_go</mat-icon></div>
+            <div class="icon-orb"><mat-icon>content_paste_go</mat-icon></div>
             <div class="header-text">
               <h2>{{ "userManagement.batchEntry" | translate }}</h2>
               <p>{{ "userManagement.batchEntryDesc" | translate }}</p>
+            </div>
+            <div class="header-action-button">
+              <button mat-stroked-button color="primary" (click)="fileImportInput.click()"
+                [matTooltip]="'userManagement.supportedFormats' | translate">
+                <mat-icon>upload_file</mat-icon>
+                <span>{{ "userManagement.importFile" | translate }}</span>
+              </button>
+              <input #fileImportInput type="file" hidden accept=".csv,.txt,.xlsx,.xls,.docx"
+                (change)="importBatchFromFile($event)">
             </div>
           </div>
 
@@ -437,10 +433,15 @@
               <div class="editor-side">
                 <mat-form-field appearance="outline" class="full-width textarea-field">
                   <mat-label>{{ "userManagement.listData" | translate }}</mat-label>
-                  <textarea matInput formControlName="emails" rows="12"
-                    placeholder="s1@uni.de; 701001; CS; AI"></textarea>
-                  <mat-hint>{{ "userManagement.batchFormat" | translate }}
-                    <code>{{ "userManagement.csvFormat" | translate }}</code></mat-hint>
+                  <textarea matInput formControlName="emails" rows="8"
+                    placeholder="max@mustermann.de; 123456; STUDENT; Betriebswirtschaft; Finance; en"></textarea>
+                  <mat-hint>
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                      <span>{{ "userManagement.batchFormat" | translate }}
+                        <code>{{ "userManagement.batchFormatValue" | translate }}</code></span>
+                      <span class="optional-hint-text">{{ "userManagement.optionalHint" | translate }}</span>
+                    </div>
+                  </mat-hint>
                 </mat-form-field>
               </div>
 
@@ -458,7 +459,7 @@
                   <mat-select formControlName="defaultCourse">
                     <mat-option [value]="undefined">{{ "userManagement.none" | translate }}</mat-option>
                     @for(c of allCoursesData(); track c.id) {
-                    <mat-option [value]="c.name">
+                    <mat-option [value]="c.id">
                       {{ c.name }} ({{ 'userManagement.degreeType.' + c.degreeType | translate }})
                     </mat-option>
                     }
@@ -473,13 +474,37 @@
                     }
                   </mat-select>
                 </mat-form-field>
+
+                <div class="field-row">
+                  <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                    <mat-label>{{ "userManagement.startYear" | translate }}</mat-label>
+                    <input matInput type="number" formControlName="defaultStartYear">
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                    <mat-label>{{ "userManagement.startQuartal" | translate }}</mat-label>
+                    <mat-select formControlName="defaultStartQuartal">
+                      <mat-option [value]="1">{{ "userManagement.quartal1" | translate }}</mat-option>
+                      <mat-option [value]="2">{{ "userManagement.quartal2" | translate }}</mat-option>
+                      <mat-option [value]="3">{{ "userManagement.quartal3" | translate }}</mat-option>
+                      <mat-option [value]="4">{{ "userManagement.quartal4" | translate }}</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+
+                <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                  <mat-label>{{ "userManagement.standardLanguage" | translate }}</mat-label>
+                  <mat-select formControlName="defaultLanguage">
+                    <mat-option value="de">Deutsch</mat-option>
+                    <mat-option value="en">English</mat-option>
+                  </mat-select>
+                </mat-form-field>
               </div>
             </div>
 
             <div class="onboarding-footer center-align">
-              <button mat-flat-button color="accent" class="onboarding-submit"
+              <button mat-flat-button color="primary" class="onboarding-submit"
                 [disabled]="bulkInviteForm.invalid || isInviting()" (click)="sendBulkInvitations()">
-                @if (isInviting()) { <mat-spinner diameter="20" class="white-spinner"></mat-spinner> }
+                @if (isInviting()) { <mat-spinner diameter="20"></mat-spinner> }
                 @else {
                 <span class="btn-content">
                   <span>{{ "userManagement.executeBatchInvitations" | translate }}</span>
@@ -491,65 +516,14 @@
           </form>
         </div>
         }
-
-        <!-- Roster Import Mode -->
-        @if (onboardingMode() === 'csv') {
-        <div class="onboarding-action-card animate-fade-in">
-          <div class="onboarding-header center">
-            <div class="icon-orb large tertiary"><mat-icon>inventory_2</mat-icon></div>
-            <div class="header-text">
-              <h2>{{ "userManagement.rosterLifecycleTransfer" | translate }}</h2>
-              <p>{{ "userManagement.rosterLifecycleTransferDesc" | translate }}</p>
-            </div>
-          </div>
-
-          <div class="compact-dropzone" (click)="fileInput.click()" [class.has-file]="csvFileName()">
-            <mat-icon class="drop-icon">cloud_upload</mat-icon>
-            <div class="drop-text">
-              <h3>{{ csvFileName() || ("userManagement.rosterFile" | translate) }}</h3>
-              <p>{{ csvFileName() ? ("userManagement.fileReady" | translate) : ("userManagement.dragDataHere" |
-                translate) }}</p>
-            </div>
-            <input #fileInput type="file" accept=".csv,.txt" hidden (change)="onFileSelected($event)">
-          </div>
-
-          <!-- Format Advice Surface -->
-          <div class="format-advice-panel animate-fade-in">
-            <div class="advice-header">
-              <mat-icon>info</mat-icon>
-              <span>{{ "userManagement.batchFormat" | translate }}</span>
-            </div>
-            <code class="advice-code">{{ "userManagement.csvFormat" | translate }}</code>
-          </div>
-
-          @if (csvInvitations().length > 0) {
-          <div class="compact-import-summary animate-fade-in">
-            <mat-icon>check_circle</mat-icon>
-            <span>{{ csvInvitations().length }} {{ "userManagement.studentsDetected" | translate }}</span>
-          </div>
-          }
-
-          <div class="onboarding-footer center-align">
-            <button mat-flat-button color="primary" class="onboarding-submit"
-              [disabled]="csvInvitations().length === 0 || isInviting()" (click)="sendCsvInvitations()">
-              @if (isInviting()) { <mat-spinner diameter="20"></mat-spinner> }
-              @else {
-              <span class="btn-content">
-                <span>{{ "userManagement.launchAutomatedIntake" | translate }}</span>
-                <mat-icon>auto_fix_high</mat-icon>
-              </span>
-              }
-            </button>
-          </div>
-        </div>
-        }
       </div>
       }
 
       <!-- GROUPS VIEW -->
       @if (activeView() === 'groups') {
       @if (!selectedGroup()) {
-      @if (showAddGroupForm()) {
+      <!-- Inline creation form removed -->
+      @if (false) {
       <div class="onboarding-high-surface compact-creation-surface">
         <div class="onboarding-action-card animate-fade-in">
           <div class="onboarding-header">
@@ -566,7 +540,7 @@
                 <mat-label>{{ "userManagement.courseOfStudy" | translate }}</mat-label>
                 <mat-select formControlName="courseOfStudy">
                   @for(c of allCoursesData(); track c.id) {
-                  <mat-option [value]="c.name">
+                  <mat-option [value]="c.id">
                     {{ c.name }} ({{ 'userManagement.degreeType.' + c.degreeType | translate }})
                   </mat-option>
                   }
@@ -612,9 +586,9 @@
                 </span>
               </button>
               <button mat-flat-button color="primary" class="onboarding-submit" [disabled]="groupForm.invalid"
-                (click)="addGroup()">
+                (click)="saveGroup()">
                 <span class="btn-content">
-                  <span>{{ "userManagement.initializeGroup" | translate }}</span>
+                  <span>{{ (editingGroupId() ? "common.save" : "userManagement.initializeGroup") | translate }}</span>
                   <mat-icon>check_circle</mat-icon>
                 </span>
               </button>
@@ -630,7 +604,7 @@
           <mat-card-header>
             <div mat-card-avatar class="group-icon-avatar"><mat-icon>group</mat-icon></div>
             <mat-card-title>{{ group.name }}</mat-card-title>
-            <mat-card-subtitle>{{ group.courseOfStudy }}</mat-card-subtitle>
+            <mat-card-subtitle>{{ group.courseOfStudyName }}</mat-card-subtitle>
           </mat-card-header>
           <mat-card-content>
             <div class="group-stats">
@@ -654,28 +628,26 @@
           <button mat-icon-button (click)="selectedGroup.set(null)"><mat-icon>arrow_back</mat-icon></button>
           <div class="title-block">
             <h1>{{ selectedGroup()?.name }}</h1>
-            <p>{{ selectedGroup()?.courseOfStudy }} • {{ selectedGroup()?.specialization }}</p>
+            <p>{{ selectedGroup()?.courseOfStudyName }} • {{ selectedGroup()?.specialization }}</p>
           </div>
           <span class="member-count-badge">{{ selectedGroup()?.memberCount }} {{ "userManagement.students" | translate
             }}</span>
+          <span style="flex: 1"></span>
+          <button mat-flat-button color="primary" (click)="openAddMemberDialog()" class="add-member-btn">
+            <mat-icon>person_add</mat-icon>
+            <span>{{ "userManagement.addStudent" | translate }}</span>
+          </button>
+          <button mat-icon-button (click)="editSelectedGroup()" matTooltip="{{ 'common.edit' | translate }}">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="deleteSelectedGroup()"
+            matTooltip="{{ 'common.delete' | translate }}">
+            <mat-icon>delete</mat-icon>
+          </button>
         </div>
-
-        <div class="detail-split">
-          <div class="add-member-zone">
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-icon matPrefix>person_add_alt</mat-icon>
-              <mat-label>{{ "userManagement.addStudentToGroup" | translate }}</mat-label>
-              <input matInput [formControl]="addMemberControl" [matAutocomplete]="auto">
-              <mat-autocomplete #auto="matAutocomplete" (optionSelected)="addMember($event.option.value)">
-                @for (s of filteredStudentsAutoComplete(); track s.id) {
-                <mat-option [value]="s">{{ getAssociationDisplayName(s) }} ({{ s.studentNumber }})</mat-option>
-                }
-              </mat-autocomplete>
-            </mat-form-field>
-          </div>
-
-          <div class="member-list-zone">
-            <mat-table [dataSource]="currentGroupMembers()" class="compact-table">
+        <div class="detail-split single-col">
+          <div class="member-list-zone full-width">
+            <mat-table #compactTable [dataSource]="currentGroupMembers()" class="compact-table">
               <ng-container matColumnDef="name">
                 <th mat-header-cell *matHeaderCellDef>{{ "userManagement.studentName" | translate }}</th>
                 <td mat-cell *matCellDef="let s">{{ getAssociationDisplayName(s) }}</td>
@@ -687,18 +659,203 @@
               <ng-container matColumnDef="actions">
                 <th mat-header-cell *matHeaderCellDef></th>
                 <td mat-cell *matCellDef="let s" class="align-right">
-                  <button mat-button color="warn" (click)="removeUserFromGroup(s.id, selectedGroup()!.id)">{{
-                    "userManagement.exclude" | translate }}</button>
+                  <button mat-icon-button color="warn" (click)="removeUserFromGroup(s.id, selectedGroup()!.id)"
+                    [matTooltip]="'userManagement.exclude' | translate">
+                    <mat-icon>person_remove</mat-icon>
+                  </button>
                 </td>
               </ng-container>
               <tr mat-header-row *matHeaderRowDef="['name', 'id', 'actions']"></tr>
-              <tr mat-row *matRowDef="let row; columns: ['name', 'id', 'actions']"></tr>
+              <tr mat-row *matRowDef="let row; columns: ['name', 'id', 'actions']" (click)="selectMember(row)" class="clickable-row"></tr>
             </mat-table>
           </div>
         </div>
+
       </mat-card>
       }
       }
     </main>
   </mat-sidenav-content>
 </mat-sidenav-container>
+
+<ng-template #groupDialogTemplate>
+  <div class="modern-dialog-container" [class.editing-mode]="editingGroupId()" [class.creation-mode]="!editingGroupId()"
+    [class.wide-mode]="groupForm.get('autoFill')?.value">
+    <button mat-icon-button class="close-modal-btn" mat-dialog-close (click)="closeGroupDialog()"
+      [matTooltip]="'common.cancel' | translate">
+      <mat-icon>close</mat-icon>
+    </button>
+
+    <div class="onboarding-header no-icon compact-header">
+      <div class="header-text">
+        <h2>{{ (editingGroupId() ? "common.edit" : "userManagement.createStudyGroup") | translate }} {{ editingGroupId()
+          ? selectedGroup()?.name : '' }}</h2>
+        <p>{{ (editingGroupId() ? "userManagement.editGroupSubtitle" : "userManagement.createStudyGroupDesc") |
+          translate }}</p>
+      </div>
+    </div>
+
+    <mat-dialog-content class="modern-dialog-content">
+      <div class="dialog-split-layout">
+        <!-- Student Preview List (Left) -->
+        @if (groupForm.get('autoFill')?.value) {
+        <div class="student-preview-side animate-slide-right">
+          <div class="side-header">
+            <h3>{{ "userManagement.studentsToAssign" | translate }}</h3>
+            <span class="count-pill">{{ autoFillCount() }}</span>
+          </div>
+
+          <div class="preview-list modern-list-container">
+            @for (s of matchingAutoFillStudents(); track s.id) {
+            <div class="student-result-item" [class.excluded]="excludedAutoFillIds().has(s.id)">
+              <div class="student-info">
+                <span class="name">{{ s.firstName }} {{ s.lastName }}</span>
+                <span class="id dimmed-text">{{ s.studentNumber }}</span>
+              </div>
+              <button mat-icon-button (click)="toggleAutoFillExclusion(s.id)"
+                [matTooltip]="(excludedAutoFillIds().has(s.id) ? 'common.add' : 'userManagement.exclude') | translate">
+                <mat-icon>{{ excludedAutoFillIds().has(s.id) ? 'add_circle' : 'do_not_disturb_on' }}</mat-icon>
+              </button>
+            </div>
+            } @empty {
+            <div class="no-results-dialog mini">
+              <mat-icon>group_off</mat-icon>
+              <p>{{ "userManagement.noMatchingStudents" | translate }}</p>
+            </div>
+            }
+          </div>
+        </div>
+        }
+
+        <form [formGroup]="groupForm" class="onboarding-form-compact">
+          <div class="form-grid">
+            <mat-form-field appearance="outline" class="col-span-2">
+              <mat-label>{{ "userManagement.courseOfStudy" | translate }}</mat-label>
+              <mat-select formControlName="courseOfStudy">
+                @for(c of allCoursesData(); track c.id) {
+                <mat-option [value]="c.id">
+                  {{ c.name }} ({{ 'userManagement.degreeType.' + c.degreeType | translate }})
+                </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="col-span-2">
+              <mat-label>{{ "userManagement.specialization" | translate }}</mat-label>
+              <mat-select formControlName="specialization">
+                @for(s of availableSpecializationsForGroup(); track s) {
+                <mat-option [value]="s">{{ s }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{ "userManagement.startYear" | translate }}</mat-label>
+              <input matInput type="number" formControlName="startYear">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{ "userManagement.startQuartal" | translate }}</mat-label>
+              <mat-select formControlName="startQuartal">
+                <mat-option [value]="1">{{ "userManagement.quartal1" | translate }}</mat-option>
+                <mat-option [value]="2">{{ "userManagement.quartal2" | translate }}</mat-option>
+                <mat-option [value]="3">{{ "userManagement.quartal3" | translate }}</mat-option>
+                <mat-option [value]="4">{{ "userManagement.quartal4" | translate }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="col-span-2">
+              <mat-label>{{ "userManagement.groupName" | translate }}</mat-label>
+              <input matInput formControlName="name">
+              <mat-hint>{{ "userManagement.groupNameHint" | translate }}</mat-hint>
+            </mat-form-field>
+
+            @if (!editingGroupId()) {
+            <div class="col-span-2 auto-fill-zone" [class.locked]="!canAutoFill()">
+              <mat-checkbox formControlName="autoFill" color="primary">
+                {{ "userManagement.autoFillStudents" | translate }}
+                @if (autoFillCount() > 0) {
+                <span class="fill-stats">
+                  ({{ autoFillCount() }} {{ "userManagement.studentsDetected" | translate }})
+                </span>
+                }
+              </mat-checkbox>
+            </div>
+            }
+          </div>
+        </form>
+      </div>
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end" class="modern-dialog-actions">
+      <button mat-stroked-button color="primary" mat-dialog-close (click)="closeGroupDialog()" class="secondary-btn">
+        {{ 'common.cancel' | translate }}
+      </button>
+      <button mat-flat-button color="primary" [disabled]="groupForm.invalid || isSavingGroup()" (click)="saveGroup()"
+        class="primary-btn">
+        @if (isSavingGroup()) {
+        <mat-spinner diameter="24"></mat-spinner>
+        } @else {
+        <span class="btn-content">
+          <mat-icon>{{ editingGroupId() ? 'save' : 'check_circle' }}</mat-icon>
+          <span>{{ (editingGroupId() ? "common.save" : "userManagement.initializeGroup") | translate }}</span>
+        </span>
+        }
+      </button>
+    </mat-dialog-actions>
+  </div>
+</ng-template>
+
+<ng-template #addMemberDialogTemplate>
+  <div class="modern-dialog-container add-student-mode">
+
+    <button mat-icon-button mat-dialog-close class="close-modal-btn">
+      <mat-icon>close</mat-icon>
+    </button>
+
+    <div class="onboarding-header no-icon compact-header">
+      <div class="header-text">
+        <h2>{{ "userManagement.addStudentToGroup" | translate }}</h2>
+        <p>{{ selectedGroup()?.name }} • {{ selectedGroup()?.specialization }}</p>
+      </div>
+    </div>
+
+    <mat-dialog-content class="modern-dialog-content">
+      <div class="add-member-dialog-content">
+        <div class="dialog-filters">
+          <div class="auto-filter-hint animate-fade-in">
+            <mat-icon>info</mat-icon>
+            <span>{{ "userManagement.autoFilteringCohorts" | translate }}</span>
+          </div>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-icon matPrefix>search</mat-icon>
+            <mat-label>{{ "userManagement.searchStudent" | translate }}</mat-label>
+            <input matInput [formControl]="addMemberControl"
+              placeholder="{{ 'userManagement.searchPlaceholder' | translate }}">
+          </mat-form-field>
+        </div>
+
+        <div class="student-results-list modern-list-container">
+          @for (s of filteredStudentsAutoComplete(); track s.id) {
+          <div class="student-result-item animate-fade-in">
+            <div class="student-info">
+              <span class="name">{{ getProfileDisplayName(s) }}</span>
+              <span class="id dimmed-text">{{ s.studentNumber }}</span>
+            </div>
+            <button mat-icon-button color="primary" (click)="addMember(s)"
+              [matTooltip]="'userManagement.addToGroup' | translate">
+              <mat-icon>add_circle</mat-icon>
+            </button>
+          </div>
+          } @empty {
+          <div class="no-results-dialog">
+            <mat-icon>search_off</mat-icon>
+            <p>{{ "userManagement.noStudentsFound" | translate }}</p>
+          </div>
+          }
+        </div>
+      </div>
+    </mat-dialog-content>
+  </div>
+</ng-template>

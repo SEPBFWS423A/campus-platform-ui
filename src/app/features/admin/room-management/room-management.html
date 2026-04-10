@@ -113,5 +113,26 @@
         </mat-card>
       </div>
     </mat-tab>
+
+    <!-- Tab: Belegungsplan -->
+    <mat-tab>
+      <ng-template matTabLabel>
+        <mat-icon>calendar_month</mat-icon> Belegungsplan
+      </ng-template>
+      <div class="management-tab-content">
+        <app-room-schedule [rooms]="rooms()" />
+      </div>
+    </mat-tab>
+
+    <!-- Tab: Raumauslastung -->
+    <mat-tab>
+      <ng-template matTabLabel>
+        <mat-icon>donut_large</mat-icon> Raumauslastung
+      </ng-template>
+      <div class="management-tab-content">
+        <app-room-utilization [rooms]="rooms()" />
+      </div>
+    </mat-tab>
+
   </mat-tab-group>
 </div>

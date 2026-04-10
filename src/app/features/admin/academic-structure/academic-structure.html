@@ -1,23 +1,37 @@
-<mat-sidenav-container class="curriculum-sidenav-container">
+<mat-sidenav-container class="curriculum-sidenav-container" [class.side-collapsed]="sidebarCollapsed()" [class.no-transition]="isFirstLoad()">
    <!-- Unified Sidebar for Curriculum & Campus -->
-   <mat-sidenav mode="side" opened class="sidebar primary-sidebar">
+   <mat-sidenav mode="side" opened class="sidebar primary-sidebar" [class.collapsed]="sidebarCollapsed()">
       <mat-nav-list class="nav-list-modern">
          <div class="nav-section">
-            <a mat-list-item [class.active-link]="activeView() === 'university'" (click)="switchView('university')">
+            <a mat-list-item [class.active-link]="activeView() === 'university'" (click)="switchView('university')"
+               [matTooltip]="sidebarCollapsed() ? ( 'academicStructure.campusAdministration' | translate ) : ''" matTooltipPosition="right">
                <mat-icon matListItemIcon>apartment</mat-icon>
                <div matListItemTitle>{{ "academicStructure.campusIdentity" | translate }}</div>
             </a>
-            <a mat-list-item [class.active-link]="activeView() === 'structure'" (click)="switchView('structure')">
+            <a mat-list-item [class.active-link]="activeView() === 'emails'" (click)="switchView('emails')"
+               [matTooltip]="sidebarCollapsed() ? ( 'academicStructure.emailTemplates' | translate ) : ''" matTooltipPosition="right">
+               <mat-icon matListItemIcon>mail</mat-icon>
+               <div matListItemTitle>{{ "academicStructure.emailTemplates" | translate }}</div>
+            </a>
+            <a mat-list-item [class.active-link]="activeView() === 'exam-types'" (click)="switchView('exam-types')"
+               [matTooltip]="sidebarCollapsed() ? ( 'academicStructure.examTypes' | translate ) : ''" matTooltipPosition="right">
+               <mat-icon matListItemIcon>assignment</mat-icon>
+               <div matListItemTitle>{{ "academicStructure.examTypes" | translate }}</div>
+            </a>
+            <a mat-list-item [class.active-link]="activeView() === 'structure'" (click)="switchView('structure')"
+               [matTooltip]="sidebarCollapsed() ? ( 'academicStructure.foundationStructure' | translate ) : ''" matTooltipPosition="right">
                <mat-icon matListItemIcon>account_tree</mat-icon>
                <div matListItemTitle>{{ "academicStructure.foundationStructure" | translate }}</div>
             </a>
-            <a mat-list-item [class.active-link]="activeView() === 'modules'" (click)="switchView('modules')">
+            <a mat-list-item [class.active-link]="activeView() === 'modules'" (click)="switchView('modules')"
+               [matTooltip]="sidebarCollapsed() ? ( 'academicStructure.moduleCatalog' | translate ) : ''" matTooltipPosition="right">
                <mat-icon matListItemIcon>view_module</mat-icon>
                <div matListItemTitle>{{ "academicStructure.moduleCatalog" | translate }}</div>
             </a>
-            <a mat-list-item [class.active-link]="activeView() === 'exam-types'" (click)="switchView('exam-types')">
-               <mat-icon matListItemIcon>assignment</mat-icon>
-               <div matListItemTitle>{{ "academicStructure.examTypes" | translate }}</div>
+            <a mat-list-item [class.active-link]="activeView() === 'grade-scale'" (click)="switchView('grade-scale')"
+               [matTooltip]="sidebarCollapsed() ? ( 'academicStructure.gradeScale' | translate ) : ''" matTooltipPosition="right">
+               <mat-icon matListItemIcon>trending_up</mat-icon>
+               <div matListItemTitle>{{ "academicStructure.gradeScale" | translate }}</div>
             </a>
             <a mat-list-item [class.active-link]="activeView() === 'faqs'" (click)="switchView('faqs')">
                <mat-icon matListItemIcon>quiz</mat-icon>
@@ -25,6 +39,12 @@
             </a>
          </div>
       </mat-nav-list>
+
+      <div class="sidebar-footer">
+         <button mat-icon-button class="collapse-toggle" (click)="sidebarCollapsed.set(!sidebarCollapsed())">
+            <mat-icon>{{ sidebarCollapsed() ? 'last_page' : 'first_page' }}</mat-icon>
+         </button>
+      </div>
    </mat-sidenav>
 
    <mat-sidenav-content class="main-content">
@@ -37,6 +57,8 @@
                   @else if (activeView() === 'structure') { {{ "academicStructure.foundationStructure" | translate }} }
                   @else if (activeView() === 'exam-types') { {{ "academicStructure.manageExamTypes" | translate }} }
                   @else if (activeView() === 'faqs') { {{ "academicStructure.faqManagement" | translate }} }
+                  @else if (activeView() === 'grade-scale') { {{ "academicStructure.gradingStandards" | translate }} }
+                  @else if (activeView() === 'emails') { {{ "academicStructure.emailManagement" | translate }} }
                   @else { {{ "academicStructure.academicModuleCatalog" | translate }} }
                </h1>
                <p>
@@ -44,21 +66,37 @@
                   @else if (activeView() === 'structure') { {{ "academicStructure.configureCoursesAndSpecializations" | translate }} }
                   @else if (activeView() === 'exam-types') { {{ "academicStructure.manageAvailableExamTypes" | translate }} }
                 @else if (activeView() === 'faqs') { {{ "academicStructure.manageFaqsDescription" | translate }} }
+                  @else if (activeView() === 'grade-scale') { {{ "academicStructure.configurePointThresholds" | translate }} }
+                  @else if (activeView() === 'emails') { {{ "academicStructure.customizeEmailTemplates" | translate }} }
                   @else { {{ "academicStructure.manageModuleRosterAndQualifications" | translate }} }
                </p>
+               @if (activeView() === 'emails') {
+                  <div class="info-banner header-banner animate-slide-down">
+                     <mat-icon>info</mat-icon>
+                     <span>{{ "academicStructure.emailPlaceholderHint" | translate }} <code>{{ '{' }}url{{ '}' }}</code></span>
+                     <button mat-icon-button (click)="copyToClipboard('{url}')" [matTooltip]="'academicStructure.copyPlaceholder' | translate">
+                        <mat-icon style="font-size: 18px; width: 18px; height: 18px;">content_copy</mat-icon>
+                     </button>
+                  </div>
+                }
             </div>
 
             <div class="header-actions">
                @if (activeView() === 'modules') {
-               <button mat-flat-button color="primary" class="high-button"
-                  (click)="showAddModuleForm.set(!showAddModuleForm())">
-                  <mat-icon>{{ showAddModuleForm() ? 'close' : 'add' }}</mat-icon> {{ (showAddModuleForm() ? 'academicStructure.cancel' : 'academicStructure.defineModule') | translate }}
-               </button>
+                <button mat-stroked-button color="primary" class="high-button" style="margin-right: 12px;"
+                   (click)="generateHandbook()">
+                   <mat-icon>description</mat-icon> {{ "academicStructure.generateHandbook" | translate }}
+                </button>
+                <button mat-flat-button color="primary" class="high-button"
+                   (click)="openAddModule()">
+                   <mat-icon>add</mat-icon> {{ "academicStructure.defineModule" | translate }}
+                </button>
                } @else if (activeView() === 'structure') {
-               <button mat-flat-button color="primary" class="high-button"
-                  (click)="showAddCourseForm.set(!showAddCourseForm())">
-                  <mat-icon>{{ showAddCourseForm() ? 'close' : 'add' }}</mat-icon> {{ (showAddCourseForm() ? 'academicStructure.cancel' : 'academicStructure.createCourse') | translate }}
-               </button>
+
+                <button mat-flat-button color="primary" class="high-button"
+                   (click)="openAddCourse()">
+                   <mat-icon>add</mat-icon> {{ "academicStructure.createCourse" | translate }}
+                </button>
                } @else if (activeView() === 'university') {
                <button mat-flat-button color="primary" class="high-button" (click)="saveUniversityInfo()"
                   [disabled]="universityForm.invalid">
@@ -66,8 +104,18 @@
                </button>
                } @else if (activeView() === 'exam-types') {
                <button mat-flat-button color="primary" class="high-button"
-                  (click)="showAddExamTypeForm.set(!showAddExamTypeForm())">
-                  <mat-icon>{{ showAddExamTypeForm() ? 'close' : 'add' }}</mat-icon> {{ (showAddExamTypeForm() ? 'academicStructure.cancel' : 'academicStructure.addExamType') | translate }}
+                  (click)="openAddExamType()">
+                  <mat-icon>add</mat-icon> {{ "academicStructure.addExamType" | translate }}
+               </button>
+               } @else if (activeView() === 'grade-scale') {
+                <button mat-flat-button color="primary" class="high-button"
+                   (click)="openAddGradeScale()">
+                   <mat-icon>add</mat-icon> {{ "academicStructure.addThreshold" | translate }}
+                </button>
+                } @else if (activeView() === 'emails') {
+               <button mat-flat-button color="primary" class="high-button" (click)="saveUniversityInfo()"
+                  [disabled]="universityForm.invalid">
+                  <mat-icon>save</mat-icon> {{ "academicStructure.syncTemplates" | translate }}
                </button>
                } @else if (activeView() === 'faqs') {
                <button mat-flat-button color="primary" class="high-button"
@@ -233,48 +281,19 @@
          <!-- STRUCTURE VIEW -->
          @if (activeView() === 'structure') {
          <div class="view-section animate-fade-in">
-            @if (showAddCourseForm()) {
-            <mat-card class="creation-overlay-card animate-slide-down">
-               <mat-card-header><mat-card-title>{{ "academicStructure.createNewCourseOfStudy" | translate
-                     }}</mat-card-title></mat-card-header>
-               <mat-card-content>
-                  <form [formGroup]="courseForm" class="course-creation-form">
-                     <div class="form-row">
-                        <mat-form-field appearance="outline" class="flex-2">
-                           <mat-label>{{ "academicStructure.courseName" | translate }}</mat-label>
-                           <input matInput [formControl]="courseNameFormControl"
-                              placeholder="{{ 'academicStructure.courseNamePlaceholder' | translate }}">
-                        </mat-form-field>
-                        <mat-form-field appearance="outline" class="flex-1">
-                           <mat-label>{{ "academicStructure.degree" | translate }}</mat-label>
-                           <mat-select formControlName="degreeType">
-                              @for (type of degreeTypes; track type) { <mat-option [value]="type">{{ type
-                                 }}</mat-option> }
-                           </mat-select>
-                        </mat-form-field>
-                     </div>
-                  </form>
-               </mat-card-content>
-               <mat-card-actions align="end">
-                  <button mat-button (click)="showAddCourseForm.set(false)">{{ "academicStructure.cancel" | translate
-                     }}</button>
-                  <button mat-flat-button color="primary" (click)="addCourse()" [disabled]="courseForm.invalid">{{
-                     "academicStructure.createCourse" | translate }}
-                  </button>
-               </mat-card-actions>
-            </mat-card>
-            }
-
             <div class="course-grid">
                @for (course of courses(); track course.id) {
                <mat-card class="modern-card">
                   <mat-card-header>
                      <div mat-card-avatar class="icon-avatar"><mat-icon>school</mat-icon></div>
-                     <mat-card-title>{{ course.name }}</mat-card-title>
-                     <div class="degree-badge" [class]="course.degreeType.toLowerCase()">
-                        {{ course.degreeType }} {{ "academicStructure.degree" | translate }}
+                     <div class="header-text-container">
+                        <mat-card-title>{{ course.name }}</mat-card-title>
+                        <div class="degree-badge" [class]="course.degreeType.toLowerCase()">
+                           {{ course.degreeType }} {{ "academicStructure.degree" | translate }}
+                        </div>
                      </div>
                      <div class="header-actions">
+                        <button mat-icon-button (click)="editCourse(course)"><mat-icon>edit</mat-icon></button>
                         <button mat-icon-button color="warn"
                            (click)="deleteCourse(course.id)"><mat-icon>delete</mat-icon></button>
                      </div>
@@ -283,27 +302,15 @@
                      <div class="specialization-section">
                         <div class="section-label">
                            <span>{{ "academicStructure.specializationAreas" | translate }}</span>
-                           <button mat-icon-button
-                              (click)="specializationForm.get('courseId')?.setValue(course.id); showAddSpecializationForm.set(!showAddSpecializationForm())">
-                              <mat-icon>{{ (showAddSpecializationForm() && specializationForm.get('courseId')?.value === course.id) ? 'close' : 'add_circle_outline' }}</mat-icon>
+                           <button mat-icon-button (click)="openAddSpecialization(course.id)">
+                              <mat-icon>add_circle_outline</mat-icon>
                            </button>
                         </div>
 
-                        @if (showAddSpecializationForm() && specializationForm.get('courseId')?.value === course.id) {
-                        <div class="inline-add-field animate-slide-down">
-                           <mat-form-field appearance="outline" >
-                              <input matInput
-                                 placeholder="{{ 'academicStructure.newSpecializationAreaPlaceholder' | translate }}"
-                                 [formControl]="specializationNameFormControl">
-                           </mat-form-field>
-                           <button mat-icon-button color="primary" (click)="addSpecialization()"
-                              [disabled]="specializationForm.invalid"><mat-icon>check</mat-icon></button>
-                        </div>
-                        }
 
                         <div class="specialization-chip-container">
                            @for (s of getSpecializationsForCourse(course.id); track s.id) {
-                           <mat-chip-row class="modern-chip" (removed)="deleteSpecialization(s.id)">
+                           <mat-chip-row class="modern-chip" (removed)="deleteSpecialization(s.id)" (click)="editSpecialization(s)">
                               {{ s.name }}
                               <button matChipRemove><mat-icon>close</mat-icon></button>
                            </mat-chip-row>
@@ -323,88 +330,6 @@
          <!-- MODULES VIEW -->
          @if (activeView() === 'modules') {
          <div class="view-section animate-fade-in">
-            @if (showAddModuleForm()) {
-            <mat-card class="creation-overlay-card module-creation animate-slide-down">
-               <mat-card-header><mat-card-title>{{ "academicStructure.defineAcademicModule" | translate
-                     }}</mat-card-title></mat-card-header>
-               <mat-card-content>
-                  <form [formGroup]="moduleForm" class="module-form">
-                     <div class="form-row">
-                        <mat-form-field appearance="outline" class="flex-2">
-                           <mat-label>{{ "academicStructure.moduleName" | translate }}</mat-label>
-                           <input matInput formControlName="name">
-                        </mat-form-field>
-                        <mat-form-field appearance="outline" class="flex-1">
-                           <mat-label>{{ "academicStructure.semester" | translate }}</mat-label>
-                           <input matInput type="number" formControlName="semester">
-                        </mat-form-field>
-                     </div>
-
-                     <div class="form-row">
-                        <mat-form-field appearance="outline" class="flex-1">
-                           <mat-label>{{ "academicStructure.courseOfStudy" | translate }}</mat-label>
-                           <mat-select formControlName="courseOfStudyId">
-                              @for (c of courses(); track c.id) { <mat-option [value]="c.id">{{ c.name }} ({{
-                                 c.degreeType }})</mat-option> }
-                           </mat-select>
-                        </mat-form-field>
-                        <mat-form-field appearance="outline" class="flex-1">
-                           <mat-label>{{ "academicStructure.associatedSpecialization" | translate }}</mat-label>
-                           <mat-select formControlName="specializationId">
-                              <mat-option [value]="undefined">{{ "academicStructure.noSpecificSpecialization" |
-                                 translate }}</mat-option>
-                              @for (s of availableSpecializationsForModuleForm(); track s.id) { <mat-option
-                                 [value]="s.id">{{ s.name }}</mat-option> }
-                           </mat-select>
-                        </mat-form-field>
-                     </div>
-
-                     <div class="form-row">
-                        <mat-form-field appearance="outline" class="flex-1">
-                           <mat-label>{{ "academicStructure.workloadHours" | translate }}</mat-label>
-                           <input matInput type="number" formControlName="requiredTotalHours">
-                        </mat-form-field>
-                        <mat-form-field appearance="outline" class="flex-1">
-                           <mat-label>{{ "academicStructure.examTypes" | translate }}</mat-label>
-                           <mat-select formControlName="possibleExamTypes" multiple>
-                              @for (et of examTypes(); track et.id) { <mat-option [value]="et">{{ getExamTypeName(et)
-                                 }}</mat-option> }
-                           </mat-select>
-                        </mat-form-field>
-                        <mat-form-field appearance="outline" class="flex-1">
-                           <mat-label>{{ "academicStructure.preferredExamType" | translate }}</mat-label>
-                           <mat-select formControlName="preferredExamTypeId">
-                              <mat-option [value]="undefined">{{ "academicStructure.none" | translate }}</mat-option>
-                              @for (et of selectedPossibleExamTypes(); track et.id) {
-                              <mat-option [value]="et.id">{{ getExamTypeName(et) }}</mat-option>
-                              }
-                           </mat-select>
-                        </mat-form-field>
-                     </div>
-
-                     <mat-form-field appearance="outline" class="full-width">
-                        <mat-label>{{ "academicStructure.qualifiedLecturers" | translate }}</mat-label>
-                        <mat-select formControlName="lecturers" multiple>
-                           @for (l of lecturers(); track l.id) {
-                           <mat-option
-                              [value]="{ id: l.id, salutation: l.salutation, title: l.title, firstName: l.firstName, lastName: l.lastName }">
-                              {{ getFullDisplayName(l) }}
-                           </mat-option>
-                           }
-                        </mat-select>
-                     </mat-form-field>
-                  </form>
-               </mat-card-content>
-               <mat-card-actions align="end">
-                  <button mat-button (click)="showAddModuleForm.set(false)">{{ "academicStructure.cancel" | translate
-                     }}</button>
-                  <button mat-flat-button color="primary" [disabled]="moduleForm.invalid" (click)="addModule()">{{
-                     "academicStructure.defineModule" | translate }}
-                  </button>
-               </mat-card-actions>
-            </mat-card>
-            }
-
             <mat-card class="data-view-card">
                <table class="modern-table">
                   <thead>
@@ -455,6 +380,8 @@
                            </div>
                         </td>
                         <td class="actions-cell">
+                           <button mat-icon-button (click)="editModule(module)"
+                              color="primary"><mat-icon>edit_outline</mat-icon></button>
                            <button mat-icon-button (click)="deleteModule(module.id)"
                               color="warn"><mat-icon>delete_outline</mat-icon></button>
                         </td>
@@ -471,50 +398,9 @@
          </div>
          }
 
-         <!-- EXAM TYPES VIEW -->
+          <!-- EXAM TYPES VIEW -->
          @if (activeView() === 'exam-types') {
          <div class="view-section animate-fade-in">
-            @if (showAddExamTypeForm()) {
-            <mat-card class="creation-overlay-card animate-slide-down">
-               <mat-card-header><mat-card-title>{{ "academicStructure.addNewExamType" | translate }}</mat-card-title></mat-card-header>
-               <mat-card-content>
-                  <form [formGroup]="examTypeForm" class="exam-type-creation-form"
-                     style="display: flex; flex-direction: column; gap: 16px;">
-                     <div style="display: flex; gap: 16px;">
-                        <mat-form-field appearance="outline" style="flex: 1;">
-                           <mat-label>{{ "academicStructure.internalCode" | translate }}</mat-label>
-                           <input matInput formControlName="type" placeholder="e.g. KLAUSUR">
-                        </mat-form-field>
-                     </div>
-                     <div style="display: flex; gap: 16px;">
-                        <mat-form-field appearance="outline" style="flex: 1;">
-                           <mat-label>{{ "academicStructure.examTypeNameDe" | translate }}</mat-label>
-                           <input matInput formControlName="nameDe" placeholder="e.g. Klausur">
-                        </mat-form-field>
-                        <mat-form-field appearance="outline" style="flex: 1;">
-                           <mat-label>{{ "academicStructure.examTypeNameEn" | translate }}</mat-label>
-                           <input matInput formControlName="nameEn" placeholder="e.g. Written Exam">
-                        </mat-form-field>
-                     </div>
-                     <div style="display: flex; gap: 16px;">
-                        <mat-form-field appearance="outline" style="flex: 1;">
-                           <mat-label>{{ "academicStructure.examTypeShortDe" | translate }}</mat-label>
-                           <input matInput formControlName="shortDe" placeholder="e.g. Kl.">
-                        </mat-form-field>
-                        <mat-form-field appearance="outline" style="flex: 1;">
-                           <mat-label>{{ "academicStructure.examTypeShortEn" | translate }}</mat-label>
-                           <input matInput formControlName="shortEn" placeholder="e.g. W.E.">
-                        </mat-form-field>
-                     </div>
-                  </form>
-               </mat-card-content>
-               <mat-card-actions align="end">
-                  <button mat-button (click)="showAddExamTypeForm.set(false)">{{ "academicStructure.cancel" | translate }}</button>
-                  <button mat-flat-button color="primary" (click)="addExamType()" [disabled]="examTypeForm.invalid">{{ "academicStructure.addType" | translate }}</button>
-               </mat-card-actions>
-            </mat-card>
-            }
-
             <div class="exam-type-grid"
                style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;">
                @for (et of examTypes(); track et.id) {
@@ -522,8 +408,16 @@
                   <mat-card-header>
                      <div mat-card-avatar class="icon-avatar"><mat-icon>assignment</mat-icon></div>
                      <mat-card-title>{{ getExamTypeName(et) }}</mat-card-title>
-                     <mat-card-subtitle>Code: {{ et.type }} | Short: {{ getExamTypeShort(et) }}</mat-card-subtitle>
+                     <mat-card-subtitle>
+                        Code: {{ et.type }} | Short: {{ getExamTypeShort(et) }} | 
+                        @if (et.category) {
+                           <span class="category-badge" [class]="et.category.toLowerCase()">
+                              {{ "academicStructure.examCategories." + et.category | translate }}
+                           </span>
+                        }
+                     </mat-card-subtitle>
                      <div class="header-actions">
+                        <button mat-icon-button (click)="editExamType(et)"><mat-icon>edit</mat-icon></button>
                         <button mat-icon-button color="warn" (click)="deleteExamType(et.id)">
                            <mat-icon>delete</mat-icon>
                         </button>
@@ -583,3 +477,384 @@
       </main>
    </mat-sidenav-content>
 </mat-sidenav-container>
+         <!-- GRADE SCALE VIEW -->
+         @if (activeView() === 'grade-scale') {
+         <div class="view-section animate-fade-in">
+            <mat-card class="data-view-card">
+               <table class="modern-table">
+                  <thead>
+                     <tr>
+                        <th>{{ "academicStructure.academicGrade" | translate }}</th>
+                        <th>{{ "academicStructure.minPoints" | translate }}</th>
+                        <th>{{ "academicStructure.labelDescription" | translate }}</th>
+                        <th class="actions-cell"></th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     @for (entry of gradeScaleEntries(); track entry.id) {
+                     <tr>
+                        <td><span class="bold-text" style="font-size: 1.1rem; color: var(--mat-sys-primary);">{{ entry.grade.toFixed(1) }}</span></td>
+                        <td>
+                           <div class="points-pill">
+                              {{ entry.minimumPoints }} Pkt.
+                           </div>
+                        </td>
+                        <td>{{ entry.label || '-' }}</td>
+                        <td class="actions-cell">
+                           <button mat-icon-button (click)="editGradeScaleEntry(entry)" color="primary">
+                              <mat-icon>edit_outline</mat-icon>
+                           </button>
+                           <button mat-icon-button (click)="deleteGradeScaleEntry(entry.id)" color="warn">
+                              <mat-icon>delete_outline</mat-icon>
+                           </button>
+                        </td>
+                     </tr>
+                     } @empty {
+                     <tr>
+                        <td colspan="4" class="empty-hint center">{{ "academicStructure.noThresholdsDefined" | translate }}</td>
+                      </tr>
+                     }
+                  </tbody>
+               </table>
+            </mat-card>
+         </div>
+         }
+
+         <!-- EMAIL TEMPLATES VIEW -->
+         @if (activeView() === 'emails') {
+         <div class="view-section animate-fade-in university-config">
+            <form [formGroup]="universityForm" class="university-form-grid">
+               
+                <!-- INVITATION EMAIL GROUP -->
+                <div class="full-span email-template-group">
+                   <div class="group-header">
+                      <mat-icon>person_add</mat-icon>
+                      <h3>{{ "academicStructure.invitationEmail" | translate }}</h3>
+                   </div>
+                   
+                   <div class="language-grid">
+                      <!-- GERMAN -->
+                      <div class="language-card">
+                         <div class="lang-header">
+                            <span class="lang-label">DE</span>
+                            <h4>Deutsch</h4>
+                         </div>
+                         <mat-form-field appearance="outline" class="subject-field">
+                            <mat-label>{{ "academicStructure.subject" | translate }}</mat-label>
+                            <input matInput formControlName="invitationEmailSubjectDe">
+                         </mat-form-field>
+                         <div class="editor-label">{{ "academicStructure.bodyHtml" | translate }}</div>
+                         <div class="NgxEditor__Wrapper">
+                            <ngx-editor-menu [editor]="editorInvitationDe" [toolbar]="toolbar"></ngx-editor-menu>
+                            <ngx-editor [editor]="editorInvitationDe" formControlName="invitationEmailBodyDe" [placeholder]="'academicStructure.bodyHtml' | translate"></ngx-editor>
+                            <ngx-editor-floating-menu [editor]="editorInvitationDe">
+                               <ngx-editor-menu [editor]="editorInvitationDe" [toolbar]="floatingToolbar"></ngx-editor-menu>
+                            </ngx-editor-floating-menu>
+                         </div>
+                      </div>
+
+                      <!-- ENGLISH -->
+                      <div class="language-card">
+                         <div class="lang-header">
+                            <span class="lang-label">EN</span>
+                            <h4>English</h4>
+                         </div>
+                         <mat-form-field appearance="outline" class="subject-field">
+                            <mat-label>{{ "academicStructure.subject" | translate }}</mat-label>
+                            <input matInput formControlName="invitationEmailSubjectEn">
+                         </mat-form-field>
+                         <div class="editor-label">{{ "academicStructure.bodyHtml" | translate }}</div>
+                         <div class="NgxEditor__Wrapper">
+                            <ngx-editor-menu [editor]="editorInvitationEn" [toolbar]="toolbar"></ngx-editor-menu>
+                            <ngx-editor [editor]="editorInvitationEn" formControlName="invitationEmailBodyEn" [placeholder]="'academicStructure.bodyHtml' | translate"></ngx-editor>
+                            <ngx-editor-floating-menu [editor]="editorInvitationEn">
+                               <ngx-editor-menu [editor]="editorInvitationEn" [toolbar]="floatingToolbar"></ngx-editor-menu>
+                            </ngx-editor-floating-menu>
+                         </div>
+                      </div>
+                   </div>
+                </div>
+
+                <!-- PASSWORD RESET EMAIL GROUP -->
+                <div class="full-span email-template-group">
+                   <div class="group-header">
+                      <mat-icon>lock_reset</mat-icon>
+                      <h3>{{ "academicStructure.passwordResetEmail" | translate }}</h3>
+                   </div>
+
+                   <div class="language-grid">
+                      <!-- GERMAN -->
+                      <div class="language-card">
+                         <div class="lang-header">
+                            <span class="lang-label">DE</span>
+                            <h4>Deutsch</h4>
+                         </div>
+                         <mat-form-field appearance="outline" class="subject-field">
+                            <mat-label>{{ "academicStructure.subject" | translate }}</mat-label>
+                            <input matInput formControlName="passwordResetEmailSubjectDe">
+                         </mat-form-field>
+                         <div class="editor-label">{{ "academicStructure.bodyHtml" | translate }}</div>
+                         <div class="NgxEditor__Wrapper">
+                            <ngx-editor-menu [editor]="editorResetDe" [toolbar]="toolbar"></ngx-editor-menu>
+                            <ngx-editor [editor]="editorResetDe" formControlName="passwordResetEmailBodyDe" [placeholder]="'academicStructure.bodyHtml' | translate"></ngx-editor>
+                            <ngx-editor-floating-menu [editor]="editorResetDe">
+                               <ngx-editor-menu [editor]="editorResetDe" [toolbar]="floatingToolbar"></ngx-editor-menu>
+                            </ngx-editor-floating-menu>
+                         </div>
+                      </div>
+
+                      <!-- ENGLISH -->
+                      <div class="language-card">
+                         <div class="lang-header">
+                            <span class="lang-label">EN</span>
+                            <h4>English</h4>
+                         </div>
+                         <mat-form-field appearance="outline" class="subject-field">
+                            <mat-label>{{ "academicStructure.subject" | translate }}</mat-label>
+                            <input matInput formControlName="passwordResetEmailSubjectEn">
+                         </mat-form-field>
+                         <div class="editor-label">{{ "academicStructure.bodyHtml" | translate }}</div>
+                         <div class="NgxEditor__Wrapper">
+                            <ngx-editor-menu [editor]="editorResetEn" [toolbar]="toolbar"></ngx-editor-menu>
+                            <ngx-editor [editor]="editorResetEn" formControlName="passwordResetEmailBodyEn" [placeholder]="'academicStructure.bodyHtml' | translate"></ngx-editor>
+                            <ngx-editor-floating-menu [editor]="editorResetEn">
+                               <ngx-editor-menu [editor]="editorResetEn" [toolbar]="floatingToolbar"></ngx-editor-menu>
+                            </ngx-editor-floating-menu>
+                         </div>
+                      </div>
+                   </div>
+                </div>
+
+            </form>
+         </div>
+         }
+      </main>
+   </mat-sidenav-content>
+</mat-sidenav-container>
+
+<!-- COURSE DIALOG TEMPLATE -->
+<ng-template #courseDialogTemplate>
+   <h2 mat-dialog-title>
+      {{ (isEditingCourse() ? "academicStructure.editCourseOfStudy" : "academicStructure.createNewCourseOfStudy") | translate }}
+   </h2>
+   <mat-dialog-content>
+      <form [formGroup]="courseForm" class="course-creation-form" style="padding-top: 10px;">
+         <div class="form-row" style="display: flex; gap: 16px;">
+            <mat-form-field appearance="outline" style="flex: 2;">
+               <mat-label>{{ "academicStructure.courseName" | translate }}</mat-label>
+               <input matInput [formControl]="courseNameFormControl"
+                  placeholder="{{ 'academicStructure.courseNamePlaceholder' | translate }}">
+            </mat-form-field>
+            <mat-form-field appearance="outline" style="flex: 1;">
+               <mat-label>{{ "academicStructure.degree" | translate }}</mat-label>
+               <mat-select formControlName="degreeType">
+                  @for (type of degreeTypes; track type) { <mat-option [value]="type">{{ type }}</mat-option> }
+               </mat-select>
+            </mat-form-field>
+         </div>
+      </form>
+   </mat-dialog-content>
+   <mat-dialog-actions align="end">
+      <button mat-button (click)="cancelCourseEdit()">{{ "academicStructure.cancel" | translate }}</button>
+      <button mat-flat-button color="primary" (click)="addCourse()" [disabled]="courseForm.invalid">
+         {{ (isEditingCourse() ? "academicStructure.updateCourse" : "academicStructure.createCourse") | translate }}
+      </button>
+   </mat-dialog-actions>
+</ng-template>
+
+<!-- EXAM TYPE DIALOG TEMPLATE -->
+<ng-template #examTypeDialogTemplate>
+   <h2 mat-dialog-title>
+      {{ (isEditingExamType() ? "academicStructure.editExamType" : "academicStructure.addNewExamType") | translate }}
+   </h2>
+   <mat-dialog-content>
+      <form [formGroup]="examTypeForm" class="exam-type-creation-form"
+         style="display: flex; flex-direction: column; gap: 16px; padding-top: 10px;">
+         <div style="display: flex; gap: 16px;">
+            <mat-form-field appearance="outline" style="flex: 1;">
+               <mat-label>{{ "academicStructure.internalCode" | translate }}</mat-label>
+               <input matInput formControlName="type" placeholder="e.g. KLAUSUR">
+            </mat-form-field>
+            <mat-form-field appearance="outline" style="flex: 1;">
+               <mat-label>{{ "academicStructure.examCategory" | translate }}</mat-label>
+               <mat-select formControlName="category">
+                  @for (cat of examCategories; track cat) {
+                     <mat-option [value]="cat">{{ "academicStructure.examCategories." + cat | translate }}</mat-option>
+                  }
+               </mat-select>
+            </mat-form-field>
+         </div>
+         <div style="display: flex; gap: 16px;">
+            <mat-form-field appearance="outline" style="flex: 1;">
+               <mat-label>{{ "academicStructure.examTypeNameDe" | translate }}</mat-label>
+               <input matInput formControlName="nameDe" placeholder="e.g. Klausur">
+            </mat-form-field>
+            <mat-form-field appearance="outline" style="flex: 1;">
+               <mat-label>{{ "academicStructure.examTypeNameEn" | translate }}</mat-label>
+               <input matInput formControlName="nameEn" placeholder="e.g. Written Exam">
+            </mat-form-field>
+         </div>
+         <div style="display: flex; gap: 16px;">
+            <mat-form-field appearance="outline" style="flex: 1;">
+               <mat-label>{{ "academicStructure.examTypeShortDe" | translate }}</mat-label>
+               <input matInput formControlName="shortDe" placeholder="e.g. Kl.">
+            </mat-form-field>
+            <mat-form-field appearance="outline" style="flex: 1;">
+               <mat-label>{{ "academicStructure.examTypeShortEn" | translate }}</mat-label>
+               <input matInput formControlName="shortEn" placeholder="e.g. W.E.">
+            </mat-form-field>
+         </div>
+      </form>
+   </mat-dialog-content>
+   <mat-dialog-actions align="end">
+      <button mat-button (click)="cancelExamTypeEdit()">{{ "academicStructure.cancel" | translate }}</button>
+      <button mat-flat-button color="primary" (click)="addExamType()" [disabled]="examTypeForm.invalid">
+         {{ (isEditingExamType() ? "academicStructure.update" : "academicStructure.addType") | translate }}
+      </button>
+   </mat-dialog-actions>
+</ng-template>
+
+<!-- SPECIALIZATION DIALOG TEMPLATE -->
+<ng-template #specializationDialogTemplate>
+   <h2 mat-dialog-title>
+      {{ (isEditingSpecialization() ? "academicStructure.editSpecialization" : "academicStructure.addNewSpecializationArea") | translate }}
+   </h2>
+   <mat-dialog-content>
+      <form [formGroup]="specializationForm" style="padding-top: 10px;">
+         <mat-form-field appearance="outline" style="width: 100%;">
+            <mat-label>{{ "academicStructure.specializationName" | translate }}</mat-label>
+            <input matInput placeholder="{{ 'academicStructure.newSpecializationAreaPlaceholder' | translate }}"
+               [formControl]="specializationNameFormControl">
+         </mat-form-field>
+
+         <mat-form-field appearance="outline" style="width: 100%;">
+            <mat-label>{{ "academicStructure.courseOfStudy" | translate }}</mat-label>
+            <mat-select formControlName="courseId">
+               @for (course of courses(); track course.id) {
+                  <mat-option [value]="course.id">{{ course.name }} ({{ course.degreeType }})</mat-option>
+               }
+            </mat-select>
+         </mat-form-field>
+      </form>
+   </mat-dialog-content>
+   <mat-dialog-actions align="end">
+      <button mat-button (click)="cancelSpecializationEdit()">{{ "academicStructure.cancel" | translate }}</button>
+      <button mat-flat-button color="primary" (click)="addSpecialization()" [disabled]="specializationForm.invalid">
+         {{ (isEditingSpecialization() ? "academicStructure.update" : "academicStructure.add") | translate }}
+      </button>
+   </mat-dialog-actions>
+</ng-template>
+
+<!-- MODULE DIALOG TEMPLATE -->
+<ng-template #moduleDialogTemplate>
+   <h2 mat-dialog-title>
+      {{ (isEditingModule() ? "academicStructure.editAcademicModule" : "academicStructure.defineAcademicModule") | translate }}
+   </h2>
+   <mat-dialog-content>
+      <form [formGroup]="moduleForm" class="module-form" style="padding-top: 10px;">
+         <div class="form-row" style="display: flex; gap: 16px;">
+            <mat-form-field appearance="outline" style="flex: 2;">
+               <mat-label>{{ "academicStructure.moduleName" | translate }}</mat-label>
+               <input matInput formControlName="name">
+            </mat-form-field>
+            <mat-form-field appearance="outline" style="flex: 1;">
+               <mat-label>{{ "academicStructure.semester" | translate }}</mat-label>
+               <input matInput type="number" formControlName="semester">
+            </mat-form-field>
+         </div>
+
+         <div class="form-row" style="display: flex; gap: 16px;">
+            <mat-form-field appearance="outline" style="flex: 1;">
+               <mat-label>{{ "academicStructure.courseOfStudy" | translate }}</mat-label>
+               <mat-select formControlName="courseOfStudyId">
+                  @for (c of courses(); track c.id) {
+                     <mat-option [value]="c.id">{{ c.name }} ({{ c.degreeType }})</mat-option>
+                  }
+               </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="outline" style="flex: 1;">
+               <mat-label>{{ "academicStructure.associatedSpecialization" | translate }}</mat-label>
+               <mat-select formControlName="specializationId">
+                  <mat-option [value]="undefined">{{ "academicStructure.noSpecificSpecialization" | translate }}</mat-option>
+                  @for (s of availableSpecializationsForModuleForm(); track s.id) {
+                     <mat-option [value]="s.id">{{ s.name }}</mat-option>
+                  }
+               </mat-select>
+            </mat-form-field>
+         </div>
+
+         <div class="form-row" style="display: flex; gap: 16px;">
+            <mat-form-field appearance="outline" style="flex: 1;">
+               <mat-label>{{ "academicStructure.workloadHours" | translate }}</mat-label>
+               <input matInput type="number" formControlName="requiredTotalHours">
+            </mat-form-field>
+            <mat-form-field appearance="outline" style="flex: 1;">
+               <mat-label>{{ "academicStructure.examTypes" | translate }}</mat-label>
+               <mat-select formControlName="possibleExamTypes" multiple [compareWith]="compareExamTypes">
+                  @for (et of examTypes(); track et.id) {
+                     <mat-option [value]="et">{{ getExamTypeName(et) }}</mat-option>
+                  }
+               </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="outline" style="flex: 1;">
+               <mat-label>{{ "academicStructure.preferredExamType" | translate }}</mat-label>
+               <mat-select formControlName="preferredExamTypeId">
+                  <mat-option [value]="undefined">{{ "academicStructure.none" | translate }}</mat-option>
+                  @for (et of selectedPossibleExamTypes(); track et.id) {
+                     <mat-option [value]="et.id">{{ getExamTypeName(et) }}</mat-option>
+                  }
+               </mat-select>
+            </mat-form-field>
+         </div>
+
+         <mat-form-field appearance="outline" style="width: 100%;">
+            <mat-label>{{ "academicStructure.qualifiedLecturers" | translate }}</mat-label>
+            <mat-select formControlName="lecturers" multiple [compareWith]="compareLecturers">
+               @for (l of lecturers(); track l.id) {
+                  <mat-option [value]="{ id: l.id, salutation: l.salutation, title: l.title, firstName: l.firstName, lastName: l.lastName }">
+                     {{ getFullDisplayName(l) }}
+                  </mat-option>
+               }
+            </mat-select>
+         </mat-form-field>
+      </form>
+   </mat-dialog-content>
+   <mat-dialog-actions align="end">
+      <button mat-button (click)="cancelModuleEdit()">{{ "academicStructure.cancel" | translate }}</button>
+      <button mat-flat-button color="primary" [disabled]="moduleForm.invalid" (click)="addModule()">
+         {{ (isEditingModule() ? "academicStructure.update" : "academicStructure.defineModule") | translate }}
+      </button>
+   </mat-dialog-actions>
+</ng-template>
+
+<!-- GRADE SCALE DIALOG TEMPLATE -->
+<ng-template #gradeScaleDialogTemplate>
+   <h2 mat-dialog-title>
+      {{ (selectedGradeScaleEntry() ? "academicStructure.editGradeThreshold" : "academicStructure.addNewGradeThreshold") | translate }}
+   </h2>
+   <mat-dialog-content>
+      <form [formGroup]="gradeScaleForm" style="display: flex; flex-direction: column; gap: 16px; padding-top: 10px;">
+         <div style="display: flex; gap: 16px;">
+            <mat-form-field appearance="outline" style="flex: 1;">
+               <mat-label>{{ "academicStructure.grade" | translate }}</mat-label>
+               <input matInput type="number" step="0.1" formControlName="grade" placeholder="e.g. 1.0">
+            </mat-form-field>
+            <mat-form-field appearance="outline" style="flex: 1;">
+               <mat-label>{{ "academicStructure.minPoints" | translate }}</mat-label>
+               <input matInput type="number" formControlName="minimumPoints" placeholder="Pkt.">
+               <span matSuffix>Pkt.</span>
+            </mat-form-field>
+         </div>
+         <mat-form-field appearance="outline">
+            <mat-label>{{ "academicStructure.labelDescriptionOptional" | translate }}</mat-label>
+            <input matInput formControlName="label" placeholder="e.g. Sehr Gut">
+         </mat-form-field>
+      </form>
+   </mat-dialog-content>
+   <mat-dialog-actions align="end">
+      <button mat-button (click)="cancelGradeScaleEdit()">{{ "academicStructure.cancel" | translate }}</button>
+      <button mat-flat-button color="primary" (click)="saveGradeScaleEntry()" [disabled]="gradeScaleForm.invalid">
+         {{ (selectedGradeScaleEntry() ? "academicStructure.update" : "academicStructure.save") | translate }}
+      </button>
+   </mat-dialog-actions>
+</ng-template>

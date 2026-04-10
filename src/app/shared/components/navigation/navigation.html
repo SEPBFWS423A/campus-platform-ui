@@ -1,15 +1,17 @@
 <nav class="nav-wrapper">
-  <a class="nav-header">
+  <a class="nav-header" [routerLink]="homePath()">
     <mat-icon class="nav-icon" fontIcon="school"></mat-icon>
-    <span class="platform-name">{{ universityName() || ("platformName" | translate) }}</span>
+    <span class="platform-name">{{ publicService.universityName() || ("platformName" | translate) }}</span>
   </a>
 
   <ul class="nav-list">
-    @for (link of currentLinks(); track link.path) {
-      <li>
+    @for (link of primaryLinks(); track link.path) {
+      <li [class.secondary]="link.secondary">
         <a [routerLink]="link.path"
            routerLinkActive="active"
            [routerLinkActiveOptions]="{exact: link.exact}"
+           [matTooltip]="link.label | translate"
+           [matTooltipDisabled]="!isCollapsed()"
            #rla="routerLinkActive"
            (mouseenter)="hoveredItem.set(link.path)"
            (mouseleave)="hoveredItem.set(null)">
@@ -19,16 +21,36 @@
             [class]="(rla.isActive || hoveredItem() === link.path) ? 'material-icons' : 'material-icons-outlined'"
             [fontIcon]="((rla.isActive || hoveredItem() === link.path) && link.activeIcon) ? link.activeIcon : link.icon">
           </mat-icon>
-          {{ link.label | translate }}
+          <span>{{ link.label | translate }}</span>
         </a>
+      </li>
+    }
+
+    @if (secondaryLinks().length > 0) {
+      <li>
+        <button mat-icon-button [matMenuTriggerFor]="moreMenu" class="more-btn"
+                [matTooltip]="'navigation.more' | translate"
+                [matTooltipDisabled]="false">
+          <mat-icon fontIcon="more_horiz"></mat-icon>
+        </button>
+        <mat-menu #moreMenu="matMenu" class="nav-extra-menu">
+          @for (link of secondaryLinks(); track link.path) {
+            <a mat-menu-item [routerLink]="link.path" routerLinkActive="active-menu-item">
+              <mat-icon [fontIcon]="link.icon"></mat-icon>
+              <span>{{ link.label | translate }}</span>
+            </a>
+          }
+        </mat-menu>
       </li>
     }
   </ul>
 
   <div class="nav-actions">
-    <button mat-flat-button (click)="openSettings()" class="settings-btn">
+    <button mat-flat-button (click)="openSettings()" class="settings-btn"
+            [matTooltip]="'navigation.profileAndSettings.profileAndSettingsName' | translate"
+            [matTooltipDisabled]="!isCollapsed()">
       <mat-icon fontIcon="account_circle"></mat-icon>
-      {{ "navigation.profileAndSettings.profileAndSettingsName" | translate }}
+      <span>{{ "navigation.profileAndSettings.profileAndSettingsName" | translate }}</span>
     </button>
   </div>
 </nav>

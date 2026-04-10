@@ -67,16 +67,58 @@
     
     mat-icon { font-size: 20px; width: 20px; height: 20px; }
 
-    &:hover { 
-      background-color: var(--mat-sys-surface-container-low); 
-      color: var(--mat-sys-on-surface); 
-    }
     
     &.active {
       color: var(--mat-sys-primary);
       background-color: var(--mat-sys-primary-container);
       
       mat-icon { font-variation-settings: 'FILL' 1; font-size: 20px; width: 20px; height: 20px; }
+    }
+  }
+}
+
+.more-btn {
+  color: var(--mat-sys-on-surface-variant);
+  border-radius: 12px !important;
+  width: 40px !important;
+  height: 40px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  
+
+  &[aria-expanded="true"] {
+    color: var(--mat-sys-primary);
+    background-color: var(--mat-sys-primary-container-low);
+  }
+}
+
+.nav-extra-menu {
+  border-radius: 16px !important;
+  margin-top: 8px;
+  overflow: hidden;
+  box-shadow: var(--mat-sys-level3) !important;
+
+  .active-menu-item {
+    color: var(--mat-sys-primary) !important;
+    background-color: var(--mat-sys-primary-container) !important;
+    font-weight: 700;
+    
+    mat-icon { font-variation-settings: 'FILL' 1; }
+  }
+
+  a[mat-menu-item] {
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0 16px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    mat-icon {
+      margin-right: 0;
+      color: inherit;
     }
   }
 }
@@ -99,22 +141,29 @@
 
   mat-icon { margin-right: 6px; font-size: 20px; width: 20px; height: 20px; }
   
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2) !important;
-    opacity: 0.9;
-  }
 }
 
 /* Responsiveness for high information density */
-@media (max-width: 1300px) {
+@media (max-width: 1450px) {
   .nav-wrapper { padding: 0 16px; }
-  .nav-list { gap: 4px; }
-  .nav-list a { padding: 6px 10px; font-size: 0.8rem; }
-  .platform-name { display: none; } /* Hide name on tablets/small screens */
+  .platform-name { display: none; }
 }
 
-@media (max-width: 1250px) {
-  .nav-list a span { display: none; } /* Show only icons for links */
-  .settings-btn span { display: none; } /* Show only account icon */
+@media (max-width: 1300px) {
+  .nav-list { gap: 8px; }
+  .nav-list a { padding: 8px 10px; }
+}
+
+@media (max-width: 1150px) {
+  .nav-list a span { display: none; }
+  .settings-btn span { display: none; }
+  .nav-list { justify-content: center; }
+}
+
+@media (max-width: 600px) {
+  .nav-wrapper { padding: 0 8px; gap: 8px; }
+  .nav-list { gap: 4px; overflow-x: auto; scrollbar-width: none; }
+  .nav-list::-webkit-scrollbar { display: none; }
+  .nav-header .nav-icon { width: 40px; height: 40px; border-radius: 12px; }
+  .settings-btn { padding: 0 12px !important; }
 }

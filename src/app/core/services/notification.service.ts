@@ -25,6 +25,13 @@ export class NotificationService {
     });
   }
 
+  showInfo(messageKey: string, interpolateParams?: object) {
+    this.translate.get(messageKey, interpolateParams).subscribe((message: string) => {
+      this.openSnackBar(message, 'info-snackbar', 3000);
+    });
+  }
+
+
   private openSnackBar(message: string, panelClass: string, duration: number) {
     this.snackBar.open(message, this.translate.instant('common.close') || 'Close', {
       duration,

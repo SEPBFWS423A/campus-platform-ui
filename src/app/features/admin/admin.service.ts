@@ -3,14 +3,17 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
-export { UserRole } from '../../core/models/user-role';
 import { UserRole } from '../../core/models/user-role';
 import { FaqAdminResponse, FaqUpsertRequest } from '../../core/models/faqModel';
+import { Salutation } from '../../core/models/salutation';
+import { AcademicTitle } from '../../core/models/academic-title';
+
+export { UserRole, Salutation, AcademicTitle };
 
 export interface User {
   id: string;
-  salutation?: string; // e.g. "Mr.", "Ms.", "Mx."
-  title?: string;      // e.g. "Dr.", "Prof."
+  salutation?: Salutation;
+  title?: AcademicTitle;
   firstName: string;
   lastName: string;
   email: string;
@@ -20,23 +23,25 @@ export interface User {
   // Student Specific Fields
   studentNumber?: string;
   courseOfStudy?: string;
+  courseOfStudyId?: string;
   courseOfStudyName?: string;
   specializationId?: string;
   specializationName?: string;
   startYear?: number;
+  startQuartal?: number;
 }
 
 export interface GroupMember {
   id: string;
   studentNumber: string;
-  title?: string;
+  title?: AcademicTitle;
   firstName: string;
   lastName: string;
 }
 
 export interface ModuleLecturer {
   id: string;
-  title?: string;
+  title?: AcademicTitle;
   firstName: string;
   lastName: string;
 }
@@ -46,15 +51,22 @@ export interface InvitationPayload {
   role: UserRole;
   studentNumber?: string;
   courseOfStudy?: string;
-  specialization?: string;
+  specializationId?: number;
+  startYear?: number;
+  startQuartal?: number;
+  language?: string;
 }
 
 export interface StudyGroup {
   id: string;
   name: string;
-  courseOfStudy: string;
+  courseOfStudyId: string;
+  courseOfStudyName: string;
+  specializationId: string;
   specialization: string;
   memberCount: number;
+  startYear?: number;
+  startQuartal?: number;
   members: GroupMember[];
 }
 
@@ -75,6 +87,11 @@ export interface Specialization {
   courseId: string;
 }
 
+export enum ExamCategory {
+  SUBMISSION = 'SUBMISSION',
+  WRITTEN = 'WRITTEN'
+}
+
 export interface ModuleExam {
   id: string;
   type: string;
@@ -82,6 +99,7 @@ export interface ModuleExam {
   nameEn: string;
   shortDe: string;
   shortEn: string;
+  category?: ExamCategory;
 }
 
 export interface Module {
@@ -106,6 +124,14 @@ export interface InstitutionInfo {
   bibliothekUrl: string;
   mensaUrl: string;
   impressum: string;
+  invitationEmailSubjectDe?: string;
+  invitationEmailBodyDe?: string;
+  invitationEmailSubjectEn?: string;
+  invitationEmailBodyEn?: string;
+  passwordResetEmailSubjectDe?: string;
+  passwordResetEmailBodyDe?: string;
+  passwordResetEmailSubjectEn?: string;
+  passwordResetEmailBodyEn?: string;
 }
 
 export interface Room {
@@ -115,6 +141,54 @@ export interface Room {
   examSeats: number;
 }
 
+export enum CourseStatus {
+  PLANNED = 'PLANNED',
+  ACTIVE = 'ACTIVE',
+  COMPLETED = 'COMPLETED'
+}
+
+export interface CourseSeries {
+  id: number;
+  moduleId: number;
+  moduleName: string;
+  assignedLecturerId: number;
+  assignedLecturerName: string;
+  status: CourseStatus;
+  selectedExamTypeId?: number;
+  selectedExamTypeName?: string;
+  submissionStartDate?: string;
+  submissionDeadline?: string;
+  studyGroups: { id: number; name: string }[];
+}
+
+export interface CourseSeriesRequest {
+  moduleId: number;
+  assignedLecturerId: number;
+  status: CourseStatus;
+  selectedExamTypeId?: number;
+  submissionStartDate?: string;
+  submissionDeadline?: string;
+  studyGroupIds: number[];
+}
+
+export interface CourseEvent {
+  id: number;
+  courseSeriesId: number;
+  roomId?: number;
+  roomName?: string;
+  name: string;
+  eventType: string;
+  startTime?: string;
+  durationMinutes?: number;
+}
+
+export interface CourseEventRequest {
+  roomId?: number;
+  name: string;
+  eventType: string;
+  startTime?: string;
+  durationMinutes?: number;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -154,6 +228,14 @@ export class AdminService {
     return this.http.post<StudyGroup>(`${this.apiUrl}/groups`, group);
   }
 
+  updateGroup(id: string, group: Partial<StudyGroup>): Observable<StudyGroup> {
+    return this.http.put<StudyGroup>(`${this.apiUrl}/groups/${id}`, group);
+  }
+
+  deleteGroup(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/groups/${id}`);
+  }
+
   addGroupMember(groupId: string, userId: string): Observable<void> {
     return this.http.post<void>(`${this.apiUrl}/groups/${groupId}/members/${userId}`, {});
   }
@@ -171,6 +253,10 @@ export class AdminService {
     return this.http.post<CourseOfStudy>(`${this.apiUrl}/courses`, course);
   }
 
+  updateCourse(id: string, course: Partial<CourseOfStudy>): Observable<CourseOfStudy> {
+    return this.http.put<CourseOfStudy>(`${this.apiUrl}/courses/${id}`, course);
+  }
+
   deleteCourse(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/courses/${id}`);
   }
@@ -182,6 +268,10 @@ export class AdminService {
 
   createSpecialization(specialization: Partial<Specialization>): Observable<Specialization> {
     return this.http.post<Specialization>(`${this.apiUrl}/specializations`, specialization);
+  }
+
+  updateSpecialization(id: string, specialization: Partial<Specialization>): Observable<Specialization> {
+    return this.http.put<Specialization>(`${this.apiUrl}/specializations/${id}`, specialization);
   }
 
   deleteSpecialization(id: string): Observable<void> {
@@ -203,12 +293,6 @@ export class AdminService {
 
   deleteModule(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/modules/${id}`);
-  }
-
-  // --- Institution Information ---
-  getInstitutionInfo(): Observable<InstitutionInfo> {
-    const userUrl = `${environment.apiUrl}/users`;
-    return this.http.get<InstitutionInfo>(`${userUrl}/institution`);
   }
 
   updateInstitutionInfo(info: InstitutionInfo): Observable<InstitutionInfo> {
@@ -263,5 +347,64 @@ export class AdminService {
 
   deleteFaq(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/faqs/${id}`);
+  }
+  
+  getAvailableRooms(startTime?: string, durationMinutes?: number, excludeEventId?: number): Observable<Room[]> {
+    let params: any = {};
+    if (startTime) params.startTime = startTime;
+    if (durationMinutes) params.durationMinutes = durationMinutes;
+    if (excludeEventId) params.excludeEventId = excludeEventId;
+    return this.http.get<Room[]>(`${this.apiUrl}/rooms/available`, { params });
+  }
+
+  // --- Course Series ---
+  getCourseSeries(): Observable<CourseSeries[]> {
+    return this.http.get<CourseSeries[]>(`${this.apiUrl}/course-series`);
+  }
+
+  getCourseSeriesById(id: number): Observable<CourseSeries> {
+    return this.http.get<CourseSeries>(`${this.apiUrl}/course-series/${id}`);
+  }
+
+  createCourseSeries(request: CourseSeriesRequest): Observable<CourseSeries> {
+    return this.http.post<CourseSeries>(`${this.apiUrl}/course-series`, request);
+  }
+
+  updateCourseSeries(id: number, request: CourseSeriesRequest): Observable<CourseSeries> {
+    return this.http.put<CourseSeries>(`${this.apiUrl}/course-series/${id}`, request);
+  }
+
+  deleteCourseSeries(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/course-series/${id}`);
+  }
+
+  // --- Events ---
+  getEventsForSeries(seriesId: number): Observable<CourseEvent[]> {
+    return this.http.get<CourseEvent[]>(`${this.apiUrl}/course-series/${seriesId}/events`);
+  }
+
+  createEvent(seriesId: number, request: CourseEventRequest): Observable<CourseEvent> {
+    return this.http.post<CourseEvent>(`${this.apiUrl}/course-series/${seriesId}/events`, request);
+  }
+
+  updateEvent(eventId: number, request: CourseEventRequest): Observable<CourseEvent> {
+    return this.http.put<CourseEvent>(`${this.apiUrl}/events/${eventId}`, request);
+  }
+
+  deleteEvent(eventId: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/events/${eventId}`);
+  }
+
+  // --- Grade Scale ---
+  getGradeScale(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/grade-scale`);
+  }
+
+  saveGradeScaleEntry(entry: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/grade-scale`, entry);
+  }
+
+  deleteGradeScaleEntry(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/grade-scale/${id}`);
   }
 }

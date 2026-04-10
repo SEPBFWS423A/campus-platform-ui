@@ -9,8 +9,10 @@ export const notificationInterceptor: HttpInterceptorFn = (req, next) => {
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
       let errorMessage = 'error.generic';
-      
-      if (error.status === 0) {
+
+      if (error.error?.message) {
+        errorMessage = error.error.message;
+      } else if (error.status === 0) {
         errorMessage = 'error.no_connection';
       } else if (error.status === 401) {
         errorMessage = 'error.unauthorized';
@@ -18,9 +20,6 @@ export const notificationInterceptor: HttpInterceptorFn = (req, next) => {
         errorMessage = 'error.forbidden';
       } else if (error.status >= 500) {
         errorMessage = 'error.server_error';
-      } else if (error.error?.message) {
-        // Use backend error message if available, but pass it as key (it might be a key or raw text)
-        errorMessage = error.error.message;
       }
 
       notificationService.showError(errorMessage);
