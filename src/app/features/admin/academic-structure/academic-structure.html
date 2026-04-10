@@ -429,8 +429,9 @@
          </div>
          }
 
-        <!-- FAQ MANAGEMENT VIEW -->
-        <div class="faq-translations">
+         <!-- FAQ MANAGEMENT VIEW -->
+         @if (activeView() === 'faqs') {
+         <div class="faq-translations">
           @for (translationGroup of faqTranslations.controls; track $index) {
             <mat-card class="config-card" [formGroup]="translationGroup">
               <mat-card-header>
@@ -473,10 +474,8 @@
               </mat-card-content>
             </mat-card>
           }
-        </div>
-      </main>
-   </mat-sidenav-content>
-</mat-sidenav-container>
+         </div>
+         }
          <!-- GRADE SCALE VIEW -->
          @if (activeView() === 'grade-scale') {
          <div class="view-section animate-fade-in">

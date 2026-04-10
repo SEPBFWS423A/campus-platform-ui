@@ -373,7 +373,7 @@
     "deleteFaqTitle": "Delete FAQ",
     "deleteFaqMessage": "Do you really want to delete this FAQ?",
     "deleteFaqSuccess": "FAQ was deleted successfully.",
-    "deleteFaqError": "FAQ could not be deleted."
+    "deleteFaqError": "FAQ could not be deleted.",
     "examCategory": "Category",
     "examCategories": {
       "SUBMISSION": "Submission",
@@ -568,7 +568,8 @@
   },
   "info": {
     "subtitle": "Important contacts and information",
-    "subtitleCitySuffix": " for {{city}}",    "loadingInstitutionTitle": "General information is loading",
+    "subtitleCitySuffix": " for {{city}}",
+    "loadingInstitutionTitle": "General information is loading",
     "loadingFaqTitle": "FAQs are loading",
     "pleaseWait": "Please wait a moment.",
     "errorTitle": "Error",
@@ -593,7 +594,7 @@
     "faqSubtitle": "Answers to frequently asked questions about the campus platform.",
     "searchPlaceholder": "Search questions...",
     "noResultsTitle": "No results found",
-    "noResultsText": "Please change your search term and try again."
+    "noResultsText": "Please change your search term and try again.",
     "close": "Close",
     "save": "Save",
     "cancel": "Cancel",

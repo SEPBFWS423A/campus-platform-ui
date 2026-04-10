@@ -9,7 +9,7 @@ import {
   TemplateRef,
   AfterViewInit
 } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators, FormControl } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators, FormControl, FormGroup, FormArray } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -102,7 +102,6 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
 
   // View state
   activeView = signal<'structure' | 'modules' | 'university' | 'exam-types' | 'grade-scale' | 'emails' | 'faqs'>('university');
-  examTypes = signal<ModuleExam[]>([]);
   gradeScaleEntries = signal<any[]>([]);
   isDrawerOpen = signal(false);
   showAddCourseForm = signal(false);
@@ -184,6 +183,12 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
     lecturers: [[] as ModuleLecturer[], Validators.required],
     courseOfStudyId: ['', Validators.required],
     specializationId: ['']
+  });
+
+  faqForm = this.fb.group({
+    sortOrder: [0, Validators.required],
+    published: [true],
+    translations: this.fb.array([])
   });
 
   examTypeForm = this.fb.group({
@@ -334,7 +339,7 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
     this.adminService.getGradeScale().subscribe(gs => this.gradeScaleEntries.set(gs));
   }
 
-  switchView(view: 'structure' | 'modules' | 'university' | 'exam-types' | 'grade-scale' | 'emails') {
+  switchView(view: 'structure' | 'modules' | 'university' | 'exam-types' | 'grade-scale' | 'emails' | 'faqs') {
     this.activeView.set(view);
     this.isDrawerOpen.set(false);
   }
@@ -759,7 +764,7 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
     return {
       sortOrder: raw.sortOrder ?? 0,
       published: raw.published ?? true,
-      translations: (raw.translations ?? []).map(t => ({
+      translations: (raw.translations ?? []).map((t: any) => ({
         id: t["id"] ?? undefined,
         languageCode: (t["languageCode"] ?? '').trim().toLowerCase(),
         question: (t["question"] ?? '').trim(),
