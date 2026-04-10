@@ -122,6 +122,7 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('examTypeDialogTemplate') examTypeDialogTemplate!: TemplateRef<any>;
   @ViewChild('moduleDialogTemplate') moduleDialogTemplate!: TemplateRef<any>;
   @ViewChild('gradeScaleDialogTemplate') gradeScaleDialogTemplate!: TemplateRef<any>;
+  @ViewChild('faqDialogTemplate') faqDialogTemplate!: TemplateRef<any>;
 
   isEditingCourse = computed(() => !!this.selectedCourse());
   isEditingSpecialization = computed(() => !!this.selectedSpecialization());
@@ -136,6 +137,10 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
   moduleDegreeFilter = signal<DegreeType | ''>('');
   moduleSpecializationFilter = signal<string | ''>('');
   moduleSemesterFilter = signal<number | ''>('');
+
+  faqSearchFilter = signal('');
+  faqCategoryFilter = signal<string>('all');
+  faqStatusFilter = signal<'all' | 'published' | 'draft'>('all');
 
   // Editors
   editorInvitationDe!: Editor;
@@ -274,6 +279,45 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
     if (!courseName && !degree) return this.specializations();
 
     return this.specializations().filter(f => courseIds.includes(f.courseId));
+  });
+
+  availableFaqCategories = computed(() => {
+    const categories = this.faqs()
+      .map(faq => this.getFaqDisplayTranslation(faq)?.category?.trim())
+      .filter((category): category is string => !!category);
+
+    return Array.from(new Set(categories)).sort((a, b) => a.localeCompare(b));
+  });
+
+  filteredAdminFaqs = computed(() => {
+    const search = this.faqSearchFilter().toLowerCase().trim();
+    const categoryFilter = this.faqCategoryFilter();
+    const statusFilter = this.faqStatusFilter();
+
+    return this.faqs().filter(faq => {
+      const translation = this.getFaqDisplayTranslation(faq);
+
+      const question = translation?.question?.toLowerCase() ?? '';
+      const answer = translation?.answer?.toLowerCase() ?? '';
+      const category = translation?.category ?? '';
+      const categoryLower = category.toLowerCase();
+
+      const matchesSearch =
+        !search ||
+        question.includes(search) ||
+        answer.includes(search) ||
+        categoryLower.includes(search);
+
+      const matchesCategory =
+        categoryFilter === 'all' || category === categoryFilter;
+
+      const matchesStatus =
+        statusFilter === 'all' ||
+        (statusFilter === 'published' && faq.published) ||
+        (statusFilter === 'draft' && !faq.published);
+
+      return matchesSearch && matchesCategory && matchesStatus;
+    });
   });
 
   get courseNameFormControl() {
@@ -644,6 +688,19 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
   }
 
   // --- FAQ CRUD ---
+  openFaqForm() {
+    this.editingFaq.set(null);
+    this.resetFaqForm();
+    this.showAddFaqForm.set(true);
+
+    this.dialog.open(this.faqDialogTemplate, {
+      width: '900px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      disableClose: true
+    });
+  }
+
   addFaq() {
     if (this.faqForm.invalid) return;
 
@@ -652,8 +709,7 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
     this.adminService.createFaq(payload).subscribe({
       next: faq => {
         this.faqs.update(list => [...list, faq].sort((a, b) => a.sortOrder - b.sortOrder || a.id - b.id));
-        this.resetFaqForm();
-        this.showAddFaqForm.set(false);
+        this.cancelFaqEdit();
         this.notificationService.showSuccess('academicStructure.addFaqSuccess');
       },
       error: () => this.notificationService.showError('academicStructure.addFaqError')
@@ -664,6 +720,13 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
     this.editingFaq.set(faq);
     this.showAddFaqForm.set(true);
     this.patchFaqForm(faq);
+
+    this.dialog.open(this.faqDialogTemplate, {
+      width: '900px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      disableClose: true
+    });
   }
 
   saveFaqEdit() {
@@ -711,6 +774,7 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
     this.editingFaq.set(null);
     this.showAddFaqForm.set(false);
     this.resetFaqForm();
+    this.dialog.closeAll();
   }
 
   addFaqTranslation(languageCode: string = '') {
@@ -819,6 +883,26 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
     return this.translate.getCurrentLang() === 'de' ? et.shortDe : et.shortEn;
   }
 
+  private getCurrentUiLanguage(): string {
+    return (this.translate.getCurrentLang() || this.translate.getFallbackLang() || 'de')
+      .toLowerCase()
+      .trim();
+  }
+
+  getFaqDisplayTranslation(faq: FaqAdminResponse): FaqTranslationModel | undefined {
+    const currentLang = this.getCurrentUiLanguage();
+
+    return (
+      faq.translations.find(t => t.languageCode?.toLowerCase() === currentLang) ??
+      faq.translations.find(t => t.languageCode?.toLowerCase() === 'de') ??
+      faq.translations[0]
+    );
+  }
+
+  updateFaqSearch(event: Event) {
+    this.faqSearchFilter.set((event.target as HTMLInputElement).value);
+  }
+
   // --- Grade Scale CRUD ---
   openAddGradeScale() {
     this.selectedGradeScaleEntry.set(null);
@@ -896,7 +980,7 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         const { course, degree, language } = result;
-        
+
         const courseModules = this.modules().filter(m => m.courseOfStudyId === course.id);
         if (courseModules.length === 0) {
           this.notificationService.showInfo('academicStructure.noModulesForHandbook');
@@ -914,7 +998,7 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
 
         const url = URL.createObjectURL(generationResult.blob);
         window.open(url, '_blank');
-        
+
         const link = document.createElement('a');
         link.href = url;
         link.download = generationResult.filename;
