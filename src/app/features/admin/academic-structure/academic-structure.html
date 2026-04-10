@@ -118,11 +118,15 @@
                   <mat-icon>save</mat-icon> {{ "academicStructure.syncTemplates" | translate }}
                </button>
                } @else if (activeView() === 'faqs') {
-               <button mat-flat-button color="primary" class="high-button"
-                   (click)="editingFaq() ? saveFaqEdit() : showAddFaqForm.set(!showAddFaqForm())">
-                   <mat-icon>{{ editingFaq() ? 'save' : (showAddFaqForm() ? 'close' : 'add') }}</mat-icon> {{ editingFaq() ? ("academicStructure.saveChanges" | translate) : ((showAddFaqForm() ? "academicStructure.cancel" : "academicStructure.addFaq") | translate) }}
-              </button>
-            }
+                 <button
+                   mat-flat-button
+                   color="primary"
+                   class="high-button"
+                   (click)="openFaqForm()">
+                   <mat-icon>{{ showAddFaqForm() ? 'close' : 'add' }}</mat-icon>
+                   {{ (showAddFaqForm() ? 'academicStructure.cancel' : 'academicStructure.addFaq') | translate }}
+                 </button>
+               }
             </div>
          </div>
 
@@ -176,6 +180,37 @@
             </mat-form-field>
          </div>
          }
+
+        @if (activeView() === 'faqs') {
+          <div class="filter-bar-row animate-slide-down">
+            <mat-icon class="filter-icon" style="color: #94a3b8; font-size: 20px; width: 22px; height: 22px;">tune</mat-icon>
+
+            <mat-form-field appearance="outline" class="mega-search">
+              <mat-icon matPrefix>search</mat-icon>
+              <mat-label>{{ "academicStructure.question" | translate }}</mat-label>
+              <input matInput (input)="updateFaqSearch($event)" [value]="faqSearchFilter()">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="filter-select">
+              <mat-label>{{ "academicStructure.category" | translate }}</mat-label>
+              <mat-select [value]="faqCategoryFilter()" (selectionChange)="faqCategoryFilter.set($event.value)">
+                <mat-option value="all">{{ "academicStructure.all" | translate }}</mat-option>
+                @for (category of availableFaqCategories(); track category) {
+                  <mat-option [value]="category">{{ category }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="filter-select small">
+              <mat-label>{{ "academicStructure.status" | translate }}</mat-label>
+              <mat-select [value]="faqStatusFilter()" (selectionChange)="faqStatusFilter.set($event.value)">
+                <mat-option value="all">{{ "academicStructure.all" | translate }}</mat-option>
+                <mat-option value="published">{{ "academicStructure.published" | translate }}</mat-option>
+                <mat-option value="draft">{{ "academicStructure.draft" | translate }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        }
       </header>
 
       <main class="curriculum-viewport">
@@ -409,7 +444,7 @@
                      <div mat-card-avatar class="icon-avatar"><mat-icon>assignment</mat-icon></div>
                      <mat-card-title>{{ getExamTypeName(et) }}</mat-card-title>
                      <mat-card-subtitle>
-                        Code: {{ et.type }} | Short: {{ getExamTypeShort(et) }} | 
+                        Code: {{ et.type }} | Short: {{ getExamTypeShort(et) }} |
                         @if (et.category) {
                            <span class="category-badge" [class]="et.category.toLowerCase()">
                               {{ "academicStructure.examCategories." + et.category | translate }}
@@ -429,53 +464,172 @@
          </div>
          }
 
-         <!-- FAQ MANAGEMENT VIEW -->
-         @if (activeView() === 'faqs') {
-         <div class="faq-translations">
-          @for (translationGroup of faqTranslations.controls; track $index) {
-            <mat-card class="config-card" [formGroup]="translationGroup">
-              <mat-card-header>
-                <mat-card-title>
-                  {{ "academicStructure.translation" | translate }} {{ $index + 1 }}
-                </mat-card-title>
-              </mat-card-header>
+        <!-- FAQ MANAGEMENT VIEW -->
+        @if (activeView() === 'faqs') {
+          <div class="view-section animate-fade-in">
+            <mat-card class="data-view-card">
+              <table class="modern-table">
+                <thead>
+                <tr>
+                  <th>{{ "academicStructure.question" | translate }}</th>
+                  <th>{{ "academicStructure.category" | translate }}</th>
+                  <th>{{ "academicStructure.languages" | translate }}</th>
+                  <th>{{ "academicStructure.order" | translate }}</th>
+                  <th>{{ "academicStructure.status" | translate }}</th>
+                  <th class="actions-cell"></th>
+                </tr>
+                </thead>
+                <tbody>
+                  @for (faq of filteredAdminFaqs(); track faq.id) {
+                    <tr class="module-row">
+                      <td>
+                        <div class="bold-text">
+                          {{ getFaqDisplayTranslation(faq)?.question || '-' }}
+                        </div>
+                        <div style="margin-top: 6px; color: var(--mat-sys-on-surface-variant); font-size: 0.9rem;">
+                          {{ getFaqDisplayTranslation(faq)?.answer || '-' }}
+                        </div>
+                      </td>
 
-              <mat-card-content>
-                <div class="form-row">
-                  <mat-form-field appearance="outline" class="flex-1">
-                    <mat-label>{{ "academicStructure.languageCode" | translate }}</mat-label>
-                    <mat-select formControlName="languageCode">
-                      <mat-option value="de">Deutsch (de)</mat-option>
-                      <mat-option value="en">English (en)</mat-option>
-                    </mat-select>
-                  </mat-form-field>
+                      <td>
+                        {{ getFaqDisplayTranslation(faq)?.category || '-' }}
+                      </td>
 
-                  <div class="translation-actions">
-                    <button mat-icon-button color="warn" type="button" (click)="removeFaqTranslation($index)">
-                      <mat-icon>delete_outline</mat-icon>
-                    </button>
-                  </div>
-                </div>
+                      <td>
+                        @for (translation of faq.translations; track translation.languageCode) {
+                          <span class="degree-badge" style="margin-right: 6px;">
+                    {{ translation.languageCode }}
+                  </span>
+                        }
+                      </td>
 
-                <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>{{ "academicStructure.question" | translate }}</mat-label>
-                  <input matInput formControlName="question">
-                </mat-form-field>
+                      <td>{{ faq.sortOrder }}</td>
 
-                <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>{{ "academicStructure.category" | translate }}</mat-label>
-                  <input matInput formControlName="category">
-                </mat-form-field>
+                      <td>
+                <span class="degree-badge" [class.bachelor]="faq.published" [class.master]="!faq.published">
+                  {{ faq.published ? ("academicStructure.published" | translate) : ("academicStructure.draft" | translate) }}
+                </span>
+                      </td>
 
-                <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>{{ "academicStructure.answer" | translate }}</mat-label>
-                  <textarea matInput rows="5" formControlName="answer"></textarea>
-                </mat-form-field>
-              </mat-card-content>
+                      <td class="actions-cell">
+                        <button mat-icon-button type="button" (click)="startEditFaq(faq)" color="primary">
+                          <mat-icon>edit_outline</mat-icon>
+                        </button>
+                        <button mat-icon-button type="button" (click)="deleteFaq(faq.id)" color="warn">
+                          <mat-icon>delete_outline</mat-icon>
+                        </button>
+                      </td>
+                    </tr>
+                  } @empty {
+                    <tr>
+                      <td colspan="6" class="empty-hint center">
+                        {{ "academicStructure.noFaqsFound" | translate }}
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
             </mat-card>
-          }
-         </div>
-         }
+          </div>
+        }
+
+        <!-- FAQ DIALOG TEMPLATE -->
+        <ng-template #faqDialogTemplate>
+          <h2 mat-dialog-title>
+            {{ (editingFaq() ? "academicStructure.editFaq" : "academicStructure.createFaq") | translate }}
+          </h2>
+
+          <mat-dialog-content>
+            <form [formGroup]="faqForm" class="module-form" style="padding-top: 10px;">
+              <div class="form-row" style="display: flex; gap: 16px;">
+                <mat-form-field appearance="outline" class="flex-1">
+                  <mat-label>{{ "academicStructure.order" | translate }}</mat-label>
+                  <input matInput type="number" formControlName="sortOrder">
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="flex-1">
+                  <mat-label>{{ "academicStructure.status" | translate }}</mat-label>
+                  <mat-select formControlName="published">
+                    <mat-option [value]="true">{{ "academicStructure.published" | translate }}</mat-option>
+                    <mat-option [value]="false">{{ "academicStructure.draft" | translate }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+
+              <div class="faq-translations">
+                @for (translationGroup of faqTranslations.controls; track $index) {
+                  <mat-card class="config-card" [formGroup]="translationGroup">
+                    <mat-card-header>
+                      <mat-card-title>
+                        {{ "academicStructure.translation" | translate }} {{ $index + 1 }}
+                      </mat-card-title>
+                    </mat-card-header>
+
+                    <mat-card-content>
+                      <div class="form-row" style="display: flex; gap: 16px; align-items: center;">
+                        <mat-form-field appearance="outline" class="flex-1">
+                          <mat-label>{{ "academicStructure.languageCode" | translate }}</mat-label>
+                          <mat-select formControlName="languageCode">
+                            <mat-option value="de">Deutsch (de)</mat-option>
+                            <mat-option value="en">English (en)</mat-option>
+                          </mat-select>
+                        </mat-form-field>
+
+                        <div class="translation-actions">
+                          <button mat-icon-button color="warn" type="button" (click)="removeFaqTranslation($index)">
+                            <mat-icon>delete_outline</mat-icon>
+                          </button>
+                        </div>
+                      </div>
+
+                      <mat-form-field appearance="outline" class="full-width">
+                        <mat-label>{{ "academicStructure.question" | translate }}</mat-label>
+                        <input matInput formControlName="question">
+                      </mat-form-field>
+
+                      <mat-form-field appearance="outline" class="full-width">
+                        <mat-label>{{ "academicStructure.category" | translate }}</mat-label>
+                        <input matInput formControlName="category">
+                      </mat-form-field>
+
+                      <mat-form-field appearance="outline" class="full-width">
+                        <mat-label>{{ "academicStructure.answer" | translate }}</mat-label>
+                        <textarea matInput rows="5" formControlName="answer"></textarea>
+                      </mat-form-field>
+                    </mat-card-content>
+                  </mat-card>
+                }
+              </div>
+
+              <div class="faq-extra-actions" style="margin-top: 16px;">
+                <button mat-stroked-button type="button" (click)="addFaqTranslation()">
+                  <mat-icon>add</mat-icon>
+                  {{ "academicStructure.addTranslation" | translate }}
+                </button>
+              </div>
+            </form>
+          </mat-dialog-content>
+
+          <mat-dialog-actions align="end">
+            <button mat-button type="button" (click)="cancelFaqEdit()">
+              {{ "academicStructure.cancel" | translate }}
+            </button>
+
+            <button
+              mat-flat-button
+              color="primary"
+              type="button"
+              [disabled]="faqForm.invalid"
+              (click)="editingFaq() ? saveFaqEdit() : addFaq()">
+              {{
+                editingFaq()
+                  ? ("academicStructure.saveChanges" | translate)
+                  : ("academicStructure.createFaq" | translate)
+              }}
+            </button>
+          </mat-dialog-actions>
+        </ng-template>
+
          <!-- GRADE SCALE VIEW -->
          @if (activeView() === 'grade-scale') {
          <div class="view-section animate-fade-in">
@@ -523,14 +677,14 @@
          @if (activeView() === 'emails') {
          <div class="view-section animate-fade-in university-config">
             <form [formGroup]="universityForm" class="university-form-grid">
-               
+
                 <!-- INVITATION EMAIL GROUP -->
                 <div class="full-span email-template-group">
                    <div class="group-header">
                       <mat-icon>person_add</mat-icon>
                       <h3>{{ "academicStructure.invitationEmail" | translate }}</h3>
                    </div>
-                   
+
                    <div class="language-grid">
                       <!-- GERMAN -->
                       <div class="language-card">
