@@ -645,7 +645,8 @@
   },
   "common": {
     "success": "Action successful",
-    "close": "Close"
+    "close": "Close",
+    "cancel": "Cancel"
   },
   "info": {
     "subtitle": "Important contacts and information",
@@ -697,9 +698,9 @@
     "allStatus": "All Status",
     "allExamTypes": "All Forms",
     "statusOPEN": "Open",
-    "statusPROVIDED": "Provided",
+    "statusPROVIDED": "Grades provided",
     "statusGRADING": "Grading",
-    "statusCOMPLETED": "Published",
+    "statusCOMPLETED": "Grades published",
     "categoryWRITTEN": "Written",
     "categorySUBMISSION": "Submission",
     "materials": "Materials",
@@ -732,6 +733,7 @@
     "examMaterialsError": "Failed to update materials",
     "gradesApplySuccess": "Grades applied successfully",
     "gradesApplyError": "Failed to apply grades",
-    "points": "Points"
+    "points": "Points",
+    "studentsSubmitted": "{{count}} students submitted"
   }
 }
