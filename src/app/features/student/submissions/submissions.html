@@ -44,12 +44,20 @@
       *ngFor="let submission of filteredSubmissions"
       type="button"
       class="submission-card"
+      [ngClass]="[getStatusClass(submission), isDueSoon(submission) ? 'due-soon' : '']"
       (click)="openSubmission(submission.submissionId)">
       <div class="card-header">
         <div class="card-icon">📄</div>
 
         <div class="card-title-area">
-          <h3>{{ submission.examTypeName || ('navigation.student.submissionsPage.defaultTitle' | translate) }}</h3>
+          <div class="title-row">
+            <h3>{{ submission.examTypeName || ('navigation.student.submissionsPage.defaultTitle' | translate) }}</h3>
+
+            <span class="due-soon-badge" *ngIf="isDueSoon(submission)">
+              {{ 'navigation.student.submissionsPage.statusLabels.dueSoon' | translate }}
+            </span>
+          </div>
+
           <p>{{ 'navigation.student.submissionsPage.courseSeries' | translate }} {{ submission.courseSeriesId }}</p>
         </div>
       </div>
@@ -65,12 +73,19 @@
         <div class="deadline-value">{{ formatDate(submission.submissionDeadline) }}</div>
       </div>
 
-      <div class="card-status-row">
-        <span class="status-chip" [ngClass]="getStatusClass(submission.status, submission.hasDocuments)">
-          {{ getStatusLabel(submission.status, submission.hasDocuments) }}
-        </span>
+      <div class="card-status-panel" [ngClass]="getStatusClass(submission)">
+        <div class="status-panel-left">
+          <div class="status-panel-title">
+            <span class="status-dot"></span>
+            <span>{{ getStatusLabelKey(submission) | translate }}</span>
+          </div>
 
-        <span class="grade-badge" *ngIf="submission.grade !== null">
+          <div class="status-panel-hint">
+            {{ getStatusHintKey(submission) | translate }}
+          </div>
+        </div>
+
+        <span class="grade-badge large" *ngIf="submission.grade !== null">
           {{ submission.grade }}
         </span>
       </div>
@@ -88,24 +103,47 @@
   </div>
 </div>
 
-<div class="modal-backdrop" *ngIf="isModalOpen" (click)="closeModal()"></div>
-
-<div class="submission-modal" *ngIf="isModalOpen">
-  <div class="modal-content" *ngIf="selectedSubmission as detail">
+<div class="modal-overlay" *ngIf="isModalOpen" (click)="closeModal()">
+  <div class="submission-modal" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <div>
-        <h2>{{ detail.examTypeName || ('navigation.student.submissionsPage.defaultTitle' | translate) }}</h2>
-        <p>{{ 'navigation.student.submissionsPage.courseSeries' | translate }} {{ detail.courseSeriesId }}</p>
+        <div class="modal-title-row">
+          <h2 *ngIf="selectedSubmission as detail; else modalLoadingTitle">
+            {{ detail.examTypeName || ('navigation.student.submissionsPage.defaultTitle' | translate) }}
+          </h2>
+
+          <span class="due-soon-badge" *ngIf="selectedSubmission && isDueSoon(selectedSubmission)">
+            {{ 'navigation.student.submissionsPage.statusLabels.dueSoon' | translate }}
+          </span>
+        </div>
+
+        <ng-template #modalLoadingTitle>
+          <h2>{{ 'navigation.student.submissionsPage.defaultTitle' | translate }}</h2>
+        </ng-template>
+
+        <p *ngIf="selectedSubmission as detail">
+          {{ 'navigation.student.submissionsPage.courseSeries' | translate }} {{ detail.courseSeriesId }}
+        </p>
       </div>
 
       <button type="button" class="close-button" (click)="closeModal()">×</button>
     </div>
 
-    <div class="loading-state" *ngIf="isLoadingDetail">
+    <div class="loading-state modal-loading" *ngIf="isLoadingDetail">
       {{ 'navigation.student.submissionsPage.loadingDetail' | translate }}
     </div>
 
-    <ng-container *ngIf="!isLoadingDetail">
+    <ng-container *ngIf="!isLoadingDetail && selectedSubmission as detail">
+      <div class="detail-status-banner" [ngClass]="getStatusClass(detail)">
+        <div class="detail-status-main">
+          <span class="status-dot"></span>
+          <span>{{ getStatusLabelKey(detail) | translate }}</span>
+        </div>
+        <div class="detail-status-hint">
+          {{ getStatusHintKey(detail) | translate }}
+        </div>
+      </div>
+
       <div class="detail-grid">
         <div class="detail-item">
           <span>{{ 'navigation.student.submissionsPage.fields.start' | translate }}</span>
@@ -129,7 +167,7 @@
         </div>
         <div class="detail-item">
           <span>{{ 'navigation.student.submissionsPage.fields.status' | translate }}</span>
-          <strong>{{ getStatusLabel(detail.status, detail.hasDocuments) }}</strong>
+          <strong>{{ getStatusLabelKey(detail) | translate }}</strong>
         </div>
       </div>
 

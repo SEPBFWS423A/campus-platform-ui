@@ -66,6 +66,24 @@
           "points": "Punkte",
           "status": "Status"
         },
+        "statusLabels": {
+          "pendingEmpty": "Ausstehend",
+          "inProgress": "In Bearbeitung",
+          "submitted": "Eingereicht",
+          "submittedClosed": "Frist abgelaufen – eingereicht",
+          "overdue": "Überfällig / nicht eingereicht",
+          "graded": "Bewertet",
+          "dueSoon": "Bald fällig"
+        },
+        "statusHints": {
+          "pendingEmpty": "Noch keine Dokumente hochgeladen",
+          "inProgress": "Dokumente gespeichert, finale Einreichung ausstehend",
+          "submitted": "Final eingereicht",
+          "submittedClosed": "Final eingereicht, Fristfenster geschlossen",
+          "overdueWithoutDocuments": "Frist verpasst, keine Dokumente hochgeladen",
+          "overdueWithDocuments": "Frist verpasst, aber nicht final eingereicht",
+          "graded": "Bewertung wurde abgeschlossen"
+        },
         "documents": {
           "title": "Dokumente",
           "empty": "Noch keine Dokumente hochgeladen."
