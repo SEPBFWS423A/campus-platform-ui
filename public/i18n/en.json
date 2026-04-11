@@ -454,11 +454,8 @@
     "deleteFaqMessage": "Do you really want to delete this FAQ?",
     "deleteFaqSuccess": "FAQ was deleted successfully.",
     "deleteFaqError": "FAQ could not be deleted.",
-    "examCategory": "Category",
-    "examCategories": {
-      "SUBMISSION": "Submission",
-      "WRITTEN": "Written"
-    },
+    "submission": "Submission",
+    "submissionRequired": "Submission required",
     "emailTemplates": "Email Templates",
     "emailManagement": "Email Management",
     "customizeEmailTemplates": "Customize automated system email templates.",
@@ -608,6 +605,7 @@
     "statusACTIVE": "Active",
     "statusGRADING": "Grading",
     "statusCOMPLETED": "Completed",
+    "statusGRADING": "Grading",
     "examTypeOptional": "Exam Type (Optional)",
     "none": "None",
     "submissionStartDate": "Submission Start",
@@ -652,7 +650,9 @@
     "close": "Close",
     "add": "Add",
     "save": "Save",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "yes": "Yes",
+    "no": "No"
   },
   "info": {
     "subtitle": "Important contacts and information",
@@ -704,9 +704,9 @@
     "allStatus": "All Status",
     "allExamTypes": "All Forms",
     "statusOPEN": "Open",
-    "statusPROVIDED": "Provided",
+    "statusPROVIDED": "Grades provided",
     "statusGRADING": "Grading",
-    "statusCOMPLETED": "Published",
+    "statusCOMPLETED": "Grades published",
     "categoryWRITTEN": "Written",
     "categorySUBMISSION": "Submission",
     "materials": "Materials",
@@ -745,5 +745,7 @@
     "DR": "Dr.",
     "PROF": "Prof.",
     "PROF_DR": "Prof. Dr."
+    "points": "Points",
+    "studentsSubmitted": "{{count}} students submitted"
   }
 }

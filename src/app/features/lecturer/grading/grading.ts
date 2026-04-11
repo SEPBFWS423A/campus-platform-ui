@@ -17,7 +17,6 @@ import { NotificationService } from '../../../core/services/notification.service
 import {
   LecturerCourseResponse,
   ExamStatus,
-  ExamCategory,
   StudentSubmissionResponse,
   SubmissionStatus
 } from '../models/lecturer.models';
@@ -64,14 +63,13 @@ export class Grading implements OnInit {
   initialSolutionFileName = '';
 
   ExamStatus = ExamStatus;
-  ExamCategory = ExamCategory;
   SubmissionStatus = SubmissionStatus;
 
   ALLOWED_GRADES = [1.0, 1.3, 1.7, 2.0, 2.3, 2.7, 3.0, 3.3, 3.7, 4.0, 5.0];
 
   // Filter state
   searchQuery = signal('');
-  filterCategory = signal<'ALL' | ExamCategory>('ALL');
+  filterCategory = signal<'ALL' | 'SUBMISSION' | 'WRITTEN'>('ALL');
   filterStatus = signal<'ALL' | ExamStatus>('ALL');
   filterExamType = signal('ALL');
   
@@ -92,7 +90,9 @@ export class Grading implements OnInit {
     return this.courses().filter(course => {
       const matchesSearch = course.moduleName.toLowerCase().includes(query) ||
                             course.studyGroupNames.some(g => g.toLowerCase().includes(query));
-      const matchesCategory = cat === 'ALL' || course.examCategory === cat;
+      const matchesCategory = cat === 'ALL' || 
+                              (cat === 'SUBMISSION' && course.isSubmission) || 
+                              (cat === 'WRITTEN' && !course.isSubmission);
       const matchesStatus = stat === 'ALL' || course.examStatus === stat;
       const matchesExamType = type === 'ALL' || course.examTypeName === type;
       
@@ -337,8 +337,37 @@ export class Grading implements OnInit {
     this.submissions.set([]);
   }
 
+  downloadStudentSubmission(student: StudentSubmissionResponse): void {
+    const currentCourse = this.selectedCourse();
+    if (!currentCourse || !student.documentUrl) return;
+
+    this.lecturerApi.downloadStudentSubmission(currentCourse.id, student.studentId).subscribe({
+      next: (response) => {
+        const byteString = window.atob(response.content);
+        const arrayBuffer = new ArrayBuffer(byteString.length);
+        const int8Array = new Uint8Array(arrayBuffer);
+        for (let i = 0; i < byteString.length; i++) {
+          int8Array[i] = byteString.charCodeAt(i);
+        }
+        const blob = new Blob([int8Array], { type: response.mimeType });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = response.fileName;
+        link.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: () => this.notificationService.showError('error.download')
+    });
+  }
+
   isGradingDisabled(course: LecturerCourseResponse): boolean {
-    return course.examStatus !== ExamStatus.GRADING && course.examStatus !== ExamStatus.COMPLETED;
+    // Always allowed if already in grading or completed status
+    if (course.examStatus === ExamStatus.GRADING || course.examStatus === ExamStatus.COMPLETED) {
+      return false;
+    }
+    // Also allowed if there is at least one submission (for SUBMISSION type exams)
+    return course.submissionCount === 0;
   }
 
   getKlausurEvent(course: LecturerCourseResponse) {

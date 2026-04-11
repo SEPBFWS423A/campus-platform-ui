@@ -87,10 +87,6 @@ export interface Specialization {
   courseId: string;
 }
 
-export enum ExamCategory {
-  SUBMISSION = 'SUBMISSION',
-  WRITTEN = 'WRITTEN'
-}
 
 export interface ModuleExam {
   id: string;
@@ -99,7 +95,7 @@ export interface ModuleExam {
   nameEn: string;
   shortDe: string;
   shortEn: string;
-  category?: ExamCategory;
+  submission: boolean;
 }
 
 export interface Module {

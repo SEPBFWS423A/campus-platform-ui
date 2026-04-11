@@ -186,4 +186,10 @@ mat-table {
     color: #2e7d32;
     &::before { background-color: #4caf50; }
   }
+
+  &.grading {
+    background-color: var(--mat-sys-error-container);
+    color: var(--mat-sys-on-error-container);
+    &::before { background-color: var(--mat-sys-error); }
+  }
 }

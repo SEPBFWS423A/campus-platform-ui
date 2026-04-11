@@ -454,11 +454,8 @@
     "deleteFaqMessage": "Möchten Sie diese FAQ wirklich löschen?",
     "deleteFaqSuccess": "FAQ wurde erfolgreich gelöscht.",
     "deleteFaqError": "FAQ konnte nicht gelöscht werden.",
-    "examCategory": "Kategorie",
-    "examCategories": {
-      "SUBMISSION": "Abgabe",
-      "WRITTEN": "Schriftlich"
-    },
+    "submission": "Abgabe",
+    "submissionRequired": "Abgaben benötigt",
     "emailTemplates": "E-Mail-Vorlagen",
     "emailManagement": "E-Mail-Verwaltung",
     "customizeEmailTemplates": "Passen Sie die automatisierten System-E-Mail-Vorlagen an.",
@@ -608,6 +605,7 @@
     "statusACTIVE": "Aktiv",
     "statusGRADING": "In Bewertung",
     "statusCOMPLETED": "Abgeschlossen",
+    "statusGRADING": "In Korrektur",
     "examTypeOptional": "Prüfungsform (Optional)",
     "none": "Keine",
     "submissionStartDate": "Abgabebeginn",
@@ -652,7 +650,9 @@
     "close": "Schließen",
     "add": "Hinzufügen",
     "save": "Speichern",
-    "cancel": "Abbrechen"
+    "cancel": "Abbrechen",
+    "yes": "Ja",
+    "no": "Nein"
   },
   "info": {
     "subtitle": "Wichtige Kontakte und Informationen",
@@ -704,9 +704,9 @@
     "allStatus": "Alle Zustände",
     "allExamTypes": "Alle Formen",
     "statusOPEN": "Offen",
-    "statusPROVIDED": "Bereitgestellt",
+    "statusPROVIDED": "Noten bereitgestellt",
     "statusGRADING": "In Korrektur",
-    "statusCOMPLETED": "Veröffentlicht",
+    "statusCOMPLETED": "Noten veröffentlicht",
     "categoryWRITTEN": "Schriftlich",
     "categorySUBMISSION": "Abgabe",
     "materials": "Materialien",
@@ -745,5 +745,7 @@
     "DR": "Dr.",
     "PROF": "Prof.",
     "PROF_DR": "Prof. Dr."
+    "points": "Punkte",
+    "studentsSubmitted": "{{count}} Studenten haben abgegeben"
   }
 }

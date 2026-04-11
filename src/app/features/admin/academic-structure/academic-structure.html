@@ -445,9 +445,9 @@
                      <mat-card-title>{{ getExamTypeName(et) }}</mat-card-title>
                      <mat-card-subtitle>
                         Code: {{ et.type }} | Short: {{ getExamTypeShort(et) }} |
-                        @if (et.category) {
-                           <span class="category-badge" [class]="et.category.toLowerCase()">
-                              {{ "academicStructure.examCategories." + et.category | translate }}
+                        @if (et.submission) {
+                           <span class="category-badge submission">
+                              {{ "academicStructure.submissionRequired" | translate }}
                            </span>
                         }
                      </mat-card-subtitle>
@@ -829,11 +829,10 @@
                <input matInput formControlName="type" placeholder="e.g. KLAUSUR">
             </mat-form-field>
             <mat-form-field appearance="outline" style="flex: 1;">
-               <mat-label>{{ "academicStructure.examCategory" | translate }}</mat-label>
-               <mat-select formControlName="category">
-                  @for (cat of examCategories; track cat) {
-                     <mat-option [value]="cat">{{ "academicStructure.examCategories." + cat | translate }}</mat-option>
-                  }
+               <mat-label>{{ "academicStructure.submissionRequired" | translate }}</mat-label>
+               <mat-select formControlName="submission">
+                  <mat-option [value]="true">{{ "common.yes" | translate }}</mat-option>
+                  <mat-option [value]="false">{{ "common.no" | translate }}</mat-option>
                </mat-select>
             </mat-form-field>
          </div>
