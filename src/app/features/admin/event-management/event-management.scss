@@ -163,22 +163,28 @@ mat-table {
     border-radius: 50%;
   }
 
-  &.active {
-    background-color: var(--mat-sys-primary-container);
-    color: var(--mat-sys-on-primary-container);
-    &::before { background-color: var(--mat-sys-primary); }
-  }
-  
   &.planned {
-    background-color: var(--mat-sys-tertiary-container);
-    color: var(--mat-sys-on-tertiary-container);
-    &::before { background-color: var(--mat-sys-tertiary); }
+    background-color: var(--mat-sys-surface-variant);
+    color: var(--mat-sys-on-surface-variant);
+    &::before { background-color: var(--mat-sys-outline); }
+  }
+
+  &.active {
+    background-color: color-mix(in srgb, #2196f3 15%, transparent);
+    color: #1976d2;
+    &::before { background-color: #2196f3; }
+  }
+
+  &.grading {
+    background-color: color-mix(in srgb, #9c27b0 15%, transparent);
+    color: #7b1fa2;
+    &::before { background-color: #9c27b0; }
   }
   
   &.completed {
-    background-color: var(--mat-sys-secondary-container);
-    color: var(--mat-sys-on-secondary-container);
-    &::before { background-color: var(--mat-sys-secondary); }
+    background-color: color-mix(in srgb, #4caf50 15%, transparent);
+    color: #2e7d32;
+    &::before { background-color: #4caf50; }
   }
 
   &.grading {

@@ -1,6 +1,6 @@
 import { Component, OnInit, signal, computed, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormGroupDirective } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormGroupDirective, FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -16,6 +16,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ConfirmationDialogComponent } from '../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
+import { AutoScheduleDialogComponent } from '../auto-schedule-dialog/auto-schedule-dialog.component';
 
 import { AdminService, CourseSeries, CourseEvent, Room, Module, User, StudyGroup } from '../../admin.service';
 
@@ -23,7 +24,7 @@ import { AdminService, CourseSeries, CourseEvent, Room, Module, User, StudyGroup
   selector: 'app-course-series-details',
   standalone: true,
   imports: [
-    CommonModule, ReactiveFormsModule, RouterModule, MatFormFieldModule,
+    CommonModule, ReactiveFormsModule, FormsModule, RouterModule, MatFormFieldModule,
     MatInputModule, MatSelectModule, MatButtonModule, MatDatepickerModule, 
     MatNativeDateModule, MatTableModule, MatIconModule, MatDividerModule, 
     MatCardModule, MatSnackBarModule, MatDialogModule, TranslateModule
@@ -46,12 +47,10 @@ export class CourseSeriesDetailsComponent implements OnInit {
   selectedModuleId = signal<number | null>(null);
 
   // Event Config
-  eventColumns: string[] = ['name', 'eventType', 'startTime', 'room', 'actions'];
-  events = signal<CourseEvent[]>([]);
+  eventColumns: string[] = ['name', 'eventType', 'startTime', 'duration', 'room', 'actions'];
+  events = signal<any[]>([]);
   rooms = signal<Room[]>([]);
-  availableRooms = signal<Room[]>([]);
-  eventForm!: FormGroup;
-  editingEventId: number | null = null;
+  availableRoomsPerRow = signal<Record<number, Room[]>>({});
   
   filteredGroups = computed(() => {
     const modId = this.selectedModuleId();
@@ -84,7 +83,7 @@ export class CourseSeriesDetailsComponent implements OnInit {
     private adminService: AdminService,
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
-    private translateService: TranslateService
+    public translateService: TranslateService
   ) {
     this.createForms();
   }
@@ -98,7 +97,6 @@ export class CourseSeriesDetailsComponent implements OnInit {
     this.adminService.getGroups().subscribe(res => this.allGroups.set(res.map(g => ({ ...g, courseOfStudy: g.courseOfStudyName }))));
     this.adminService.getRooms().subscribe(res => {
       this.rooms.set(res);
-      this.availableRooms.set(res);
     });
 
     this.loadSeriesAndEvents();
@@ -138,50 +136,6 @@ export class CourseSeriesDetailsComponent implements OnInit {
       this.seriesForm.get('studyGroupIds')?.setValue(newSelection);
     });
 
-    this.eventForm = this.fb.group({
-      name: ['', Validators.required],
-      eventType: ['LEHRVERANSTALTUNG', Validators.required],
-      startDate: [null, Validators.required],
-      startTime: ['', Validators.required],
-      durationMinutes: [90, [Validators.required, Validators.min(1)]],
-      roomId: [null]
-    });
-
-    this.setupRoomFiltering();
-  }
-
-  setupRoomFiltering() {
-    this.eventForm.valueChanges.subscribe(() => {
-      this.updateAvailableRooms();
-    });
-  }
-
-  updateAvailableRooms() {
-    const val = this.eventForm.value;
-    if (val.startDate && val.startTime && val.durationMinutes) {
-      const combined = this.prepareStartTime(val.startDate, val.startTime);
-      this.adminService.getAvailableRooms(combined, val.durationMinutes, this.editingEventId || undefined).subscribe({
-        next: (res) => {
-          this.availableRooms.set(res);
-          // If current selection is no longer in the list, clear it
-          const currentRoomId = this.eventForm.get('roomId')?.value;
-          if (currentRoomId && !res.find(r => r.id === currentRoomId)) {
-            this.eventForm.get('roomId')?.setValue(null);
-          }
-        }
-      });
-    } else {
-      this.availableRooms.set(this.rooms());
-    }
-  }
-
-  prepareStartTime(date: any, time: string): string | undefined {
-    if (!date || !time) return undefined;
-    const d = new Date(date);
-    const [hh, mm] = time.split(':');
-    d.setHours(parseInt(hh, 10), parseInt(mm, 10), 0, 0);
-    const pad = (n: number) => n.toString().padStart(2, '0');
-    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:00`;
   }
 
   loadSeriesAndEvents() {
@@ -208,16 +162,25 @@ export class CourseSeriesDetailsComponent implements OnInit {
   loadEvents() {
     this.adminService.getEventsForSeries(this.seriesId).subscribe({
       next: (res) => {
-        // Sort events by startTime, handling potentially missing dates
-        const sorted = [...res].sort((a, b) => {
+        const parsedEvents = res.map(e => {
+          let editDateObj: Date | null = null;
+          let eTime = '';
+          if (e.startTime) {
+            editDateObj = new Date(e.startTime);
+            const pad = (n: number) => n.toString().padStart(2, '0');
+            eTime = `${pad(editDateObj.getHours())}:${pad(editDateObj.getMinutes())}`;
+          }
+          let evRoomIds = e.rooms?.map((r: any) => r.id) || [];
+          return { ...e, editDate: editDateObj, editTime: eTime, editRoomIds: evRoomIds };
+        });
+
+        const sorted = parsedEvents.sort((a, b) => {
           const timeA = a.startTime ? new Date(a.startTime).getTime() : 0;
           const timeB = b.startTime ? new Date(b.startTime).getTime() : 0;
           return timeA - timeB;
         });
+        
         this.events.set(sorted);
-        if (!this.editingEventId) {
-          this.setDefaultEventName();
-        }
       }
     });
   }
@@ -261,125 +224,103 @@ export class CourseSeriesDetailsComponent implements OnInit {
             this.snackBar.open(translations['eventManagement.updatedSuccessfully'], translations['common.close'], { duration: 3000 });
           });
           this.loadSeriesAndEvents();
+        },
+        error: (err) => {
+          const messageKey = err.error?.message || 'eventManagement.failedToUpdate';
+          this.snackBar.open(this.translateService.instant(messageKey), this.translateService.instant('common.close'), { duration: 5000 });
         }
       });
     }
   }
 
-  editEvent(event: CourseEvent) {
-    this.editingEventId = event.id;
-    let sDate = null;
-    let sTime = '';
-    
-    if (event.startTime) {
-      const d = new Date(event.startTime);
-      sDate = d;
-      const pad = (n: number) => n.toString().padStart(2, '0');
-      sTime = `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  updateEventInline(event: any, field: string, value: any) {
+    let combinedStart: string | undefined = undefined;
+    if (event.editDate && event.editTime) {
+       const d = new Date(event.editDate);
+       const pad = (n: number) => n.toString().padStart(2, '0');
+       const dateStr = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+       combinedStart = `${dateStr}T${event.editTime}:00`;
     }
 
-    this.eventForm.patchValue({
+    const request: any = {
       name: event.name,
       eventType: event.eventType,
-      startDate: sDate,
-      startTime: sTime,
+      roomIds: event.editRoomIds,
       durationMinutes: event.durationMinutes,
-      roomId: event.roomId || null
+      startTime: combinedStart
+    };
+    
+    if (field === 'editRoomIds') {
+        request.roomIds = value; 
+    }
+
+    this.adminService.updateEvent(event.id, request).subscribe({
+      next: () => {
+         this.loadEvents();
+      },
+      error: (err) => {
+         this.loadEvents(); // Re-sync UI with server state to perform rollback
+         const errorMsg = err.error?.message || 'Failed to update event';
+         this.translateService.get([errorMsg, 'common.close']).subscribe(translations => {
+            this.snackBar.open(translations[errorMsg] || errorMsg, translations['common.close'], { duration: 5000 });
+         });
+      }
     });
-    this.updateAvailableRooms();
   }
 
-  cancelEventEdit() {
-    this.editingEventId = null;
-    if (this.eventFormDirective) {
-      this.eventFormDirective.resetForm({
-        name: '',
-        eventType: 'LEHRVERANSTALTUNG',
-        startDate: null,
-        startTime: '',
-        durationMinutes: 90,
-        roomId: null
-      });
-    } else {
-      this.eventForm.reset({
-        name: '',
-        eventType: 'LEHRVERANSTALTUNG',
-        startDate: null,
-        startTime: '',
-        durationMinutes: 90,
-        roomId: null
-      });
+  loadAvailableRooms(element: any) {
+    if (!element.startTime || !element.durationMinutes) {
+       this.availableRoomsPerRow.update(prev => ({
+         ...prev,
+         [element.id]: this.rooms()
+       }));
+       return;
     }
-    this.availableRooms.set(this.rooms());
-    this.setDefaultEventName();
-  }
 
-  setDefaultEventName() {
-    const s = this.series();
-    if (s) {
-      const nextNum = this.events().length + 1;
-      this.eventForm.patchValue({
-        name: `${s.moduleName} (${nextNum})`
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    const d = new Date(element.startTime);
+    // Format to ISO-like string expected by backend if needed, or use existing startTime string if it's already compatible
+    // The input type="date" and "time" were combined in my previous step into element.editDate/editTime
+    
+    // We already have element.startTime as a full ISO string from loadEvents or updateEventInline
+    this.adminService.getAvailableRooms(
+      element.startTime, 
+      element.durationMinutes, 
+      element.id,
+      this.seriesId,
+      element.eventType
+    ).subscribe(res => {
+      // Ensure currently selected rooms are always in the list
+      const merged = [...res];
+      const currentRooms = element.rooms || [];
+      currentRooms.forEach((r: any) => {
+        if (!merged.find(m => m.id === r.id)) {
+          merged.push(r);
+        }
       });
-    }
-  }
-
-  saveEvent() {
-    if (this.eventForm.valid) {
-      const formVal = this.eventForm.value;
       
-      let combinedStart: string | undefined = undefined;
-      if (formVal.startDate && formVal.startTime) {
-        const d = new Date(formVal.startDate);
-        const [hh, mm] = formVal.startTime.split(':');
-        d.setHours(parseInt(hh, 10), parseInt(mm, 10), 0, 0);
-        
-        const pad = (n: number) => n.toString().padStart(2, '0');
-        combinedStart = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:00`;
-      }
+      this.availableRoomsPerRow.update(prev => ({
+        ...prev,
+        [element.id]: merged
+      }));
+    });
+  }
 
-      const request = {
-        name: formVal.name,
-        eventType: formVal.eventType,
-        roomId: formVal.roomId,
-        durationMinutes: formVal.durationMinutes,
-        startTime: combinedStart
-      };
-
-      if (this.editingEventId) {
-        this.adminService.updateEvent(this.editingEventId, request).subscribe({
-          next: () => {
-            this.translateService.get(['eventManagement.updatedSuccessfully', 'common.close']).subscribe(translations => {
-              this.snackBar.open(translations['eventManagement.updatedSuccessfully'], translations['common.close'], { duration: 3000 });
-            });
-            this.cancelEventEdit();
-            this.loadEvents();
-          },
-          error: (err) => {
-            const errorMsg = err.error?.message || 'Failed to update event';
-            this.translateService.get([errorMsg, 'common.close']).subscribe(translations => {
-              this.snackBar.open(translations[errorMsg] || errorMsg, translations['common.close'], { duration: 5000 });
-            });
-          }
-        });
-      } else {
-        this.adminService.createEvent(this.seriesId, request).subscribe({
-          next: () => {
-            this.translateService.get(['eventManagement.createdSuccessfully', 'common.close']).subscribe(translations => {
-              this.snackBar.open(translations['eventManagement.createdSuccessfully'], translations['common.close'], { duration: 3000 });
-            });
-            this.cancelEventEdit();
-            this.loadEvents();
-          },
-          error: (err) => {
-            const errorMsg = err.error?.message || 'Failed to add event';
-            this.translateService.get([errorMsg, 'common.close']).subscribe(translations => {
-              this.snackBar.open(translations[errorMsg] || errorMsg, translations['common.close'], { duration: 5000 });
-            });
-          }
-        });
+  fastAddEvent() {
+    this.adminService.fastAddEvent(this.seriesId).subscribe({
+      next: () => {
+         this.translateService.get(['common.success', 'common.close']).subscribe(translations => {
+            this.snackBar.open(translations['common.success'], translations['common.close'], { duration: 2000 });
+         });
+         this.loadEvents();
+      },
+      error: (err) => {
+         const errorMsg = err.error?.message || 'Failed to add event';
+         this.translateService.get([errorMsg, 'common.close']).subscribe(translations => {
+            this.snackBar.open(translations[errorMsg] || errorMsg, translations['common.close'], { duration: 5000 });
+         });
       }
-    }
+    });
   }
 
   deleteEvent(id: number) {
@@ -401,6 +342,38 @@ export class CourseSeriesDetailsComponent implements OnInit {
           });
         }
       });
+    });
+  }
+
+  getRoomNames(element: CourseEvent): string {
+    return element.rooms?.map(r => r.name).join(', ') || '-';
+  }
+
+  openAutoScheduleDialog() {
+    const dialogRef = this.dialog.open(AutoScheduleDialogComponent, {
+      width: '750px',
+      maxWidth: '90vw',
+      maxHeight: '90vh',
+      data: { seriesId: this.seriesId }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.adminService.autoSchedule(this.seriesId, result).subscribe({
+          next: () => {
+            this.translateService.get(['common.success', 'common.close']).subscribe(translations => {
+              this.snackBar.open(translations['common.success'], translations['common.close'], { duration: 3000 });
+            });
+            this.loadEvents();
+          },
+          error: (err) => {
+            const errorMsg = err.error?.message || 'Failed to trigger auto-scheduling';
+            this.translateService.get([errorMsg, 'common.close']).subscribe(translations => {
+              this.snackBar.open(translations[errorMsg] || errorMsg, translations['common.close'], { duration: 5000 });
+            });
+          }
+        });
+      }
     });
   }
 }

@@ -6,7 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { AdminService, CourseStatus, Module, User, StudyGroup } from '../../admin.service';
 
@@ -46,6 +46,7 @@ export class CourseSeriesCreateDialogComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private adminService: AdminService,
+    public translateService: TranslateService,
     public dialogRef: MatDialogRef<CourseSeriesCreateDialogComponent>
   ) {
     this.form = this.fb.group({

@@ -140,6 +140,7 @@ export interface Room {
 export enum CourseStatus {
   PLANNED = 'PLANNED',
   ACTIVE = 'ACTIVE',
+  GRADING = 'GRADING',
   COMPLETED = 'COMPLETED'
 }
 
@@ -170,8 +171,7 @@ export interface CourseSeriesRequest {
 export interface CourseEvent {
   id: number;
   courseSeriesId: number;
-  roomId?: number;
-  roomName?: string;
+  rooms: { id: number; name: string }[];
   name: string;
   eventType: string;
   startTime?: string;
@@ -345,11 +345,13 @@ export class AdminService {
     return this.http.delete<void>(`${this.apiUrl}/faqs/${id}`);
   }
   
-  getAvailableRooms(startTime?: string, durationMinutes?: number, excludeEventId?: number): Observable<Room[]> {
+  getAvailableRooms(startTime?: string, durationMinutes?: number, excludeEventId?: number, seriesId?: number, eventType?: string): Observable<Room[]> {
     let params: any = {};
     if (startTime) params.startTime = startTime;
     if (durationMinutes) params.durationMinutes = durationMinutes;
     if (excludeEventId) params.excludeEventId = excludeEventId;
+    if (seriesId) params.seriesId = seriesId;
+    if (eventType) params.eventType = eventType;
     return this.http.get<Room[]>(`${this.apiUrl}/rooms/available`, { params });
   }
 
@@ -381,6 +383,14 @@ export class AdminService {
 
   createEvent(seriesId: number, request: CourseEventRequest): Observable<CourseEvent> {
     return this.http.post<CourseEvent>(`${this.apiUrl}/course-series/${seriesId}/events`, request);
+  }
+
+  fastAddEvent(seriesId: number): Observable<CourseEvent> {
+    return this.http.post<CourseEvent>(`${this.apiUrl}/course-series/${seriesId}/fast-add-event`, {});
+  }
+
+  autoSchedule(seriesId: number, config: any): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/course-series/${seriesId}/auto-schedule`, config);
   }
 
   updateEvent(eventId: number, request: CourseEventRequest): Observable<CourseEvent> {

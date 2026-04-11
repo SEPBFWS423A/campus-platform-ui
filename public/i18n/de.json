@@ -47,7 +47,7 @@
         "searchPlaceholder": "Nach Prüfungsform oder Status suchen",
         "defaultTitle": "Abgabe",
         "defaultTag": "Dokument",
-        "courseSeries": "Kurs-ID:",
+        "courseSeries": "Vorlesungsreihen-ID:",
         "deadline": "Abgabefrist",
         "empty": "Keine passenden Abgaben gefunden.",
         "loadingList": "Abgaben werden geladen...",
@@ -570,7 +570,7 @@
     },
     "module": {
       "notFound": "Das Modul konnte nicht gefunden werden.",
-      "referenced": "Das Modul kann nicht gelöscht werden, da es noch von einer Kursreihe oder Studentnoten referenziert wird."
+      "referenced": "Das Modul kann nicht gelöscht werden, da es noch von einer Vorlesungsreihe oder Studentnoten referenziert wird."
     },
     "examType": {
       "referenced": "Diese Prüfungsform kann nicht gelöscht werden, da sie noch von einem oder mehreren Modulen verwendet wird."
@@ -579,15 +579,18 @@
       "notFound": "Studiengang konnte nicht gefunden werden.",
       "referenced": "Dieser Studiengang kann nicht gelöscht werden, da ein Modul dieses Studiengangs existiert."
     },
+    "courseSeries": {
+      "studyGroupAlreadyAssigned": "Eine oder mehrere der ausgewählten Studiengruppen sind für dieses Modul bereits einer anderen Vorlesungsreihe zugeordnet."
+    },
     "specialization": {
       "notFound": "Die Vertiefung konnte nicht gefunden werden.",
       "referenced": "Diese Vertiefung kann nicht gelöscht werden, da ein Modul dieser Vertiefung existiert."
     }
   },
   "eventManagement": {
-    "title": "Veranstaltungen (Kursreihen)",
-    "addCourseSeries": "Kursreihe hinzufügen",
-    "editCourseSeries": "Kursreihe bearbeiten",
+    "title": "Veranstaltungen (Vorlesungsreihen)",
+    "addCourseSeries": "Vorlesungsreihe hinzufügen",
+    "editCourseSeries": "Vorlesungsreihe bearbeiten",
     "id": "ID",
     "module": "Modul",
     "lecturer": "Dozent",
@@ -595,7 +598,7 @@
     "examType": "Prüfungsform",
     "studyGroups": "Studiengruppen",
     "actions": "Aktionen",
-    "noData": "Keine Kursreihen verfügbar. Klicken Sie auf \"Kursreihe hinzufügen\", um eine zu erstellen.",
+    "noData": "Keine Vorlesungsreihen verfügbar. Klicken Sie auf \"Vorlesungsreihe hinzufügen\", um eine zu erstellen.",
     "assignedLecturer": "Zugeordneter Dozent",
     "manageSchedule": "Termine verwalten",
     "statusPLANNED": "Geplant",
@@ -608,22 +611,23 @@
     "submissionDeadline": "Abgabefrist",
     "cancel": "Abbrechen",
     "save": "Speichern",
-    "errorLoading": "Fehler beim Laden der Kursreihen",
+    "errorLoading": "Fehler beim Laden der Vorlesungsreihen",
     "createdSuccessfully": "Erfolgreich erstellt",
     "failedToCreate": "Erstellung fehlgeschlagen",
     "updatedSuccessfully": "Erfolgreich aktualisiert",
     "failedToUpdate": "Aktualisierung fehlgeschlagen",
     "confirmAction": "Aktion bestätigen",
-    "confirmDeleteMsg": "Möchten Sie diese Kursreihe wirklich löschen?",
+    "confirmDeleteMsg": "Möchten Sie diese Vorlesungsreihe wirklich löschen?",
     "delete": "Löschen",
     "deletedSuccessfully": "Erfolgreich gelöscht",
     "failedToDelete": "Löschen fehlgeschlagen",
     "planningStatus": "Planungsstatus",
-    "planningComplete": "Kursreihe erfolgreich geplant!",
+    "planningComplete": "Vorlesungsreihe erfolgreich geplant!",
     "planningIncomplete": "Planung unvollständig: {{hours}}h {{minutes}}m fehlen noch.",
     "noRoomsAvailable": "Keine freien Räume for den gewählten Zeitraum.",
     "lecturerCollision": "Dozenten-Kollision erkannt. Dieser Dozent hat bereits einen anderen Termin in diesem Zeitraum.",
     "roomCollision": "Raum-Kollision erkannt. Dieser Raum ist im gewählten Zeitraum bereits belegt.",
+    "groupCollision": "Kursgruppen-Kollision erkannt. Eine oder mehrere der zugewiesenen Gruppen haben bereits einen anderen Termin in diesem Zeitraum.",
     "eventName": "Terminname",
     "eventType": "Terminart",
     "eventDate": "Datum",
@@ -632,17 +636,31 @@
     "eventRoom": "Raum",
     "addEvent": "Neuen Termin hinzufügen",
     "editEvent": "Termin bearbeiten",
-    "noEvents": "Keine Termine for diese Kursreihe gefunden.",
-    "seriesDetails": "Details zur Kursreihe",
+    "noEvents": "Keine Termine for diese Vorlesungsreihe gefunden.",
+    "seriesDetails": "Details zur Vorlesungsreihe",
     "lehrveranstaltung": "Lehrveranstaltung",
     "klausur": "Klausur",
     "seats": "Plätze",
     "examSeats": "Klausurplätze",
-    "hours": "Stunden"
+    "startDate": "Startdatum",
+    "endDate": "Enddatum",
+    "hours": "Stunden",
+    "autoSchedule": "Automatische Terminplanung",
+    "autoScheduleTitle": "Automatische Terminplanung konfigurieren",
+    "autoScheduleExplanation": "Dieses Tool plant automatisch die fehlende Lehrzeit für diese Vorlesungsreihe ein. Die Termine werden gleichmäßig über den gewählten Zeitraum verteilt, wobei Ihre bevorzugten Zeitfenster in der angegebenen Priorität verwendet werden.",
+    "dateRange": "Zeitfenster für Planung",
+    "timeSlots": "Vorgeschlagene Vorlesungszeiten (nach Priorität)",
+    "addSlot": "Zeitfenster hinzufügen",
+    "startTime": "Beginn",
+    "endTime": "Ende",
+    "runAutoSchedule": "Planung starten",
+    "dateRangeInvalid": "Das Enddatum darf nicht vor dem Startdatum liegen."
   },
   "common": {
     "success": "Aktion erfolgreich",
     "close": "Schließen",
+    "add": "Hinzufügen",
+    "save": "Speichern",
     "cancel": "Abbrechen",
     "yes": "Ja",
     "no": "Nein"
@@ -732,6 +750,12 @@
     "examMaterialsError": "Fehler beim Aktualisieren der Materialien",
     "gradesApplySuccess": "Noten erfolgreich angewendet",
     "gradesApplyError": "Fehler beim Anwenden der Noten",
+    "points": "Punkte"
+  },
+  "academicTitle": {
+    "DR": "Dr.",
+    "PROF": "Prof.",
+    "PROF_DR": "Prof. Dr.",
     "points": "Punkte",
     "studentsSubmitted": "{{count}} Studenten haben abgegeben"
   }

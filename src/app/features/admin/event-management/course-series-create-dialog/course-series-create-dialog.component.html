@@ -12,7 +12,7 @@
       <mat-label>{{ 'eventManagement.assignedLecturer' | translate }}</mat-label>
       <mat-select formControlName="assignedLecturerId" required>
         <mat-option *ngFor="let l of selectedModuleLecturers" [value]="l.id">
-          {{ l.title ? l.title + ' ' : '' }}{{ l.firstName }} {{ l.lastName }}
+          {{ l.title ? ('academicTitle.' + l.title | translate) + ' ' : '' }}{{ l.firstName }} {{ l.lastName }}
         </mat-option>
       </mat-select>
     </mat-form-field>
@@ -21,7 +21,7 @@
       <mat-label>{{ 'eventManagement.examTypeOptional' | translate }}</mat-label>
       <mat-select formControlName="selectedExamTypeId">
         <mat-option [value]="null">{{ 'eventManagement.none' | translate }}</mat-option>
-        <mat-option *ngFor="let et of selectedModuleExamTypes" [value]="et.id">{{ et.nameDe }}</mat-option>
+        <mat-option *ngFor="let et of selectedModuleExamTypes" [value]="et.id">{{ et[translateService.currentLang === 'de' ? 'nameDe' : 'nameEn'] }}</mat-option>
       </mat-select>
     </mat-form-field>
 
