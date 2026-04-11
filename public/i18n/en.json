@@ -64,7 +64,8 @@
           "submissionDate": "Submitted on",
           "grade": "Grade",
           "points": "Points",
-          "status": "Status"
+          "status": "Status",
+          "individualDeadline": "Individual deadline"
         },
         "statusLabels": {
           "pendingEmpty": "Pending",
