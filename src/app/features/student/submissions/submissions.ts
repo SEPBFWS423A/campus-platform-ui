@@ -1,6 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { AfterViewInit, Component, inject } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  inject,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { finalize, firstValueFrom } from 'rxjs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -38,6 +43,7 @@ type SubmissionViewState = {
 export class Submissions implements AfterViewInit {
   private readonly submissionsService = inject(SubmissionsService);
   private readonly translate = inject(TranslateService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   submissions: StudentSubmissionListItemResponse[] = [];
   selectedSubmission: StudentSubmissionDetailResponse | null = null;
@@ -74,23 +80,34 @@ export class Submissions implements AfterViewInit {
   readonly dueSoonThresholdDays = 7;
 
   ngAfterViewInit(): void {
-    setTimeout(() => this.loadSubmissions(), 0);
+    setTimeout(() => {
+      this.loadSubmissions();
+      this.syncView();
+    }, 0);
   }
 
   loadSubmissions(): void {
     this.isLoadingList = true;
     this.errorMessage = '';
+    this.syncView();
 
     this.submissionsService
       .getSubmissions()
-      .pipe(finalize(() => (this.isLoadingList = false)))
+      .pipe(
+        finalize(() => {
+          this.isLoadingList = false;
+          this.syncView();
+        })
+      )
       .subscribe({
         next: (data: StudentSubmissionListItemResponse[]) => {
           this.submissions = data;
+          this.syncView();
         },
         error: (err: HttpErrorResponse) => {
           console.error('Fehler GET /users/submissions:', err);
           this.errorMessage = 'navigation.student.submissionsPage.messages.loadListError';
+          this.syncView();
         },
       });
   }
@@ -102,18 +119,26 @@ export class Submissions implements AfterViewInit {
     this.selectedFiles = [];
     this.selectedSubmission = null;
     this.isModalOpen = true;
+    this.syncView();
 
     this.submissionsService
       .getSubmissionDetail(submissionId)
-      .pipe(finalize(() => (this.isLoadingDetail = false)))
+      .pipe(
+        finalize(() => {
+          this.isLoadingDetail = false;
+          this.syncView();
+        })
+      )
       .subscribe({
         next: (detail: StudentSubmissionDetailResponse) => {
           this.selectedSubmission = detail;
+          this.syncView();
         },
         error: (err: HttpErrorResponse) => {
           console.error('Fehler GET /users/submissions/{id}:', err);
           this.errorMessage = 'navigation.student.submissionsPage.messages.loadDetailError';
           this.isModalOpen = false;
+          this.syncView();
         },
       });
   }
@@ -124,10 +149,12 @@ export class Submissions implements AfterViewInit {
     this.selectedFiles = [];
     this.successMessage = '';
     this.isLoadingDetail = false;
+    this.syncView();
   }
 
   setTab(tab: SubmissionTab): void {
     this.activeTab = tab;
+    this.syncView();
   }
 
   get filteredSubmissions(): StudentSubmissionListItemResponse[] {
@@ -193,11 +220,13 @@ export class Submissions implements AfterViewInit {
 
     this.selectedFiles = validFiles;
     input.value = '';
+    this.syncView();
   }
 
   removeSelectedFile(index: number): void {
     this.selectedFiles.splice(index, 1);
     this.selectedFiles = [...this.selectedFiles];
+    this.syncView();
   }
 
   async uploadSelectedFiles(): Promise<void> {
@@ -208,6 +237,7 @@ export class Submissions implements AfterViewInit {
     this.isUploading = true;
     this.errorMessage = '';
     this.successMessage = '';
+    this.syncView();
 
     try {
       for (const file of this.selectedFiles) {
@@ -226,11 +256,14 @@ export class Submissions implements AfterViewInit {
       this.selectedFiles = [];
       this.successMessage = 'navigation.student.submissionsPage.messages.uploadSuccess';
       await this.refreshCurrentSubmissionAndList();
+      this.syncView();
     } catch (err) {
       console.error('Fehler POST /users/submissions/{id}/documents:', err);
       this.errorMessage = 'navigation.student.submissionsPage.messages.uploadError';
+      this.syncView();
     } finally {
       this.isUploading = false;
+      this.syncView();
     }
   }
 
@@ -241,6 +274,7 @@ export class Submissions implements AfterViewInit {
 
     this.errorMessage = '';
     this.successMessage = '';
+    this.syncView();
 
     this.submissionsService
       .deleteDocument(this.selectedSubmission.submissionId, documentItem.id)
@@ -248,10 +282,12 @@ export class Submissions implements AfterViewInit {
         next: async () => {
           this.successMessage = 'navigation.student.submissionsPage.messages.deleteSuccess';
           await this.refreshCurrentSubmissionAndList();
+          this.syncView();
         },
         error: (err: HttpErrorResponse) => {
           console.error('Fehler DELETE /users/submissions/{id}/documents/{documentId}:', err);
           this.errorMessage = 'navigation.student.submissionsPage.messages.deleteError';
+          this.syncView();
         },
       });
   }
@@ -263,6 +299,7 @@ export class Submissions implements AfterViewInit {
 
     this.errorMessage = '';
     this.successMessage = '';
+    this.syncView();
 
     this.submissionsService
       .downloadDocument(this.selectedSubmission.submissionId, documentItem.id)
@@ -274,10 +311,12 @@ export class Submissions implements AfterViewInit {
           link.download = documentItem.fileName;
           link.click();
           window.URL.revokeObjectURL(url);
+          this.syncView();
         },
         error: (err: HttpErrorResponse) => {
           console.error('Fehler GET /users/submissions/{id}/documents/{documentId}/download:', err);
           this.errorMessage = 'navigation.student.submissionsPage.messages.downloadError';
+          this.syncView();
         },
       });
   }
@@ -290,18 +329,26 @@ export class Submissions implements AfterViewInit {
     this.isSubmitting = true;
     this.errorMessage = '';
     this.successMessage = '';
+    this.syncView();
 
     this.submissionsService
       .submitSubmission(this.selectedSubmission.submissionId)
-      .pipe(finalize(() => (this.isSubmitting = false)))
+      .pipe(
+        finalize(() => {
+          this.isSubmitting = false;
+          this.syncView();
+        })
+      )
       .subscribe({
         next: async () => {
           this.successMessage = 'navigation.student.submissionsPage.messages.submitSuccess';
           await this.refreshCurrentSubmissionAndList();
+          this.syncView();
         },
         error: (err: HttpErrorResponse) => {
           console.error('Fehler POST /users/submissions/{id}/submit:', err);
           this.errorMessage = 'navigation.student.submissionsPage.messages.submitError';
+          this.syncView();
         },
       });
   }
@@ -316,6 +363,8 @@ export class Submissions implements AfterViewInit {
       const detail = await firstValueFrom(this.submissionsService.getSubmissionDetail(currentId));
       this.selectedSubmission = detail;
     }
+
+    this.syncView();
   }
 
   getStatusClass(item: SubmissionViewState): string {
@@ -485,5 +534,13 @@ export class Submissions implements AfterViewInit {
     if (bytes < 1024) return `${bytes} B`;
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
     return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+  }
+
+  private syncView(): void {
+    try {
+      this.cdr.detectChanges();
+    } catch {
+      // bewusst leer
+    }
   }
 }
