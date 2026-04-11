@@ -180,4 +180,10 @@ mat-table {
     color: var(--mat-sys-on-secondary-container);
     &::before { background-color: var(--mat-sys-secondary); }
   }
+
+  &.grading {
+    background-color: var(--mat-sys-error-container);
+    color: var(--mat-sys-on-error-container);
+    &::before { background-color: var(--mat-sys-error); }
+  }
 }

@@ -604,6 +604,7 @@
     "statusPLANNED": "Planned",
     "statusACTIVE": "Active",
     "statusCOMPLETED": "Completed",
+    "statusGRADING": "Grading",
     "examTypeOptional": "Exam Type (Optional)",
     "none": "None",
     "submissionStartDate": "Submission Start",

@@ -604,6 +604,7 @@
     "statusPLANNED": "Geplant",
     "statusACTIVE": "Aktiv",
     "statusCOMPLETED": "Abgeschlossen",
+    "statusGRADING": "In Korrektur",
     "examTypeOptional": "Prüfungsform (Optional)",
     "none": "Keine",
     "submissionStartDate": "Abgabebeginn",
