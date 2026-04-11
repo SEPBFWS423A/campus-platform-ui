@@ -26,6 +26,7 @@ type SubmissionViewState = {
   status: SubmissionStatus;
   hasDocuments: boolean;
   submissionDeadline: string | null;
+  effectiveSubmissionDeadline?: string | null;
 };
 
 @Component({
@@ -449,11 +450,13 @@ export class Submissions implements AfterViewInit {
       return false;
     }
 
-    if (this.isDeadlinePassed(item.submissionDeadline)) {
+    const deadline = item.effectiveSubmissionDeadline ?? item.submissionDeadline;
+
+    if (this.isDeadlinePassed(deadline)) {
       return false;
     }
 
-    const deadlineDate = this.parseDate(item.submissionDeadline);
+    const deadlineDate = this.parseDate(deadline);
     if (!deadlineDate) {
       return false;
     }

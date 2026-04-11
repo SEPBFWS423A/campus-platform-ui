@@ -17,6 +17,9 @@ export interface StudentSubmissionListItemResponse {
   status: SubmissionStatus;
   submissionStartDate: string | null;
   submissionDeadline: string | null;
+  effectiveSubmissionDeadline: string | null;
+  individualSubmissionDeadline: string | null;
+  hasIndividualDeadline: boolean;
   hasDocuments: boolean;
   missingDocuments: boolean;
   editable: boolean;
@@ -34,6 +37,9 @@ export interface StudentSubmissionDetailResponse {
   status: SubmissionStatus;
   submissionStartDate: string | null;
   submissionDeadline: string | null;
+  effectiveSubmissionDeadline: string | null;
+  individualSubmissionDeadline: string | null;
+  hasIndividualDeadline: boolean;
   submissionDate: string | null;
   hasDocuments: boolean;
   missingDocuments: boolean;

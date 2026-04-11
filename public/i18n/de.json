@@ -64,7 +64,8 @@
           "submissionDate": "Eingereicht am",
           "grade": "Note",
           "points": "Punkte",
-          "status": "Status"
+          "status": "Status",
+          "individualDeadline": "Individuelle Deadline"
         },
         "statusLabels": {
           "pendingEmpty": "Ausstehend",

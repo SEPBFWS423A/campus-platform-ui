@@ -80,8 +80,7 @@
 
         <div class="deadline-box">
           <div class="deadline-title">{{ 'navigation.student.submissionsPage.deadline' | translate }}</div>
-          <div class="deadline-value">{{ formatDate(submission.submissionDeadline) }}</div>
-        </div>
+          <div class="deadline-value">{{ formatDate(submission.effectiveSubmissionDeadline) }}</div>        </div>
 
         <div class="card-status-panel" [ngClass]="getStatusClass(submission)">
           <div class="status-panel-left">
@@ -145,8 +144,7 @@
 
       <div class="deadline-box">
         <div class="deadline-title">{{ 'navigation.student.submissionsPage.deadline' | translate }}</div>
-        <div class="deadline-value">{{ formatDate(submission.submissionDeadline) }}</div>
-      </div>
+        <div class="deadline-value">{{ formatDate(submission.effectiveSubmissionDeadline) }}</div>      </div>
 
       <div class="card-status-panel" [ngClass]="getStatusClass(submission)">
         <div class="status-panel-left">
@@ -231,8 +229,14 @@
           <strong>{{ formatDate(detail.submissionStartDate) }}</strong>
         </div>
         <div class="detail-item">
-          <span>{{ 'navigation.student.submissionsPage.fields.deadline' | translate }}</span>
-          <strong>{{ formatDate(detail.submissionDeadline) }}</strong>
+  <span>
+    {{
+      detail.hasIndividualDeadline
+        ? ('navigation.student.submissionsPage.fields.individualDeadline' | translate)
+        : ('navigation.student.submissionsPage.fields.deadline' | translate)
+    }}
+  </span>
+          <strong>{{ formatDate(detail.effectiveSubmissionDeadline) }}</strong>
         </div>
         <div class="detail-item">
           <span>{{ 'navigation.student.submissionsPage.fields.submissionDate' | translate }}</span>
