@@ -66,6 +66,24 @@
           "points": "Points",
           "status": "Status"
         },
+        "statusLabels": {
+          "pendingEmpty": "Pending",
+          "inProgress": "In progress",
+          "submitted": "Submitted",
+          "submittedClosed": "Deadline passed – submitted",
+          "overdue": "Overdue / not submitted",
+          "graded": "Graded",
+          "dueSoon": "Due soon"
+        },
+        "statusHints": {
+          "pendingEmpty": "No documents uploaded yet",
+          "inProgress": "Documents saved, final submission still pending",
+          "submitted": "Finally submitted",
+          "submittedClosed": "Finally submitted, deadline window closed",
+          "overdueWithoutDocuments": "Deadline missed, no documents uploaded",
+          "overdueWithDocuments": "Deadline missed, but not finally submitted",
+          "graded": "Evaluation has been completed"
+        },
         "documents": {
           "title": "Documents",
           "empty": "No documents uploaded yet."

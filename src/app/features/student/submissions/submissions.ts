@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit, inject } from '@angular/core';
+import { AfterViewInit, Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { finalize, firstValueFrom } from 'rxjs';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SubmissionsService } from '../../../core/services/submissions.service';
 import {
   StudentSubmissionDetailResponse,
@@ -14,15 +14,30 @@ import {
 } from '../../../core/models/submissions.models';
 
 type SubmissionTab = 'ALL' | 'OPEN' | 'SUBMITTED' | 'GRADED';
+type UiSubmissionStatus =
+  | 'pending-empty'
+  | 'progress'
+  | 'submitted'
+  | 'submitted-closed'
+  | 'overdue'
+  | 'graded';
+
+type SubmissionViewState = {
+  status: SubmissionStatus;
+  hasDocuments: boolean;
+  submissionDeadline: string | null;
+};
 
 @Component({
   selector: 'app-submissions',
+  standalone: true,
   imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './submissions.html',
   styleUrl: './submissions.scss',
 })
-export class Submissions implements OnInit {
+export class Submissions implements AfterViewInit {
   private readonly submissionsService = inject(SubmissionsService);
+  private readonly translate = inject(TranslateService);
 
   submissions: StudentSubmissionListItemResponse[] = [];
   selectedSubmission: StudentSubmissionDetailResponse | null = null;
@@ -30,7 +45,7 @@ export class Submissions implements OnInit {
   activeTab: SubmissionTab = 'ALL';
   searchTerm = '';
 
-  isLoadingList = false;
+  isLoadingList = true;
   isLoadingDetail = false;
   isUploading = false;
   isSubmitting = false;
@@ -56,14 +71,13 @@ export class Submissions implements OnInit {
 
   readonly allowedExtensions = ['.pdf', '.xlsx', '.pptx'];
   readonly maxFileSize = 1572864;
+  readonly dueSoonThresholdDays = 7;
 
-  ngOnInit(): void {
-    console.log('Submissions ngOnInit gestartet');
-    this.loadSubmissions();
+  ngAfterViewInit(): void {
+    setTimeout(() => this.loadSubmissions(), 0);
   }
 
   loadSubmissions(): void {
-    console.log('loadSubmissions wurde aufgerufen');
     this.isLoadingList = true;
     this.errorMessage = '';
 
@@ -72,25 +86,21 @@ export class Submissions implements OnInit {
       .pipe(finalize(() => (this.isLoadingList = false)))
       .subscribe({
         next: (data: StudentSubmissionListItemResponse[]) => {
-          console.log('Submissions erfolgreich geladen:', data);
           this.submissions = data;
         },
         error: (err: HttpErrorResponse) => {
-          console.error('Fehler GET /api/users/submissions:', err);
-          console.error('Status:', err.status);
-          console.error('Body:', err.error);
-          console.error('Message:', err.message);
+          console.error('Fehler GET /users/submissions:', err);
           this.errorMessage = 'navigation.student.submissionsPage.messages.loadListError';
         },
       });
   }
 
   openSubmission(submissionId: number): void {
-    console.log('openSubmission wurde aufgerufen mit submissionId:', submissionId);
     this.isLoadingDetail = true;
     this.errorMessage = '';
     this.successMessage = '';
     this.selectedFiles = [];
+    this.selectedSubmission = null;
     this.isModalOpen = true;
 
     this.submissionsService
@@ -98,14 +108,10 @@ export class Submissions implements OnInit {
       .pipe(finalize(() => (this.isLoadingDetail = false)))
       .subscribe({
         next: (detail: StudentSubmissionDetailResponse) => {
-          console.log('Submission-Detail erfolgreich geladen:', detail);
           this.selectedSubmission = detail;
         },
         error: (err: HttpErrorResponse) => {
-          console.error('Fehler GET /api/users/submissions/{id}:', err);
-          console.error('Status:', err.status);
-          console.error('Body:', err.error);
-          console.error('Message:', err.message);
+          console.error('Fehler GET /users/submissions/{id}:', err);
           this.errorMessage = 'navigation.student.submissionsPage.messages.loadDetailError';
           this.isModalOpen = false;
         },
@@ -117,6 +123,7 @@ export class Submissions implements OnInit {
     this.selectedSubmission = null;
     this.selectedFiles = [];
     this.successMessage = '';
+    this.isLoadingDetail = false;
   }
 
   setTab(tab: SubmissionTab): void {
@@ -128,10 +135,28 @@ export class Submissions implements OnInit {
 
     return this.submissions.filter((submission) => {
       const matchesTab = this.matchesActiveTab(submission);
-      const examType = (submission.examTypeName ?? '').toLowerCase();
-      const status = this.getStatusLabel(submission.status, submission.hasDocuments).toLowerCase();
 
-      return matchesTab && (!term || examType.includes(term) || status.includes(term));
+      if (!matchesTab) {
+        return false;
+      }
+
+      if (!term) {
+        return true;
+      }
+
+      const examType = (submission.examTypeName ?? '').toLowerCase();
+      const status = this.translate.instant(this.getStatusLabelKey(submission)).toLowerCase();
+      const hint = this.translate.instant(this.getStatusHintKey(submission)).toLowerCase();
+      const dueSoon = this.isDueSoon(submission)
+        ? this.translate.instant('navigation.student.submissionsPage.statusLabels.dueSoon').toLowerCase()
+        : '';
+
+      return (
+        examType.includes(term) ||
+        status.includes(term) ||
+        hint.includes(term) ||
+        dueSoon.includes(term)
+      );
     });
   }
 
@@ -202,7 +227,7 @@ export class Submissions implements OnInit {
       this.successMessage = 'navigation.student.submissionsPage.messages.uploadSuccess';
       await this.refreshCurrentSubmissionAndList();
     } catch (err) {
-      console.error('Fehler POST /api/users/submissions/{id}/documents:', err);
+      console.error('Fehler POST /users/submissions/{id}/documents:', err);
       this.errorMessage = 'navigation.student.submissionsPage.messages.uploadError';
     } finally {
       this.isUploading = false;
@@ -225,7 +250,7 @@ export class Submissions implements OnInit {
           await this.refreshCurrentSubmissionAndList();
         },
         error: (err: HttpErrorResponse) => {
-          console.error('Fehler DELETE /api/users/submissions/{id}/documents/{documentId}:', err);
+          console.error('Fehler DELETE /users/submissions/{id}/documents/{documentId}:', err);
           this.errorMessage = 'navigation.student.submissionsPage.messages.deleteError';
         },
       });
@@ -251,7 +276,7 @@ export class Submissions implements OnInit {
           window.URL.revokeObjectURL(url);
         },
         error: (err: HttpErrorResponse) => {
-          console.error('Fehler GET /api/users/submissions/{id}/documents/{documentId}/download:', err);
+          console.error('Fehler GET /users/submissions/{id}/documents/{documentId}/download:', err);
           this.errorMessage = 'navigation.student.submissionsPage.messages.downloadError';
         },
       });
@@ -275,7 +300,7 @@ export class Submissions implements OnInit {
           await this.refreshCurrentSubmissionAndList();
         },
         error: (err: HttpErrorResponse) => {
-          console.error('Fehler POST /api/users/submissions/{id}/submit:', err);
+          console.error('Fehler POST /users/submissions/{id}/submit:', err);
           this.errorMessage = 'navigation.student.submissionsPage.messages.submitError';
         },
       });
@@ -291,6 +316,113 @@ export class Submissions implements OnInit {
       const detail = await firstValueFrom(this.submissionsService.getSubmissionDetail(currentId));
       this.selectedSubmission = detail;
     }
+  }
+
+  getStatusClass(item: SubmissionViewState): string {
+    switch (this.resolveUiStatus(item)) {
+      case 'pending-empty':
+        return 'status-pending';
+      case 'progress':
+        return 'status-progress';
+      case 'submitted':
+        return 'status-submitted';
+      case 'submitted-closed':
+        return 'status-submitted-closed';
+      case 'overdue':
+        return 'status-overdue';
+      case 'graded':
+        return 'status-graded';
+    }
+  }
+
+  getStatusLabelKey(item: SubmissionViewState): string {
+    switch (this.resolveUiStatus(item)) {
+      case 'pending-empty':
+        return 'navigation.student.submissionsPage.statusLabels.pendingEmpty';
+      case 'progress':
+        return 'navigation.student.submissionsPage.statusLabels.inProgress';
+      case 'submitted':
+        return 'navigation.student.submissionsPage.statusLabels.submitted';
+      case 'submitted-closed':
+        return 'navigation.student.submissionsPage.statusLabels.submittedClosed';
+      case 'overdue':
+        return 'navigation.student.submissionsPage.statusLabels.overdue';
+      case 'graded':
+        return 'navigation.student.submissionsPage.statusLabels.graded';
+    }
+  }
+
+  getStatusHintKey(item: SubmissionViewState): string {
+    switch (this.resolveUiStatus(item)) {
+      case 'pending-empty':
+        return 'navigation.student.submissionsPage.statusHints.pendingEmpty';
+      case 'progress':
+        return 'navigation.student.submissionsPage.statusHints.inProgress';
+      case 'submitted':
+        return 'navigation.student.submissionsPage.statusHints.submitted';
+      case 'submitted-closed':
+        return 'navigation.student.submissionsPage.statusHints.submittedClosed';
+      case 'overdue':
+        return item.hasDocuments
+          ? 'navigation.student.submissionsPage.statusHints.overdueWithDocuments'
+          : 'navigation.student.submissionsPage.statusHints.overdueWithoutDocuments';
+      case 'graded':
+        return 'navigation.student.submissionsPage.statusHints.graded';
+    }
+  }
+
+  isDueSoon(item: SubmissionViewState): boolean {
+    if (item.status !== 'PENDING') {
+      return false;
+    }
+
+    if (this.isDeadlinePassed(item.submissionDeadline)) {
+      return false;
+    }
+
+    const deadlineDate = this.parseDate(item.submissionDeadline);
+    if (!deadlineDate) {
+      return false;
+    }
+
+    const diffMs = deadlineDate.getTime() - Date.now();
+    const diffDays = diffMs / (1000 * 60 * 60 * 24);
+
+    return diffDays >= 0 && diffDays <= this.dueSoonThresholdDays;
+  }
+
+  private resolveUiStatus(item: SubmissionViewState): UiSubmissionStatus {
+    if (item.status === 'GRADED') {
+      return 'graded';
+    }
+
+    if (item.status === 'SUBMITTED') {
+      return this.isDeadlinePassed(item.submissionDeadline) ? 'submitted-closed' : 'submitted';
+    }
+
+    if (this.isDeadlinePassed(item.submissionDeadline)) {
+      return 'overdue';
+    }
+
+    return item.hasDocuments ? 'progress' : 'pending-empty';
+  }
+
+  private isDeadlinePassed(deadline: string | null): boolean {
+    const deadlineDate = this.parseDate(deadline);
+    if (!deadlineDate) {
+      return false;
+    }
+
+    return deadlineDate.getTime() < Date.now();
+  }
+
+  private parseDate(value: string | null): Date | null {
+    if (!value) {
+      return null;
+    }
+
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? null : date;
   }
 
   private validateSelectedFile(file: File): string | null {
@@ -325,20 +457,6 @@ export class Submissions implements OnInit {
       reader.onerror = (error) => reject(error);
       reader.readAsDataURL(file);
     });
-  }
-
-  getStatusLabel(status: SubmissionStatus, hasDocuments: boolean): string {
-    if (status === 'PENDING' && !hasDocuments) return 'Ausstehend';
-    if (status === 'PENDING' && hasDocuments) return 'In Bearbeitung';
-    if (status === 'SUBMITTED') return 'Eingereicht';
-    return 'Bewertet';
-  }
-
-  getStatusClass(status: SubmissionStatus, hasDocuments: boolean): string {
-    if (status === 'PENDING' && !hasDocuments) return 'status-pending';
-    if (status === 'PENDING' && hasDocuments) return 'status-progress';
-    if (status === 'SUBMITTED') return 'status-submitted';
-    return 'status-graded';
   }
 
   formatDate(value: string | null): string {
