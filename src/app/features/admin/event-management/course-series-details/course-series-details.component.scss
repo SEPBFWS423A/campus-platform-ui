@@ -192,6 +192,12 @@ mat-card {
   }
 }
 
+.table-header-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 16px 16px;
+}
+
 .table-footer {
   display: flex;
   justify-content: flex-end;

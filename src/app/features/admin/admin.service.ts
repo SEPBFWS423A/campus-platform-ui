@@ -389,6 +389,10 @@ export class AdminService {
     return this.http.post<CourseEvent>(`${this.apiUrl}/course-series/${seriesId}/fast-add-event`, {});
   }
 
+  autoSchedule(seriesId: number, config: any): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/course-series/${seriesId}/auto-schedule`, config);
+  }
+
   updateEvent(eventId: number, request: CourseEventRequest): Observable<CourseEvent> {
     return this.http.put<CourseEvent>(`${this.apiUrl}/events/${eventId}`, request);
   }

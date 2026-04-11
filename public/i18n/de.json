@@ -603,7 +603,6 @@
     "manageSchedule": "Termine verwalten",
     "statusPLANNED": "Geplant",
     "statusACTIVE": "Aktiv",
-    "statusGRADING": "In Bewertung",
     "statusCOMPLETED": "Abgeschlossen",
     "statusGRADING": "In Korrektur",
     "examTypeOptional": "Prüfungsform (Optional)",
@@ -643,7 +642,19 @@
     "klausur": "Klausur",
     "seats": "Plätze",
     "examSeats": "Klausurplätze",
-    "hours": "Stunden"
+    "startDate": "Startdatum",
+    "endDate": "Enddatum",
+    "hours": "Stunden",
+    "autoSchedule": "Automatische Terminplanung",
+    "autoScheduleTitle": "Automatische Terminplanung konfigurieren",
+    "autoScheduleExplanation": "Dieses Tool plant automatisch die fehlende Lehrzeit für diese Vorlesungsreihe ein. Die Termine werden gleichmäßig über den gewählten Zeitraum verteilt, wobei Ihre bevorzugten Zeitfenster in der angegebenen Priorität verwendet werden.",
+    "dateRange": "Zeitfenster für Planung",
+    "timeSlots": "Vorgeschlagene Vorlesungszeiten (nach Priorität)",
+    "addSlot": "Zeitfenster hinzufügen",
+    "startTime": "Beginn",
+    "endTime": "Ende",
+    "runAutoSchedule": "Planung starten",
+    "dateRangeInvalid": "Das Enddatum darf nicht vor dem Startdatum liegen."
   },
   "common": {
     "success": "Aktion erfolgreich",
@@ -744,7 +755,7 @@
   "academicTitle": {
     "DR": "Dr.",
     "PROF": "Prof.",
-    "PROF_DR": "Prof. Dr."
+    "PROF_DR": "Prof. Dr.",
     "points": "Punkte",
     "studentsSubmitted": "{{count}} Studenten haben abgegeben"
   }

@@ -603,7 +603,6 @@
     "manageSchedule": "Manage Schedule",
     "statusPLANNED": "Planned",
     "statusACTIVE": "Active",
-    "statusGRADING": "Grading",
     "statusCOMPLETED": "Completed",
     "statusGRADING": "Grading",
     "examTypeOptional": "Exam Type (Optional)",
@@ -643,7 +642,18 @@
     "klausur": "Exam",
     "seats": "Seats",
     "examSeats": "Exam Seats",
-    "hours": "hours"
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "hours": "hours",
+    "autoSchedule": "Automatic Appointment Planning",
+    "autoScheduleTitle": "Configure Automatic Planning",
+    "autoScheduleExplanation": "This tool automatically schedules the missing teaching time for this course series. Events are distributed evenly across the chosen timeframe, using your preferred time slots in the specified priority",
+    "timeSlots": "Suggested Lecture Times (Priority)",
+    "addSlot": "Add Time Slot",
+    "startTime": "Start",
+    "endTime": "End",
+    "runAutoSchedule": "Start Planning",
+    "dateRangeInvalid": "End date cannot be before start date."
   },
   "common": {
     "success": "Action successful",
@@ -744,7 +754,7 @@
   "academicTitle": {
     "DR": "Dr.",
     "PROF": "Prof.",
-    "PROF_DR": "Prof. Dr."
+    "PROF_DR": "Prof. Dr.",
     "points": "Points",
     "studentsSubmitted": "{{count}} students submitted"
   }

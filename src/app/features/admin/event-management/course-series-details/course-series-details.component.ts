@@ -16,6 +16,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ConfirmationDialogComponent } from '../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
+import { AutoScheduleDialogComponent } from '../auto-schedule-dialog/auto-schedule-dialog.component';
 
 import { AdminService, CourseSeries, CourseEvent, Room, Module, User, StudyGroup } from '../../admin.service';
 
@@ -346,5 +347,33 @@ export class CourseSeriesDetailsComponent implements OnInit {
 
   getRoomNames(element: CourseEvent): string {
     return element.rooms?.map(r => r.name).join(', ') || '-';
+  }
+
+  openAutoScheduleDialog() {
+    const dialogRef = this.dialog.open(AutoScheduleDialogComponent, {
+      width: '750px',
+      maxWidth: '90vw',
+      maxHeight: '90vh',
+      data: { seriesId: this.seriesId }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.adminService.autoSchedule(this.seriesId, result).subscribe({
+          next: () => {
+            this.translateService.get(['common.success', 'common.close']).subscribe(translations => {
+              this.snackBar.open(translations['common.success'], translations['common.close'], { duration: 3000 });
+            });
+            this.loadEvents();
+          },
+          error: (err) => {
+            const errorMsg = err.error?.message || 'Failed to trigger auto-scheduling';
+            this.translateService.get([errorMsg, 'common.close']).subscribe(translations => {
+              this.snackBar.open(translations[errorMsg] || errorMsg, translations['common.close'], { duration: 5000 });
+            });
+          }
+        });
+      }
+    });
   }
 }
