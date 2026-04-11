@@ -114,6 +114,10 @@
           "invalidFileType": "Only PDF, Excel and PowerPoint files (.pdf, .xlsx, .pptx) are allowed.",
           "invalidMimeType": "The file type is not allowed.",
           "fileTooLarge": "The file exceeds the maximum size of 1.5 MB."
+        },
+        "overdueSection": {
+          "title": "Action required",
+          "subtitle": "These submissions are overdue and can no longer be submitted regularly."
         }
       }
     },

@@ -1,15 +1,10 @@
-import { CommonModule } from '@angular/common';
-import { HttpErrorResponse } from '@angular/common/http';
-import {
-  AfterViewInit,
-  ChangeDetectorRef,
-  Component,
-  inject,
-} from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { finalize, firstValueFrom } from 'rxjs';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { SubmissionsService } from '../../../core/services/submissions.service';
+import {CommonModule} from '@angular/common';
+import {HttpErrorResponse} from '@angular/common/http';
+import {AfterViewInit, ChangeDetectorRef, Component, inject,} from '@angular/core';
+import {FormsModule} from '@angular/forms';
+import {finalize, firstValueFrom} from 'rxjs';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
+import {SubmissionsService} from '../../../core/services/submissions.service';
 import {
   StudentSubmissionDetailResponse,
   StudentSubmissionListItemResponse,
@@ -157,44 +152,75 @@ export class Submissions implements AfterViewInit {
     this.syncView();
   }
 
-  get filteredSubmissions(): StudentSubmissionListItemResponse[] {
+  get overdueSubmissions(): StudentSubmissionListItemResponse[] {
+    if (this.activeTab !== 'ALL') {
+      return [];
+    }
+
     const term = this.searchTerm.trim().toLowerCase();
 
     return this.submissions.filter((submission) => {
-      const matchesTab = this.matchesActiveTab(submission);
+      if (this.resolveUiStatus(submission) !== 'overdue') {
+        return false;
+      }
 
+      return this.matchesSearchTerm(submission, term);
+    });
+  }
+
+  get regularFilteredSubmissions(): StudentSubmissionListItemResponse[] {
+    const term = this.searchTerm.trim().toLowerCase();
+
+    return this.submissions.filter((submission) => {
+      const uiStatus = this.resolveUiStatus(submission);
+
+      if (this.activeTab === 'ALL' && uiStatus === 'overdue') {
+        return false;
+      }
+
+      const matchesTab = this.matchesActiveTab(submission);
       if (!matchesTab) {
         return false;
       }
 
-      if (!term) {
-        return true;
-      }
-
-      const examType = (submission.examTypeName ?? '').toLowerCase();
-      const status = this.translate.instant(this.getStatusLabelKey(submission)).toLowerCase();
-      const hint = this.translate.instant(this.getStatusHintKey(submission)).toLowerCase();
-      const dueSoon = this.isDueSoon(submission)
-        ? this.translate.instant('navigation.student.submissionsPage.statusLabels.dueSoon').toLowerCase()
-        : '';
-
-      return (
-        examType.includes(term) ||
-        status.includes(term) ||
-        hint.includes(term) ||
-        dueSoon.includes(term)
-      );
+      return this.matchesSearchTerm(submission, term);
     });
   }
 
+  private matchesSearchTerm(submission: StudentSubmissionListItemResponse, term: string): boolean {
+    if (!term) {
+      return true;
+    }
+
+    const courseName = (submission.courseName ?? '').toLowerCase();
+    const examType = (submission.examTypeName ?? '').toLowerCase();
+    const groups = (submission.studyGroupNames ?? []).join(' ').toLowerCase();
+    const status = this.translate.instant(this.getStatusLabelKey(submission)).toLowerCase();
+    const hint = this.translate.instant(this.getStatusHintKey(submission)).toLowerCase();
+    const dueSoon = this.isDueSoon(submission)
+      ? this.translate.instant('navigation.student.submissionsPage.statusLabels.dueSoon').toLowerCase()
+      : '';
+
+    return (
+      courseName.includes(term) ||
+      examType.includes(term) ||
+      groups.includes(term) ||
+      status.includes(term) ||
+      hint.includes(term) ||
+      dueSoon.includes(term)
+    );
+  }
+
   private matchesActiveTab(submission: StudentSubmissionListItemResponse): boolean {
+    const uiStatus = this.resolveUiStatus(submission);
+
     switch (this.activeTab) {
       case 'OPEN':
-        return submission.status === 'PENDING';
+        return uiStatus === 'pending-empty' || uiStatus === 'progress';
       case 'SUBMITTED':
-        return submission.status === 'SUBMITTED';
+        return uiStatus === 'submitted' || uiStatus === 'submitted-closed';
       case 'GRADED':
-        return submission.status === 'GRADED';
+        return uiStatus === 'graded';
       default:
         return true;
     }
@@ -356,12 +382,10 @@ export class Submissions implements AfterViewInit {
   private async refreshCurrentSubmissionAndList(): Promise<void> {
     const currentId = this.selectedSubmission?.submissionId;
 
-    const submissions = await firstValueFrom(this.submissionsService.getSubmissions());
-    this.submissions = submissions;
+    this.submissions = await firstValueFrom(this.submissionsService.getSubmissions());
 
     if (currentId) {
-      const detail = await firstValueFrom(this.submissionsService.getSubmissionDetail(currentId));
-      this.selectedSubmission = detail;
+      this.selectedSubmission = await firstValueFrom(this.submissionsService.getSubmissionDetail(currentId));
     }
 
     this.syncView();

@@ -114,6 +114,10 @@
           "invalidFileType": "Nur PDF-, Excel- und PowerPoint-Dateien (.pdf, .xlsx, .pptx) sind erlaubt.",
           "invalidMimeType": "Der Dateityp ist nicht erlaubt.",
           "fileTooLarge": "Die Datei überschreitet die maximale Größe von 1,5 MB."
+        },
+        "overdueSection": {
+          "title": "Handlungsbedarf",
+          "subtitle": "Diese Abgaben sind überfällig und können nicht mehr regulär eingereicht werden."
         }
       }
     },
