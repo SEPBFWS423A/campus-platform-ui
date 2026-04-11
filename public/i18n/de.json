@@ -697,9 +697,9 @@
     "allStatus": "Alle Zustände",
     "allExamTypes": "Alle Formen",
     "statusOPEN": "Offen",
-    "statusPROVIDED": "Bereitgestellt",
+    "statusPROVIDED": "Noten bereitgestellt",
     "statusGRADING": "In Korrektur",
-    "statusCOMPLETED": "Veröffentlicht",
+    "statusCOMPLETED": "Noten veröffentlicht",
     "categoryWRITTEN": "Schriftlich",
     "categorySUBMISSION": "Abgabe",
     "materials": "Materialien",
@@ -732,6 +732,7 @@
     "examMaterialsError": "Fehler beim Aktualisieren der Materialien",
     "gradesApplySuccess": "Noten erfolgreich angewendet",
     "gradesApplyError": "Fehler beim Anwenden der Noten",
-    "points": "Punkte"
+    "points": "Punkte",
+    "studentsSubmitted": "{{count}} Studenten haben abgegeben"
   }
 }

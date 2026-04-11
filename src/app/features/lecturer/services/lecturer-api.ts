@@ -7,7 +7,8 @@ import {
   ExamMaterialsRequest,
   GradeBulkRequest,
   SingleGradeRequest,
-  ExamDocumentResponse
+  ExamDocumentResponse,
+  SubmissionDocumentDownloadData
 } from '../models/lecturer.models';
 
 import { environment } from '../../../../environments/environment';
@@ -47,5 +48,9 @@ export class LecturerApi {
 
   downloadDocument(seriesId: number, type: string): Observable<ExamDocumentResponse> {
     return this.http.get<ExamDocumentResponse>(`${this.baseUrl}/course-series/${seriesId}/download-document?type=${type}`);
+  }
+
+  downloadStudentSubmission(seriesId: number, studentId: number): Observable<SubmissionDocumentDownloadData> {
+    return this.http.get<SubmissionDocumentDownloadData>(`${this.baseUrl}/course-series/${seriesId}/student-submissions/${studentId}/download`);
   }
 }

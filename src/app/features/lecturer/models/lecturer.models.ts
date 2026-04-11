@@ -89,3 +89,10 @@ export interface GradeScaleEntry {
   minimumPoints: number;
   label?: string;
 }
+
+export interface SubmissionDocumentDownloadData {
+  fileName: string;
+  mimeType: string;
+  fileSize: number;
+  content: string;
+}

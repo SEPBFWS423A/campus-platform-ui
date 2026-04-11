@@ -127,7 +127,7 @@
                      <span>Status: <strong>{{ 'lecturerGrading.status' + course.examStatus | translate }}</strong></span>
                       @if (course.isSubmission && course.submissionCount > 0) {
                         <span class="submission-count-tag">
-                          {{ course.submissionCount }} {{ 'userManagement.students' | translate }}
+                          {{ 'lecturerGrading.studentsSubmitted' | translate: { count: course.submissionCount } }}
                         </span>
                      }
                    </div>
@@ -369,9 +369,9 @@
                      {{ 'lecturerGrading.status' + student.status | translate }}
                    </span>
                    @if (student.documentUrl) {
-                      <a mat-icon-button [href]="student.documentUrl" target="_blank" matTooltip="Download Submission" class="sub-dl-btn">
+                      <button mat-icon-button (click)="downloadStudentSubmission(student)" matTooltip="Download Submission" class="sub-dl-btn">
                         <mat-icon>file_download</mat-icon>
-                      </a>
+                      </button>
                    }
                  </div>
                  @if (student.submissionDate) {

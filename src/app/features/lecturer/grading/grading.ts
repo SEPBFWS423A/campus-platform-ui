@@ -337,8 +337,37 @@ export class Grading implements OnInit {
     this.submissions.set([]);
   }
 
+  downloadStudentSubmission(student: StudentSubmissionResponse): void {
+    const currentCourse = this.selectedCourse();
+    if (!currentCourse || !student.documentUrl) return;
+
+    this.lecturerApi.downloadStudentSubmission(currentCourse.id, student.studentId).subscribe({
+      next: (response) => {
+        const byteString = window.atob(response.content);
+        const arrayBuffer = new ArrayBuffer(byteString.length);
+        const int8Array = new Uint8Array(arrayBuffer);
+        for (let i = 0; i < byteString.length; i++) {
+          int8Array[i] = byteString.charCodeAt(i);
+        }
+        const blob = new Blob([int8Array], { type: response.mimeType });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = response.fileName;
+        link.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: () => this.notificationService.showError('error.download')
+    });
+  }
+
   isGradingDisabled(course: LecturerCourseResponse): boolean {
-    return course.examStatus !== ExamStatus.GRADING && course.examStatus !== ExamStatus.COMPLETED;
+    // Always allowed if already in grading or completed status
+    if (course.examStatus === ExamStatus.GRADING || course.examStatus === ExamStatus.COMPLETED) {
+      return false;
+    }
+    // Also allowed if there is at least one submission (for SUBMISSION type exams)
+    return course.submissionCount === 0;
   }
 
   getKlausurEvent(course: LecturerCourseResponse) {
