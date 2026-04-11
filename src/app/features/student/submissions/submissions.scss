@@ -6,10 +6,11 @@
   margin-bottom: 24px;
 
   h1 {
-    margin: 0 0 8px;
-    font-size: 2.25rem;
+    margin: 0 0 6px;
+    font-size: 2.1rem;
     font-weight: 800;
     color: #2563eb;
+    line-height: 1.1;
   }
 
   p {
@@ -49,7 +50,7 @@
   gap: 16px;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
   padding: 14px 16px;
   background: #ffffff;
   border: 1px solid #dbe4f0;
@@ -94,9 +95,56 @@
   color: #2563eb;
 }
 
+.overdue-section {
+  margin-bottom: 28px;
+  padding: 20px;
+  border: 1px solid #fecaca;
+  border-radius: 28px;
+  background: linear-gradient(180deg, #fff5f5 0%, #ffffff 100%);
+}
+
+.overdue-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 18px;
+
+  h2 {
+    margin: 0 0 6px;
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #991b1b;
+  }
+
+  p {
+    margin: 0;
+    color: #7f1d1d;
+    font-size: 0.95rem;
+  }
+}
+
+.overdue-counter {
+  min-width: 40px;
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fca5a5;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+}
+
+.overdue-grid {
+  margin-bottom: 0;
+}
+
 .cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 340px));
+  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
   gap: 24px;
 }
 
@@ -110,18 +158,19 @@
 }
 
 .submission-card {
-  text-align: left;
   border: 1px solid #dbe4f0;
   border-top: 6px solid transparent;
   border-radius: 28px;
   background: #ffffff;
   padding: 18px;
-  cursor: pointer;
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
   transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+  cursor: pointer;
+  outline: none;
 }
 
-.submission-card:hover {
+.submission-card:hover,
+.submission-card:focus-visible {
   transform: translateY(-2px);
   box-shadow: 0 16px 36px rgba(15, 23, 42, 0.1);
 }
@@ -151,14 +200,16 @@
 }
 
 .submission-card.due-soon {
-  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.18), 0 14px 36px rgba(15, 23, 42, 0.08);
+  box-shadow:
+    0 0 0 3px rgba(245, 158, 11, 0.22),
+    0 14px 36px rgba(15, 23, 42, 0.08);
 }
 
 .card-header {
   display: flex;
   gap: 16px;
   align-items: flex-start;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .card-icon {
@@ -170,22 +221,25 @@
   align-items: center;
   justify-content: center;
   font-size: 24px;
+  flex: 0 0 56px;
 }
 
 .card-title-area {
   flex: 1;
+  min-width: 0;
 
   h3 {
     margin: 0;
-    font-size: 1.8rem;
+    font-size: 1.25rem;
     font-weight: 800;
     color: #0f172a;
+    line-height: 1.2;
   }
 
   p {
     margin: 4px 0 0;
     color: #64748b;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
   }
 }
 
@@ -197,33 +251,49 @@
   flex-wrap: wrap;
 }
 
-.card-tags {
+.meta-badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
   margin-bottom: 16px;
 }
 
-.tag {
-  display: inline-flex;
-  align-items: center;
-  height: 28px;
-  padding: 0 12px;
-  border-radius: 999px;
-  background: #dbeafe;
-  color: #2563eb;
-  font-size: 0.85rem;
-  font-weight: 700;
+.modal-meta {
+  margin-top: 12px;
+  margin-bottom: 0;
 }
 
+.group-badge,
+.exam-badge,
 .due-soon-badge {
   display: inline-flex;
   align-items: center;
-  min-height: 30px;
+  min-height: 28px;
   padding: 0 12px;
   border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.group-badge {
+  background: #eef2ff;
+  color: #4338ca;
+}
+
+.exam-badge {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.due-soon-badge {
   background: #fef3c7;
   color: #b45309;
   border: 1px solid #fcd34d;
-  font-size: 0.82rem;
-  font-weight: 800;
+}
+
+.due-soon-badge-below {
+  display: inline-flex;
+  margin-top: 8px;
 }
 
 .deadline-box {
@@ -243,7 +313,7 @@
 }
 
 .deadline-value {
-  font-size: 1.6rem;
+  font-size: 1.05rem;
   font-weight: 800;
   color: #0f172a;
 }
@@ -356,6 +426,7 @@
   font-size: 0.9rem;
   font-weight: 600;
   color: #64748b;
+  line-height: 1.2;
 }
 
 .grade-badge {
@@ -368,6 +439,7 @@
   align-items: center;
   justify-content: center;
   font-weight: 800;
+  flex: 0 0 auto;
 }
 
 .grade-badge.large {
@@ -404,7 +476,7 @@
 }
 
 .submission-modal {
-  width: min(920px, 100%);
+  width: min(940px, 100%);
   max-height: 90vh;
   overflow-y: auto;
   background: #ffffff;
@@ -421,12 +493,18 @@
   align-items: flex-start;
   gap: 16px;
   margin-bottom: 24px;
+}
+
+.modal-header-main {
+  min-width: 0;
+  flex: 1;
 
   h2 {
     margin: 0;
-    font-size: 2rem;
+    font-size: 1.6rem;
     font-weight: 800;
     color: #0f172a;
+    line-height: 1.2;
   }
 
   p {
@@ -650,6 +728,11 @@
   .toolbar {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .overdue-section-header {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .cards-grid {

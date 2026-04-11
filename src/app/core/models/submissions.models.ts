@@ -11,6 +11,8 @@ export interface SubmissionDocumentResponse {
 export interface StudentSubmissionListItemResponse {
   submissionId: number;
   courseSeriesId: number;
+  courseName: string | null;
+  studyGroupNames: string[];
   examTypeName: string | null;
   status: SubmissionStatus;
   submissionStartDate: string | null;
@@ -26,6 +28,8 @@ export interface StudentSubmissionListItemResponse {
 export interface StudentSubmissionDetailResponse {
   submissionId: number;
   courseSeriesId: number;
+  courseName: string | null;
+  studyGroupNames: string[];
   examTypeName: string | null;
   status: SubmissionStatus;
   submissionStartDate: string | null;

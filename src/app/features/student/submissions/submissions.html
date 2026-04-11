@@ -35,35 +35,110 @@
     </div>
   </div>
 
+  <div
+    class="overdue-section"
+    *ngIf="activeTab === 'ALL' && overdueSubmissions.length > 0">
+    <div class="overdue-section-header">
+      <div>
+        <h2>{{ 'navigation.student.submissionsPage.overdueSection.title' | translate }}</h2>
+        <p>{{ 'navigation.student.submissionsPage.overdueSection.subtitle' | translate }}</p>
+      </div>
+      <span class="overdue-counter">{{ overdueSubmissions.length }}</span>
+    </div>
+
+    <div class="cards-grid overdue-grid">
+      <div
+        *ngFor="let submission of overdueSubmissions"
+        class="submission-card"
+        [ngClass]="getStatusClass(submission)"
+        role="button"
+        tabindex="0"
+        (click)="openSubmission(submission.submissionId)"
+        (keydown.enter)="openSubmission(submission.submissionId)"
+        (keydown.space)="openSubmission(submission.submissionId); $event.preventDefault()">
+        <div class="card-header">
+          <div class="card-icon">📄</div>
+
+          <div class="card-title-area">
+            <div class="title-row">
+              <h3>{{ submission.courseName || submission.examTypeName || ('navigation.student.submissionsPage.defaultTitle' | translate) }}</h3>
+            </div>
+
+            <p>{{ 'navigation.student.submissionsPage.courseSeries' | translate }} {{ submission.courseSeriesId }}</p>
+          </div>
+        </div>
+
+        <div class="meta-badges">
+          <span class="group-badge" *ngFor="let group of submission.studyGroupNames">
+            {{ group }}
+          </span>
+
+          <span class="exam-badge">
+            {{ submission.examTypeName || ('navigation.student.submissionsPage.defaultTag' | translate) }}
+          </span>
+        </div>
+
+        <div class="deadline-box">
+          <div class="deadline-title">{{ 'navigation.student.submissionsPage.deadline' | translate }}</div>
+          <div class="deadline-value">{{ formatDate(submission.submissionDeadline) }}</div>
+        </div>
+
+        <div class="card-status-panel" [ngClass]="getStatusClass(submission)">
+          <div class="status-panel-left">
+            <div class="status-panel-title">
+              <span class="status-dot"></span>
+              <span>{{ getStatusLabelKey(submission) | translate }}</span>
+            </div>
+
+            <div class="status-panel-hint">
+              {{ getStatusHintKey(submission) | translate }}
+            </div>
+          </div>
+
+          <span class="grade-badge large" *ngIf="submission.grade !== null">
+            {{ submission.grade }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="cards-grid">
     <div class="loading-state" *ngIf="isLoadingList">
       {{ 'navigation.student.submissionsPage.loadingList' | translate }}
     </div>
 
-    <button
-      *ngFor="let submission of filteredSubmissions"
-      type="button"
+    <div
+      *ngFor="let submission of regularFilteredSubmissions"
       class="submission-card"
       [ngClass]="[getStatusClass(submission), isDueSoon(submission) ? 'due-soon' : '']"
-      (click)="openSubmission(submission.submissionId)">
+      role="button"
+      tabindex="0"
+      (click)="openSubmission(submission.submissionId)"
+      (keydown.enter)="openSubmission(submission.submissionId)"
+      (keydown.space)="openSubmission(submission.submissionId); $event.preventDefault()">
       <div class="card-header">
         <div class="card-icon">📄</div>
 
         <div class="card-title-area">
           <div class="title-row">
-            <h3>{{ submission.examTypeName || ('navigation.student.submissionsPage.defaultTitle' | translate) }}</h3>
-
-            <span class="due-soon-badge" *ngIf="isDueSoon(submission)">
-              {{ 'navigation.student.submissionsPage.statusLabels.dueSoon' | translate }}
-            </span>
+            <h3>{{ submission.courseName || submission.examTypeName || ('navigation.student.submissionsPage.defaultTitle' | translate) }}</h3>
           </div>
 
           <p>{{ 'navigation.student.submissionsPage.courseSeries' | translate }} {{ submission.courseSeriesId }}</p>
+
+          <span class="due-soon-badge due-soon-badge-below" *ngIf="isDueSoon(submission)">
+    {{ 'navigation.student.submissionsPage.statusLabels.dueSoon' | translate }}
+  </span>
         </div>
       </div>
 
-      <div class="card-tags">
-        <span class="tag">
+      <div class="meta-badges">
+        <span class="group-badge" *ngFor="let group of submission.studyGroupNames">
+          {{ group }}
+        </span>
+
+        <span class="exam-badge">
           {{ submission.examTypeName || ('navigation.student.submissionsPage.defaultTag' | translate) }}
         </span>
       </div>
@@ -89,15 +164,11 @@
           {{ submission.grade }}
         </span>
       </div>
+    </div>
 
-      <div class="card-footer">
-        <button type="button" class="ghost-button">
-          {{ 'navigation.student.submissionsPage.actions.details' | translate }}
-        </button>
-      </div>
-    </button>
-
-    <div class="empty-state" *ngIf="!isLoadingList && filteredSubmissions.length === 0">
+    <div
+      class="empty-state"
+      *ngIf="!isLoadingList && regularFilteredSubmissions.length === 0 && !(activeTab === 'ALL' && overdueSubmissions.length > 0)">
       {{ 'navigation.student.submissionsPage.empty' | translate }}
     </div>
   </div>
@@ -106,10 +177,10 @@
 <div class="modal-overlay" *ngIf="isModalOpen" (click)="closeModal()">
   <div class="submission-modal" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <div>
+      <div class="modal-header-main">
         <div class="modal-title-row">
           <h2 *ngIf="selectedSubmission as detail; else modalLoadingTitle">
-            {{ detail.examTypeName || ('navigation.student.submissionsPage.defaultTitle' | translate) }}
+            {{ detail.courseName || detail.examTypeName || ('navigation.student.submissionsPage.defaultTitle' | translate) }}
           </h2>
 
           <span class="due-soon-badge" *ngIf="selectedSubmission && isDueSoon(selectedSubmission)">
@@ -124,6 +195,16 @@
         <p *ngIf="selectedSubmission as detail">
           {{ 'navigation.student.submissionsPage.courseSeries' | translate }} {{ detail.courseSeriesId }}
         </p>
+
+        <div class="meta-badges modal-meta" *ngIf="selectedSubmission as detail">
+          <span class="group-badge" *ngFor="let group of detail.studyGroupNames">
+            {{ group }}
+          </span>
+
+          <span class="exam-badge">
+            {{ detail.examTypeName || ('navigation.student.submissionsPage.defaultTag' | translate) }}
+          </span>
+        </div>
       </div>
 
       <button type="button" class="close-button" (click)="closeModal()">×</button>
