@@ -582,6 +582,9 @@
       "notFound": "Course not found.",
       "referenced": "Course is referenced."
     },
+    "courseSeries": {
+      "studyGroupAlreadyAssigned": "One or more selected study groups are already assigned to another course series for this module."
+    },
     "specialization": {
       "notFound": "Specialization not found.",
       "referenced": "Specialization is referenced."
@@ -603,6 +606,7 @@
     "manageSchedule": "Manage Schedule",
     "statusPLANNED": "Planned",
     "statusACTIVE": "Active",
+    "statusGRADING": "Grading",
     "statusCOMPLETED": "Completed",
     "examTypeOptional": "Exam Type (Optional)",
     "none": "None",
@@ -626,6 +630,7 @@
     "noRoomsAvailable": "No rooms available.",
     "lecturerCollision": "Lecturer collision.",
     "roomCollision": "Room collision.",
+    "groupCollision": "Study group collision detected. One or more of the assigned groups already have another event scheduled during this time.",
     "eventName": "Event Name",
     "eventType": "Event Type",
     "eventDate": "Date",
@@ -644,7 +649,10 @@
   },
   "common": {
     "success": "Action successful",
-    "close": "Close"
+    "close": "Close",
+    "add": "Add",
+    "save": "Save",
+    "cancel": "Cancel"
   },
   "info": {
     "subtitle": "Important contacts and information",
@@ -732,5 +740,10 @@
     "gradesApplySuccess": "Grades applied successfully",
     "gradesApplyError": "Failed to apply grades",
     "points": "Points"
+  },
+  "academicTitle": {
+    "DR": "Dr.",
+    "PROF": "Prof.",
+    "PROF_DR": "Prof. Dr."
   }
 }

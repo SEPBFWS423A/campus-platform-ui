@@ -38,6 +38,7 @@
           <span class="status-indicator" 
                 [class.planned]="element.status === 'PLANNED'"
                 [class.active]="element.status === 'ACTIVE'"
+                [class.grading]="element.status === 'GRADING'"
                 [class.completed]="element.status === 'COMPLETED'">
             {{ 'eventManagement.status' + element.status | translate }}
           </span>

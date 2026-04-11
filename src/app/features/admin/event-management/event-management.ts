@@ -87,7 +87,10 @@ export class EventManagement implements OnInit {
             this.snackBar.open(this.translate.instant('eventManagement.createdSuccessfully'), this.translate.instant('common.close'), { duration: 3000 });
             this.loadData();
           },
-          error: (err) => this.snackBar.open(this.translate.instant('eventManagement.failedToCreate'), this.translate.instant('common.close'), { duration: 3000 })
+          error: (err) => {
+            const messageKey = err.error?.message || 'eventManagement.failedToCreate';
+            this.snackBar.open(this.translate.instant(messageKey), this.translate.instant('common.close'), { duration: 5000 });
+          }
         });
       }
     });
