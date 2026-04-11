@@ -40,7 +40,64 @@
       "home": "Home",
       "timetable": "Stundenplan",
       "grades": "Noten",
-      "submissions": "Abgaben"
+      "submissions": "Abgaben",
+      "submissionsPage": {
+        "title": "Abgaben",
+        "subtitle": "Lade Dokumente hoch, verwalte deine Einreichungen und verfolge den Status.",
+        "searchPlaceholder": "Nach Prüfungsform oder Status suchen",
+        "defaultTitle": "Abgabe",
+        "defaultTag": "Dokument",
+        "courseSeries": "Kurs-ID:",
+        "deadline": "Abgabefrist",
+        "empty": "Keine passenden Abgaben gefunden.",
+        "loadingList": "Abgaben werden geladen...",
+        "loadingDetail": "Details werden geladen...",
+        "tabs": {
+          "all": "Alle",
+          "open": "Offen",
+          "submitted": "Eingereicht",
+          "graded": "Bewertet"
+        },
+        "fields": {
+          "start": "Start",
+          "deadline": "Deadline",
+          "submissionDate": "Eingereicht am",
+          "grade": "Note",
+          "points": "Punkte",
+          "status": "Status"
+        },
+        "documents": {
+          "title": "Dokumente",
+          "empty": "Noch keine Dokumente hochgeladen."
+        },
+        "upload": {
+          "title": "Dokumente hochladen"
+        },
+        "actions": {
+          "details": "Details",
+          "download": "Herunterladen",
+          "delete": "Löschen",
+          "remove": "Entfernen",
+          "upload": "Dokumente hochladen",
+          "uploading": "Lädt hoch...",
+          "finalSubmit": "Final einreichen",
+          "submitting": "Reicht ein..."
+        },
+        "messages": {
+          "loadListError": "Abgaben konnten nicht geladen werden.",
+          "loadDetailError": "Abgabedetails konnten nicht geladen werden.",
+          "uploadSuccess": "Dokumente wurden erfolgreich hochgeladen.",
+          "uploadError": "Beim Hochladen ist ein Fehler aufgetreten.",
+          "deleteSuccess": "Dokument wurde gelöscht.",
+          "deleteError": "Dokument konnte nicht gelöscht werden.",
+          "downloadError": "Dokument konnte nicht heruntergeladen werden.",
+          "submitSuccess": "Abgabe wurde final eingereicht.",
+          "submitError": "Abgabe konnte nicht final eingereicht werden.",
+          "invalidFileType": "Nur PDF-, Excel- und PowerPoint-Dateien (.pdf, .xlsx, .pptx) sind erlaubt.",
+          "invalidMimeType": "Der Dateityp ist nicht erlaubt.",
+          "fileTooLarge": "Die Datei überschreitet die maximale Größe von 1,5 MB."
+        }
+      }
     },
     "profileAndSettings": {
       "profileAndSettingsName": "Profil & Einstellungen",
