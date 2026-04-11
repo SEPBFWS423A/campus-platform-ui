@@ -6,6 +6,7 @@ import {UserManagement} from './user-management/user-management';
 import {ExamManagement} from './exam-management/exam-management';
 import {AcademicStructure} from './academic-structure/academic-structure';
 import {CourseSeriesDetailsComponent} from './event-management/course-series-details/course-series-details.component';
+import {DocumentManagement} from './document-management/document-management';
 
 export const adminRoutes: Routes = [
   {
@@ -35,5 +36,9 @@ export const adminRoutes: Routes = [
   {
     path: 'exam-management',
     component: ExamManagement
+  },
+  {
+    path: 'document-management',
+    component: DocumentManagement
   },
 ];

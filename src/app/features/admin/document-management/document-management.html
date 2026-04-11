@@ -1,0 +1,94 @@
+<header class="section-header">
+  <div class="header-content">
+    <h1>{{ 'documentManagement.title' | translate }}</h1>
+    <p>{{ 'documentManagement.subtitle' | translate }}</p>
+  </div>
+</header>
+
+<div class="document-management-content">
+  <!-- Upload Section -->
+  <mat-card class="card upload-card">
+    <div class="card-header">
+      <mat-icon>upload_file</mat-icon>
+      <h3>{{ 'documentManagement.uploadTitle' | translate }}</h3>
+    </div>
+    
+    <form [formGroup]="uploadForm" (ngSubmit)="onUpload()" class="upload-form">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'documentManagement.displayName' | translate }}</mat-label>
+        <input matInput formControlName="displayName" [placeholder]="'documentManagement.displayName' | translate">
+      </mat-form-field>
+
+      <div class="file-input-wrapper">
+        <button type="button" mat-stroked-button (click)="fileInput.click()" [disabled]="isUploading()">
+          <mat-icon>attach_file</mat-icon>
+          {{ selectedFile ? selectedFile.name : ('lecturerGrading.chooseFile' | translate) }}
+        </button>
+        <input #fileInput type="file" (change)="onFileSelected($event)" style="display: none">
+      </div>
+
+      <div class="form-actions">
+        <button mat-raised-button color="primary" type="submit" [disabled]="uploadForm.invalid || isUploading()">
+          <mat-icon>cloud_upload</mat-icon>
+          {{ (isUploading() ? 'studentSubmissionPage.actions.uploading' : 'documentManagement.uploadButton') | translate }}
+        </button>
+      </div>
+    </form>
+  </mat-card>
+
+  <!-- List Section -->
+  <mat-card class="card list-card">
+    <div class="card-header">
+      <mat-icon>list</mat-icon>
+      <h3>{{ 'documentManagement.documents' | translate }}</h3>
+    </div>
+
+    <div class="table-container">
+      <table mat-table [dataSource]="documents()" class="management-table">
+        
+        <ng-container matColumnDef="displayName">
+          <th mat-header-cell *matHeaderCellDef>{{ 'documentManagement.displayName' | translate }}</th>
+          <td mat-cell *matCellDef="let doc" class="primary-cell">{{ doc.displayName }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="fileName">
+          <th mat-header-cell *matHeaderCellDef>{{ 'documentManagement.fileName' | translate }}</th>
+          <td mat-cell *matCellDef="let doc" class="secondary-cell">{{ doc.fileName }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="fileSize">
+          <th mat-header-cell *matHeaderCellDef>{{ 'documentManagement.fileSize' | translate }}</th>
+          <td mat-cell *matCellDef="let doc">{{ formatBytes(doc.fileSize) }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="uploadedAt">
+          <th mat-header-cell *matHeaderCellDef>{{ 'documentManagement.uploadDate' | translate }}</th>
+          <td mat-cell *matCellDef="let doc">{{ doc.uploadedAt | date:'short' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>{{ 'documentManagement.actions' | translate }}</th>
+          <td mat-cell *matCellDef="let doc">
+            <div class="action-buttons">
+              <button mat-icon-button (click)="onDownload(doc.id, doc.fileName)" [title]="'documentManagement.download' | translate">
+                <mat-icon>download</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="onDelete(doc.id)" [title]="'studentSubmissionPage.actions.delete' | translate">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell empty-cell" [attr.colspan]="displayedColumns.length">
+            {{ 'documentManagement.noDocuments' | translate }}
+          </td>
+        </tr>
+      </table>
+    </div>
+  </mat-card>
+</div>

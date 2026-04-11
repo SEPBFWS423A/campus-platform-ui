@@ -1,0 +1,137 @@
+.document-management-content {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  .card {
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    background: var(--mat-sys-surface);
+    
+    .card-header {
+      padding: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      background: rgba(var(--mat-sys-primary-rgb), 0.03);
+
+      mat-icon {
+        color: var(--mat-sys-primary);
+      }
+
+      h3 {
+        margin: 0;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+      }
+    }
+  }
+
+  .upload-card {
+    .upload-form {
+      padding: 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      align-items: baseline;
+
+      .full-width {
+        flex: 1;
+        min-width: 300px;
+      }
+
+      .file-input-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .form-actions {
+        margin-left: auto;
+      }
+    }
+  }
+
+  .list-card {
+    .table-container {
+      overflow-x: auto;
+    }
+
+    .management-table {
+      width: 100%;
+      background: transparent;
+
+      th {
+        font-weight: 600;
+        color: var(--mat-sys-on-surface-variant);
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+        padding: 1rem 1.5rem;
+      }
+
+      td {
+        padding: 1rem 1.5rem;
+        color: var(--mat-sys-on-surface);
+      }
+
+      .primary-cell {
+        font-weight: 600;
+        color: var(--mat-sys-primary);
+      }
+
+      .secondary-cell {
+        font-size: 0.85rem;
+        color: var(--mat-sys-on-surface-variant);
+        font-family: 'Roboto Mono', monospace;
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .empty-cell {
+        text-align: center;
+        padding: 3rem;
+        color: var(--mat-sys-on-surface-variant);
+        font-style: italic;
+      }
+
+      tr.mat-mdc-row:hover {
+        background-color: rgba(var(--mat-sys-primary-rgb), 0.02);
+      }
+    }
+  }
+}
+
+// Section Header Styling (matches other admin pages)
+.section-header {
+  padding: 3rem 2rem;
+  background: linear-gradient(135deg, var(--mat-sys-primary) 0%, #1e3a8a 100%);
+  color: white;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+  .header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+
+    h1 {
+      margin: 0;
+      font-size: 2.5rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    p {
+      margin: 0.5rem 0 0;
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
+  }
+}

@@ -28,7 +28,8 @@
       "academicStructure": "Academic Structure",
       "roomManagement": "Room Management",
       "eventManagement": "Event Management",
-      "examManagement": "Exam Management"
+      "examManagement": "Exam Management",
+      "documentManagement": "Document Management"
     },
     "lecturer": {
       "home": "Home",
@@ -732,5 +733,27 @@
     "gradesApplySuccess": "Grades applied successfully",
     "gradesApplyError": "Failed to apply grades",
     "points": "Points"
+  },
+  "documentManagement": {
+    "title": "Document Management",
+    "subtitle": "Manage general documents and downloads for the entire campus.",
+    "uploadTitle": "Upload New Document",
+    "displayName": "Display Name",
+    "fileName": "File Name",
+    "fileSize": "Size",
+    "uploadDate": "Uploaded At",
+    "documents": "Documents",
+    "actions": "Actions",
+    "uploadButton": "Upload",
+    "deleteTitle": "Delete Document",
+    "deleteMessage": "Are you sure you want to permanently delete this document?",
+    "uploadSuccess": "Document uploaded successfully.",
+    "uploadError": "Error uploading document.",
+    "deleteSuccess": "Document deleted successfully.",
+    "deleteError": "Error deleting document.",
+    "noDocuments": "No documents found.",
+    "userTitle": "Campus Downloads",
+    "userSubtitle": "Find general forms, instructions, and documents here.",
+    "download": "Download"
   }
 }
