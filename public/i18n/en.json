@@ -40,7 +40,64 @@
       "home": "Home",
       "timetable": "Timetable",
       "grades": "Grades",
-      "submissions": "Submissions"
+      "submissions": "Submissions",
+      "submissionsPage": {
+        "title": "Submissions",
+        "subtitle": "Upload documents, manage your submissions and track their status.",
+        "searchPlaceholder": "Search by exam type or status",
+        "defaultTitle": "Submission",
+        "defaultTag": "Document",
+        "courseSeries": "Course ID:",
+        "deadline": "Submission deadline",
+        "empty": "No matching submissions found.",
+        "loadingList": "Loading submissions...",
+        "loadingDetail": "Loading details...",
+        "tabs": {
+          "all": "All",
+          "open": "Open",
+          "submitted": "Submitted",
+          "graded": "Graded"
+        },
+        "fields": {
+          "start": "Start",
+          "deadline": "Deadline",
+          "submissionDate": "Submitted on",
+          "grade": "Grade",
+          "points": "Points",
+          "status": "Status"
+        },
+        "documents": {
+          "title": "Documents",
+          "empty": "No documents uploaded yet."
+        },
+        "upload": {
+          "title": "Upload documents"
+        },
+        "actions": {
+          "details": "Details",
+          "download": "Download",
+          "delete": "Delete",
+          "remove": "Remove",
+          "upload": "Upload documents",
+          "uploading": "Uploading...",
+          "finalSubmit": "Submit final version",
+          "submitting": "Submitting..."
+        },
+        "messages": {
+          "loadListError": "Submissions could not be loaded.",
+          "loadDetailError": "Submission details could not be loaded.",
+          "uploadSuccess": "Documents were uploaded successfully.",
+          "uploadError": "An error occurred during upload.",
+          "deleteSuccess": "Document was deleted.",
+          "deleteError": "Document could not be deleted.",
+          "downloadError": "Document could not be downloaded.",
+          "submitSuccess": "Submission was submitted successfully.",
+          "submitError": "Submission could not be submitted.",
+          "invalidFileType": "Only PDF, Excel and PowerPoint files (.pdf, .xlsx, .pptx) are allowed.",
+          "invalidMimeType": "The file type is not allowed.",
+          "fileTooLarge": "The file exceeds the maximum size of 1.5 MB."
+        }
+      }
     },
     "profileAndSettings": {
       "profileAndSettingsName": "Profile & Settings",

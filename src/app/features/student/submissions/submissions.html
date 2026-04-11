@@ -1,1 +1,218 @@
-<p>submissions works!</p>
+<div class="submissions-page">
+  <div class="page-header">
+    <div>
+      <h1>{{ 'navigation.student.submissionsPage.title' | translate }}</h1>
+      <p>{{ 'navigation.student.submissionsPage.subtitle' | translate }}</p>
+    </div>
+  </div>
+
+  <div class="messages" *ngIf="errorMessage || successMessage">
+    <div class="message error" *ngIf="errorMessage">
+      {{ errorMessage | translate }}
+    </div>
+    <div class="message success" *ngIf="successMessage">
+      {{ successMessage | translate }}
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-box">
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        [placeholder]="'navigation.student.submissionsPage.searchPlaceholder' | translate" />
+    </div>
+
+    <div class="tabs">
+      <button
+        *ngFor="let tab of tabs"
+        type="button"
+        class="tab-button"
+        [class.active]="activeTab === tab.value"
+        (click)="setTab(tab.value)">
+        {{ tab.labelKey | translate }}
+      </button>
+    </div>
+  </div>
+
+  <div class="cards-grid">
+    <div class="loading-state" *ngIf="isLoadingList">
+      {{ 'navigation.student.submissionsPage.loadingList' | translate }}
+    </div>
+
+    <button
+      *ngFor="let submission of filteredSubmissions"
+      type="button"
+      class="submission-card"
+      (click)="openSubmission(submission.submissionId)">
+      <div class="card-header">
+        <div class="card-icon">📄</div>
+
+        <div class="card-title-area">
+          <h3>{{ submission.examTypeName || ('navigation.student.submissionsPage.defaultTitle' | translate) }}</h3>
+          <p>{{ 'navigation.student.submissionsPage.courseSeries' | translate }} {{ submission.courseSeriesId }}</p>
+        </div>
+      </div>
+
+      <div class="card-tags">
+        <span class="tag">
+          {{ submission.examTypeName || ('navigation.student.submissionsPage.defaultTag' | translate) }}
+        </span>
+      </div>
+
+      <div class="deadline-box">
+        <div class="deadline-title">{{ 'navigation.student.submissionsPage.deadline' | translate }}</div>
+        <div class="deadline-value">{{ formatDate(submission.submissionDeadline) }}</div>
+      </div>
+
+      <div class="card-status-row">
+        <span class="status-chip" [ngClass]="getStatusClass(submission.status, submission.hasDocuments)">
+          {{ getStatusLabel(submission.status, submission.hasDocuments) }}
+        </span>
+
+        <span class="grade-badge" *ngIf="submission.grade !== null">
+          {{ submission.grade }}
+        </span>
+      </div>
+
+      <div class="card-footer">
+        <button type="button" class="ghost-button">
+          {{ 'navigation.student.submissionsPage.actions.details' | translate }}
+        </button>
+      </div>
+    </button>
+
+    <div class="empty-state" *ngIf="!isLoadingList && filteredSubmissions.length === 0">
+      {{ 'navigation.student.submissionsPage.empty' | translate }}
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" *ngIf="isModalOpen" (click)="closeModal()"></div>
+
+<div class="submission-modal" *ngIf="isModalOpen">
+  <div class="modal-content" *ngIf="selectedSubmission as detail">
+    <div class="modal-header">
+      <div>
+        <h2>{{ detail.examTypeName || ('navigation.student.submissionsPage.defaultTitle' | translate) }}</h2>
+        <p>{{ 'navigation.student.submissionsPage.courseSeries' | translate }} {{ detail.courseSeriesId }}</p>
+      </div>
+
+      <button type="button" class="close-button" (click)="closeModal()">×</button>
+    </div>
+
+    <div class="loading-state" *ngIf="isLoadingDetail">
+      {{ 'navigation.student.submissionsPage.loadingDetail' | translate }}
+    </div>
+
+    <ng-container *ngIf="!isLoadingDetail">
+      <div class="detail-grid">
+        <div class="detail-item">
+          <span>{{ 'navigation.student.submissionsPage.fields.start' | translate }}</span>
+          <strong>{{ formatDate(detail.submissionStartDate) }}</strong>
+        </div>
+        <div class="detail-item">
+          <span>{{ 'navigation.student.submissionsPage.fields.deadline' | translate }}</span>
+          <strong>{{ formatDate(detail.submissionDeadline) }}</strong>
+        </div>
+        <div class="detail-item">
+          <span>{{ 'navigation.student.submissionsPage.fields.submissionDate' | translate }}</span>
+          <strong>{{ formatDateTime(detail.submissionDate) }}</strong>
+        </div>
+        <div class="detail-item">
+          <span>{{ 'navigation.student.submissionsPage.fields.grade' | translate }}</span>
+          <strong>{{ detail.grade ?? '—' }}</strong>
+        </div>
+        <div class="detail-item">
+          <span>{{ 'navigation.student.submissionsPage.fields.points' | translate }}</span>
+          <strong>{{ detail.points ?? '—' }}</strong>
+        </div>
+        <div class="detail-item">
+          <span>{{ 'navigation.student.submissionsPage.fields.status' | translate }}</span>
+          <strong>{{ getStatusLabel(detail.status, detail.hasDocuments) }}</strong>
+        </div>
+      </div>
+
+      <div class="documents-section">
+        <div class="section-header">
+          <h3>{{ 'navigation.student.submissionsPage.documents.title' | translate }}</h3>
+          <span>{{ detail.documents.length }}</span>
+        </div>
+
+        <div class="document-list" *ngIf="detail.documents.length > 0; else noDocuments">
+          <div class="document-item" *ngFor="let document of detail.documents">
+            <div class="document-info">
+              <strong>{{ document.fileName }}</strong>
+              <span>{{ formatFileSize(document.fileSize) }} • {{ formatDateTime(document.uploadedAt) }}</span>
+            </div>
+
+            <div class="document-actions">
+              <button type="button" class="secondary" (click)="downloadDocument(document)">
+                {{ 'navigation.student.submissionsPage.actions.download' | translate }}
+              </button>
+
+              <button
+                *ngIf="detail.editable"
+                type="button"
+                class="danger"
+                (click)="deleteDocument(document)">
+                {{ 'navigation.student.submissionsPage.actions.delete' | translate }}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <ng-template #noDocuments>
+          <div class="empty-documents">
+            {{ 'navigation.student.submissionsPage.documents.empty' | translate }}
+          </div>
+        </ng-template>
+      </div>
+
+      <div class="upload-section" *ngIf="detail.editable">
+        <h3>{{ 'navigation.student.submissionsPage.upload.title' | translate }}</h3>
+
+        <input
+          type="file"
+          multiple
+          (change)="onFilesSelected($event)"
+          accept=".pdf,.xlsx,.pptx,application/pdf,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.openxmlformats-officedocument.presentationml.presentation" />
+
+        <div class="selected-files" *ngIf="selectedFiles.length > 0">
+          <div class="selected-file" *ngFor="let file of selectedFiles; let i = index">
+            <span>{{ file.name }} ({{ formatFileSize(file.size) }})</span>
+            <button type="button" class="link-button" (click)="removeSelectedFile(i)">
+              {{ 'navigation.student.submissionsPage.actions.remove' | translate }}
+            </button>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          class="primary"
+          [disabled]="selectedFiles.length === 0 || isUploading"
+          (click)="uploadSelectedFiles()">
+          {{
+            isUploading
+              ? ('navigation.student.submissionsPage.actions.uploading' | translate)
+              : ('navigation.student.submissionsPage.actions.upload' | translate)
+          }}
+        </button>
+      </div>
+
+      <div class="submit-section">
+        <button
+          type="button"
+          class="primary submit-button"
+          [disabled]="!detail.finalSubmitAllowed || isSubmitting"
+          (click)="submitCurrentSubmission()">
+          {{
+            isSubmitting
+              ? ('navigation.student.submissionsPage.actions.submitting' | translate)
+              : ('navigation.student.submissionsPage.actions.finalSubmit' | translate)
+          }}
+        </button>
+      </div>
+    </ng-container>
+  </div>
+</div>
