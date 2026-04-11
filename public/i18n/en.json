@@ -454,11 +454,8 @@
     "deleteFaqMessage": "Do you really want to delete this FAQ?",
     "deleteFaqSuccess": "FAQ was deleted successfully.",
     "deleteFaqError": "FAQ could not be deleted.",
-    "examCategory": "Category",
-    "examCategories": {
-      "SUBMISSION": "Submission",
-      "WRITTEN": "Written"
-    },
+    "submission": "Submission",
+    "submissionRequired": "Submission required",
     "emailTemplates": "Email Templates",
     "emailManagement": "Email Management",
     "customizeEmailTemplates": "Customize automated system email templates.",
@@ -645,7 +642,10 @@
   },
   "common": {
     "success": "Action successful",
-    "close": "Close"
+    "close": "Close",
+    "cancel": "Cancel",
+    "yes": "Yes",
+    "no": "No"
   },
   "info": {
     "subtitle": "Important contacts and information",

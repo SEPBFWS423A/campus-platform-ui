@@ -5,10 +5,6 @@ export enum ExamStatus {
   COMPLETED = 'COMPLETED'
 }
 
-export enum ExamCategory {
-  WRITTEN = 'WRITTEN',
-  SUBMISSION = 'SUBMISSION'
-}
 
 export enum SubmissionStatus {
   PENDING = 'PENDING',
@@ -29,7 +25,7 @@ export interface LecturerCourseResponse {
   moduleName: string;
   studyGroupNames: string[];
   examTypeName: string;
-  examCategory: ExamCategory;
+  isSubmission: boolean;
   examStatus: ExamStatus;
   examFileName?: string;
   solutionFileName?: string;

@@ -24,7 +24,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
-import { AdminService, CourseOfStudy, Specialization, Module, User, UserRole, DegreeType, InstitutionInfo, ModuleExam, ModuleLecturer, ExamCategory } from '../admin.service';
+import { AdminService, CourseOfStudy, Specialization, Module, User, UserRole, DegreeType, InstitutionInfo, ModuleExam, ModuleLecturer } from '../admin.service';
 import {FaqAdminResponse, FaqTranslationModel, FaqUpsertRequest} from '../../../core/models/faqModel';
 import { NotificationService } from '../../../core/services/notification.service';
 import { ConfirmationDialogComponent } from '../../../shared/components/confirmation-dialog/confirmation-dialog.component';
@@ -164,7 +164,6 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
 
   // Degree Types
   degreeTypes = Object.values(DegreeType);
-  examCategories = Object.values(ExamCategory);
 
   selectedCourseIdForModule = signal<string>('');
 
@@ -198,7 +197,7 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
 
   examTypeForm = this.fb.group({
     type: ['', Validators.required],
-    category: [ExamCategory.WRITTEN, Validators.required],
+    submission: [false, Validators.required],
     nameDe: ['', Validators.required],
     nameEn: ['', Validators.required],
     shortDe: ['', Validators.required],
@@ -633,7 +632,7 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
     this.selectedExamType.set(et);
     this.examTypeForm.patchValue({
       type: et.type,
-      category: et.category,
+      submission: et.submission,
       nameDe: et.nameDe,
       nameEn: et.nameEn,
       shortDe: et.shortDe,

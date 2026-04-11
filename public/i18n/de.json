@@ -454,11 +454,8 @@
     "deleteFaqMessage": "Möchten Sie diese FAQ wirklich löschen?",
     "deleteFaqSuccess": "FAQ wurde erfolgreich gelöscht.",
     "deleteFaqError": "FAQ konnte nicht gelöscht werden.",
-    "examCategory": "Kategorie",
-    "examCategories": {
-      "SUBMISSION": "Abgabe",
-      "WRITTEN": "Schriftlich"
-    },
+    "submission": "Abgabe",
+    "submissionRequired": "Abgaben benötigt",
     "emailTemplates": "E-Mail-Vorlagen",
     "emailManagement": "E-Mail-Verwaltung",
     "customizeEmailTemplates": "Passen Sie die automatisierten System-E-Mail-Vorlagen an.",
@@ -645,7 +642,10 @@
   },
   "common": {
     "success": "Aktion erfolgreich",
-    "close": "Schließen"
+    "close": "Schließen",
+    "cancel": "Abbrechen",
+    "yes": "Ja",
+    "no": "Nein"
   },
   "info": {
     "subtitle": "Wichtige Kontakte und Informationen",

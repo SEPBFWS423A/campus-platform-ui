@@ -17,7 +17,6 @@ import { NotificationService } from '../../../core/services/notification.service
 import {
   LecturerCourseResponse,
   ExamStatus,
-  ExamCategory,
   StudentSubmissionResponse,
   SubmissionStatus
 } from '../models/lecturer.models';
@@ -64,14 +63,13 @@ export class Grading implements OnInit {
   initialSolutionFileName = '';
 
   ExamStatus = ExamStatus;
-  ExamCategory = ExamCategory;
   SubmissionStatus = SubmissionStatus;
 
   ALLOWED_GRADES = [1.0, 1.3, 1.7, 2.0, 2.3, 2.7, 3.0, 3.3, 3.7, 4.0, 5.0];
 
   // Filter state
   searchQuery = signal('');
-  filterCategory = signal<'ALL' | ExamCategory>('ALL');
+  filterCategory = signal<'ALL' | 'SUBMISSION' | 'WRITTEN'>('ALL');
   filterStatus = signal<'ALL' | ExamStatus>('ALL');
   filterExamType = signal('ALL');
   
@@ -92,7 +90,9 @@ export class Grading implements OnInit {
     return this.courses().filter(course => {
       const matchesSearch = course.moduleName.toLowerCase().includes(query) ||
                             course.studyGroupNames.some(g => g.toLowerCase().includes(query));
-      const matchesCategory = cat === 'ALL' || course.examCategory === cat;
+      const matchesCategory = cat === 'ALL' || 
+                              (cat === 'SUBMISSION' && course.isSubmission) || 
+                              (cat === 'WRITTEN' && !course.isSubmission);
       const matchesStatus = stat === 'ALL' || course.examStatus === stat;
       const matchesExamType = type === 'ALL' || course.examTypeName === type;
       

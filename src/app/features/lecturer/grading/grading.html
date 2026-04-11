@@ -27,8 +27,8 @@
           <mat-icon matPrefix>category</mat-icon>
           <mat-select [ngModel]="filterCategory()" (ngModelChange)="filterCategory.set($event)">
             <mat-option value="ALL">{{ 'lecturerGrading.allCategories' | translate }}</mat-option>
-            <mat-option [value]="ExamCategory.WRITTEN">{{ 'lecturerGrading.categoryWRITTEN' | translate }}</mat-option>
-            <mat-option [value]="ExamCategory.SUBMISSION">{{ 'lecturerGrading.categorySUBMISSION' | translate }}</mat-option>
+            <mat-option value="WRITTEN">{{ 'lecturerGrading.categoryWRITTEN' | translate }}</mat-option>
+            <mat-option value="SUBMISSION">{{ 'lecturerGrading.categorySUBMISSION' | translate }}</mat-option>
           </mat-select>
         </mat-form-field>
 
@@ -68,7 +68,7 @@
                
                <mat-card-header>
                  <div mat-card-avatar class="course-icon-bg">
-                   <mat-icon>{{ course.examCategory === ExamCategory.WRITTEN ? 'edit_note' : 'upload_file' }}</mat-icon>
+                    <mat-icon>{{ !course.isSubmission ? 'edit_note' : 'upload_file' }}</mat-icon>
                  </div>
                  <mat-card-title>{{ course.moduleName }}</mat-card-title>
                  <mat-card-subtitle>
@@ -84,12 +84,12 @@
                  <div class="exam-info">
                    <div class="info-row">
                      <span class="exam-type-badge">{{ course.examTypeName }}</span>
-                     <span class="category-badge" [class.written]="course.examCategory === ExamCategory.WRITTEN">
-                       {{ 'lecturerGrading.category' + course.examCategory | translate }}
-                     </span>
+                      <span class="category-badge" [class.written]="!course.isSubmission">
+                        {{ 'lecturerGrading.category' + (course.isSubmission ? 'SUBMISSION' : 'WRITTEN') | translate }}
+                      </span>
                    </div>
      
-                   @if (course.examCategory === ExamCategory.WRITTEN && getKlausurEvent(course); as klausur) {
+                    @if (!course.isSubmission && getKlausurEvent(course); as klausur) {
                       <div class="event-details glass">
                         <div class="detail-item">
                           <mat-icon>calendar_today</mat-icon>
@@ -106,7 +106,7 @@
                       </div>
                    }
      
-                   @if (course.examCategory === ExamCategory.SUBMISSION) {
+                    @if (course.isSubmission) {
                       <div class="event-details glass deadline">
                         <div class="detail-item deadline-label">
                           <span>{{ 'lecturerGrading.deadline' | translate }}</span>
@@ -125,7 +125,7 @@
                    <div class="status-indicator">
                      <div class="dot" [class]="getStatusColor(course.examStatus)"></div>
                      <span>Status: <strong>{{ 'lecturerGrading.status' + course.examStatus | translate }}</strong></span>
-                     @if (course.examCategory === ExamCategory.SUBMISSION && course.submissionCount > 0) {
+                      @if (course.isSubmission && course.submissionCount > 0) {
                         <span class="submission-count-tag">
                           {{ course.submissionCount }} {{ 'userManagement.students' | translate }}
                         </span>
@@ -135,7 +135,7 @@
                </mat-card-content>
      
                <mat-card-actions align="end">
-                 @if (course.examCategory === 'WRITTEN') {
+                  @if (!course.isSubmission) {
                     <button mat-button class="action-btn" (click)="manageMaterials(course)">
                       <mat-icon>upload_file</mat-icon>
                       {{ 'lecturerGrading.materials' | translate }}
