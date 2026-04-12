@@ -13,7 +13,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
 import { UserSettingsDialog } from '../settings/user-settings.dialog/user-settings.dialog';
 import { InstitutionInfo } from '../../../features/admin/admin.service';
-import {UserService} from '../../../core/user/user.service';
+import { UserService } from '../../../core/user/user.service';
 import { PublicService } from '../../../core/public/public.service';
 
 export type NavLink = {
@@ -72,7 +72,7 @@ export class Navigation implements OnInit {
   private dialog = inject(MatDialog);
   public publicService = inject(PublicService);
   private breakpointObserver = inject(BreakpointObserver);
-  
+
   hoveredItem = signal<string | null>(null);
 
   isCollapsed = toSignal(

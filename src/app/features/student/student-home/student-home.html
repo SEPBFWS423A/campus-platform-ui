@@ -1,1 +1,163 @@
-<p>student-home works!</p>
+<!-- Ladezustand -->
+@if (loading()) {
+  <div class="loading-state">
+    <mat-icon>hourglass_empty</mat-icon>
+    <p>Daten werden geladen…</p>
+  </div>
+}
+
+<!-- Fehlerzustand -->
+@if (error() && !loading()) {
+  <div class="error-state">
+    <mat-icon>error_outline</mat-icon>
+    <p>Dashboard konnte nicht geladen werden. Bitte Seite neu laden.</p>
+  </div>
+}
+
+<!-- Inhalt -->
+@if (dashboard(); as data) {
+  <!-- Header -->
+  <header class="section-header">
+    <div class="header-content">
+      <h1>Home</h1>
+      <p>Willkommen zurück, {{ data.firstName }} {{ data.lastName }}!</p>
+    </div>
+    <div class="current-date">
+      <mat-icon>calendar_today</mat-icon>
+      <span>{{ currentDate | date:'EEEE, d. MMMM yyyy' }}</span>
+    </div>
+  </header>
+
+  <!-- Stats Row -->
+  <div class="stats-row">
+    <!-- Notenschnitt -->
+    <div class="stat-card">
+      <div class="stat-icon primary-bg">
+        <mat-icon>bar_chart</mat-icon>
+      </div>
+      <span class="stat-label">Notenschnitt</span>
+      @if (data.averageGrade != null) {
+        <span class="stat-value">{{ data.averageGrade }}</span>
+      } @else {
+        <span class="stat-value">–</span>
+        <span class="stat-subtext">Noch keine Noten</span>
+      }
+    </div>
+
+    <!-- ECTS Fortschritt -->
+    <div class="stat-card">
+      <div class="stat-icon success-bg">
+        <mat-icon>school</mat-icon>
+      </div>
+      <span class="stat-label">ECTS Fortschritt</span>
+      @if (data.ectsEarned != null) {
+        <span class="stat-value">{{ ectsLabel() }}</span>
+        <div class="progress-container">
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="ectsProgress()"></div>
+          </div>
+        </div>
+      } @else {
+        <span class="stat-value">–</span>
+        <span class="stat-subtext">Daten noch nicht verfügbar</span>
+      }
+    </div>
+
+    <!-- Anstehende Prüfungen -->
+    <div class="stat-card">
+      <div class="stat-icon warning-bg">
+        <mat-icon>event_note</mat-icon>
+      </div>
+      <span class="stat-label">Anstehende Prüfungen</span>
+      <span class="stat-value">{{ data.upcomingExamCount }}</span>
+      <span class="stat-trend">
+        {{ data.upcomingExamCount > 0 ? 'Viel Erfolg!' : 'Keine Termine' }}
+      </span>
+    </div>
+  </div>
+
+  <!-- Dashboard Grid -->
+  <div class="dashboard-grid">
+    <!-- Heutiger Stundenplan -->
+    <div class="card schedule-card">
+      <div class="card-header">
+        <h3>Heutiger Stundenplan</h3>
+        <a routerLink="/student/timetable" class="all-link">Alle ansehen</a>
+      </div>
+      
+      <div class="schedule-content">
+        @if (todayEvents().length === 0) {
+          <div class="empty-schedule">
+            <mat-icon>event_available</mat-icon>
+            <p>Keine Veranstaltungen heute.</p>
+          </div>
+        } @else {
+          @for (event of todayEvents(); track event.eventId) {
+            <div class="timeline-event">
+              <span class="event-time">{{ formatTime(event.startTime) }}</span>
+              <div class="event-info">
+                <h4>{{ event.moduleName }}</h4>
+                <p>
+                  @if (event.roomName) { {{ event.roomName }} &bull; }
+                  {{ event.eventName }}
+                </p>
+              </div>
+            </div>
+          }
+        }
+      </div>
+    </div>
+
+    <!-- Right Column -->
+    <div class="right-col-stack">
+      <!-- Neuigkeiten -->
+      <div class="card">
+        <div class="card-header">
+          <h3>Neuigkeiten</h3>
+        </div>
+        <ul class="activity-list">
+          @if (data.notifications.length === 0) {
+            <li class="activity-item">
+              <div class="activity-content">
+                <p class="activity-text">Keine aktuellen Benachrichtigungen</p>
+              </div>
+            </li>
+          }
+          @for (n of data.notifications; track n.text) {
+            <li class="activity-item">
+              <div class="activity-icon-small" [class]="n.colorClass + '-bg'">
+                <mat-icon>{{ n.icon }}</mat-icon>
+              </div>
+              <div class="activity-content">
+                <p class="activity-text" [innerHTML]="n.text"></p>
+                <span class="activity-time">{{ n.detail }}</span>
+              </div>
+            </li>
+          }
+        </ul>
+      </div>
+
+      <!-- Schnellzugriff -->
+      <div class="card">
+        <div class="card-header">
+          <h3>Schnellzugriff</h3>
+        </div>
+        <div class="quick-access-grid">
+          @for (action of quickActions; track action.label) {
+            @if (!action.external) {
+              <a class="action-btn" [routerLink]="action.route">
+                <mat-icon>{{ action.icon }}</mat-icon>
+                <span>{{ action.label }}</span>
+              </a>
+            } @else {
+              <a class="action-btn" [href]="action.href" target="_blank" rel="noopener">
+                <mat-icon>{{ action.icon }}</mat-icon>
+                <span>{{ action.label }}</span>
+              </a>
+            }
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+}
