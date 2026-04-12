@@ -1,1 +1,6 @@
-<p>exam-management works!</p>
+<app-exam-management-list 
+  [courses]="courses()" 
+  [isLoadingCourses]="isLoading()"
+  [isAdmin]="true"
+  (refresh)="loadAllExams()">
+</app-exam-management-list>

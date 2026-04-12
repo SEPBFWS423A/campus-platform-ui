@@ -31,7 +31,7 @@
           <span class="value">{{ data.studyGroups.join(', ') }}</span>
         </div>
 
-        @if (data.isSubmission && data.submissionDeadline) {
+        @if (data.submission && data.submissionDeadline) {
           <div class="info-item">
             <span class="label">{{ 'eventManagement.submissionDeadline' | translate }}</span>
             <span class="value deadline">{{ data.submissionDeadline | date:'medium' }}</span>

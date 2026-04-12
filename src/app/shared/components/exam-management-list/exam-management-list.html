@@ -1,0 +1,472 @@
+<div class="grading-container">
+  <!-- OVERVIEW VIEW -->
+@if (view() === 'overview') {
+  <div class="overview-view">
+    <div class="header">
+      <div class="title-section">
+        <h1>{{ (isAdmin() ? 'navigation.admin.examManagement' : 'lecturerGrading.title') | translate }}</h1>
+        <p>{{ 'lecturerGrading.subtitle' | translate }}</p>
+      </div>
+      <div class="stats-overview">
+        <div class="stat-item">
+          <span class="stat-value">{{ courses().length }}</span>
+          <span class="stat-label">{{ 'lecturerGrading.totalCourses' | translate }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- FILTER BAR -->
+    <div class="filter-bar glass">
+      <div class="search-box">
+        <mat-icon>search</mat-icon>
+        <input type="text" [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)" [placeholder]="'lecturerGrading.searchPlaceholder' | translate">
+      </div>
+      
+      <div class="filters">
+        @if (isAdmin()) {
+          <mat-form-field appearance="outline" class="filter-select">
+            <mat-icon matPrefix>person</mat-icon>
+            <mat-select [ngModel]="filterLecturer()" (ngModelChange)="filterLecturer.set($event)">
+              <mat-option value="ALL">{{ 'lecturerGrading.allLecturers' | translate }}</mat-option>
+              @for (name of uniqueLecturers(); track name) {
+                <mat-option [value]="name">{{ name }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="filter-select">
+            <mat-icon matPrefix>groups</mat-icon>
+            <mat-select [ngModel]="filterStudyGroup()" (ngModelChange)="filterStudyGroup.set($event)">
+              <mat-option value="ALL">{{ 'lecturerGrading.allStudyGroups' | translate }}</mat-option>
+              @for (group of uniqueStudyGroups(); track group) {
+                <mat-option [value]="group">{{ group }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        }
+
+        <mat-form-field appearance="outline" class="filter-select">
+          <mat-icon matPrefix>task</mat-icon>
+          <mat-select [ngModel]="filterSubmission()" (ngModelChange)="filterSubmission.set($event)">
+            <mat-option value="ALL">{{ 'lecturerGrading.allSubmissionModes' | translate }}</mat-option>
+            <mat-option value="NO">{{ 'lecturerGrading.noSubmissionRequired' | translate }}</mat-option>
+            <mat-option value="YES">{{ 'lecturerGrading.submissionRequired' | translate }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="filter-select">
+          <mat-icon matPrefix>task_alt</mat-icon>
+          <mat-select [ngModel]="filterStatus()" (ngModelChange)="filterStatus.set($event)">
+            <mat-option value="ALL">{{ 'lecturerGrading.allStatus' | translate }}</mat-option>
+            <mat-option [value]="ExamStatus.OPEN">{{ 'lecturerGrading.statusOPEN' | translate }}</mat-option>
+            <mat-option [value]="ExamStatus.PROVIDED">{{ 'lecturerGrading.statusPROVIDED' | translate }}</mat-option>
+            <mat-option [value]="ExamStatus.COMPLETED">{{ 'lecturerGrading.statusCOMPLETED' | translate }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="filter-select">
+          <mat-icon matPrefix>quiz</mat-icon>
+          <mat-select [ngModel]="filterExamType()" (ngModelChange)="filterExamType.set($event)">
+            <mat-option value="ALL">{{ 'lecturerGrading.allExamTypes' | translate }}</mat-option>
+            @for (type of uniqueExamTypes(); track type) {
+               <mat-option [value]="type">{{ type }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+
+    @if (isLoadingCourses()) {
+      <div class="loading-state overview-loader">
+        <mat-spinner diameter="64"></mat-spinner>
+        <p>Loading course series list...</p>
+      </div>
+    } @else {
+      <div class="course-grid">
+        @for (course of filteredCourses(); track course.id) {
+           <div class="course-card-wrapper">
+             <mat-card class="course-card" [class]="getStatusColor(course.examStatus)">
+               <div class="card-accent" [class]="getStatusColor(course.examStatus)"></div>
+               
+               <mat-card-header>
+                 <div mat-card-avatar class="course-icon-bg">
+                    <mat-icon>{{ !course.submission ? 'edit_note' : 'upload_file' }}</mat-icon>
+                 </div>
+                 <mat-card-title>{{ course.moduleName }}</mat-card-title>
+                 <mat-card-subtitle>
+                   <div class="groups-list">
+                     @for (group of course.studyGroupNames; track group) {
+                        <span class="group-tag">{{ group }}</span>
+                     }
+                   </div>
+                   @if (isAdmin() && course.lecturerName) {
+                    <div class="lecturer-tag">
+                      <mat-icon>person</mat-icon>
+                      <span>{{ course.lecturerName }}</span>
+                    </div>
+                   }
+                 </mat-card-subtitle>
+               </mat-card-header>
+     
+               <mat-card-content>
+                 <div class="exam-info">
+                   <div class="info-row">
+                     <span class="exam-type-badge">{{ course.examTypeName }}</span>
+                      <span class="category-badge">
+                        {{ (course.submission ? 'lecturerGrading.submissionRequired' : 'lecturerGrading.noSubmissionRequired') | translate }}
+                      </span>
+                   </div>
+     
+                    @if (!course.submission && getKlausurEvent(course); as klausur) {
+                      <div class="event-details glass" [class.is-past]="isPast(klausur.start)">
+                        <div class="detail-item">
+                          <mat-icon>calendar_today</mat-icon>
+                          <span>{{ klausur.start | date:'dd.MM.yyyy' }}</span>
+                        </div>
+                        <div class="detail-item">
+                          <mat-icon>schedule</mat-icon>
+                          <span>{{ klausur.start | date:'HH:mm' }} - {{ klausur.end | date:'HH:mm' }}</span>
+                        </div>
+                        <div class="detail-item">
+                          <mat-icon>room</mat-icon>
+                          <span>{{ klausur.roomName }}</span>
+                        </div>
+                      </div>
+                   }
+     
+                    @if (course.submission) {
+                      <div class="event-details glass deadline" [class.is-past]="isPast(course.submissionDeadline)">
+                        <div class="detail-item deadline-label">
+                          <span>{{ 'lecturerGrading.deadline' | translate }}</span>
+                        </div>
+                        <div class="detail-item">
+                          <mat-icon>event_busy</mat-icon>
+                          <span>{{ course.submissionDeadline | date:'dd.MM.yyyy' }}</span>
+                        </div>
+                        <div class="detail-item">
+                          <mat-icon>schedule</mat-icon>
+                          <span>{{ course.submissionDeadline | date:'HH:mm' }} Uhr</span>
+                        </div>
+                      </div>
+                   }
+     
+                   <div class="status-indicator">
+                     <div class="dot" [class]="getStatusColor(course.examStatus)"></div>
+                     <span>Status: <strong>{{ 'lecturerGrading.status' + course.examStatus | translate }}</strong></span>
+                      @if (course.submission && course.submissionCount > 0) {
+                        <span class="submission-count-tag">
+                          {{ 'lecturerGrading.studentsSubmitted' | translate: { count: course.submissionCount } }}
+                        </span>
+                     }
+                   </div>
+                 </div>
+               </mat-card-content>
+     
+               <mat-card-actions align="end">
+                  @if (!course.submission) {
+                    <button mat-button class="action-btn" (click)="manageMaterials(course)">
+                      <mat-icon>upload_file</mat-icon>
+                      {{ 'lecturerGrading.materials' | translate }}
+                    </button>
+                  }
+                  <button mat-raised-button color="primary" class="primary-action"
+                          [disabled]="isGradingDisabled(course)"
+                          (click)="openGrading(course)">
+                    <mat-icon>grade</mat-icon>
+                    {{ (course.examStatus === ExamStatus.COMPLETED ? 'lecturerGrading.viewGrades' : 'lecturerGrading.gradeNow') | translate }}
+                  </button>
+               </mat-card-actions>
+             </mat-card>
+           </div>
+        }
+      </div>
+    }
+  </div>
+}
+
+  <!-- MATERIALS VIEW -->
+  @if (view() === 'materials' && selectedCourse(); as course) {
+    <div class="detail-view">
+      <div class="header">
+        <button mat-icon-button (click)="backToOverview()">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <h1>{{ 'lecturerGrading.manageMaterials' | translate }}: {{ course.moduleName }}</h1>
+      </div>
+  
+      <mat-card class="detail-card">
+        <mat-card-content>
+          <div class="materials-form">
+          <div class="file-support-hint glass">
+            <mat-icon>info</mat-icon>
+            <span>{{ 'lecturerGrading.supportedFormats' | translate }}</span>
+          </div>
+          <div class="file-upload-section">
+            <div class="file-input-group">
+              <label>{{ 'lecturerGrading.examPaper' | translate }}</label>
+              <div class="upload-zone" [class.has-file]="!!examFileName()">
+                <!-- No file state -->
+                @if (!examFileName()) {
+                   <button type="button" class="upload-placeholder-btn" (click)="examFileInput.click()"
+                           [disabled]="course.examStatus !== ExamStatus.OPEN && course.examStatus !== ExamStatus.PROVIDED">
+                     <mat-icon>cloud_upload</mat-icon>
+                     <span>{{ 'lecturerGrading.chooseFile' | translate }}</span>
+                   </button>
+                }
+  
+                <!-- File selected state -->
+                @if (examFileName()) {
+                   <div class="active-file-card">
+                     <div class="file-icon-wrapper">
+                       <mat-icon>description</mat-icon>
+                     </div>
+                     <div class="file-info">
+                       <span class="file-label">{{ 'lecturerGrading.examPaper' | translate }}</span>
+                       <span class="file-name" [matTooltip]="examFileName()">{{ examFileName() }}</span>
+                     </div>
+                     <div class="file-card-actions">
+                       <button type="button" class="action-btn download" (click)="downloadFile('exam')" matTooltip="Download">
+                         <mat-icon>download</mat-icon>
+                       </button>
+                       <button type="button" class="action-btn change" (click)="examFileInput.click()" 
+                               [disabled]="course.examStatus !== ExamStatus.OPEN && course.examStatus !== ExamStatus.PROVIDED"
+                               matTooltip="Change">
+                         <mat-icon>refresh</mat-icon>
+                       </button>
+                       <button type="button" class="action-btn delete" (click)="clearFile('exam')" 
+                               [disabled]="course.examStatus !== ExamStatus.OPEN && course.examStatus !== ExamStatus.PROVIDED"
+                               matTooltip="Remove">
+                         <mat-icon>delete_outline</mat-icon>
+                       </button>
+                     </div>
+                   </div>
+                }
+                <input #examFileInput type="file" (change)="onFileSelected($event, 'exam')" hidden accept=".pdf,.doc,.docx,.txt">
+              </div>
+            </div>
+  
+            <div class="file-input-group">
+              <label>{{ 'lecturerGrading.sampleSolution' | translate }}</label>
+              <div class="upload-zone" [class.has-file]="!!solutionFileName()">
+                <!-- No file state -->
+                @if (!solutionFileName()) {
+                   <button type="button" class="upload-placeholder-btn" (click)="solutionFileInput.click()"
+                           [disabled]="course.examStatus !== ExamStatus.OPEN && course.examStatus !== ExamStatus.PROVIDED">
+                     <mat-icon>cloud_upload</mat-icon>
+                     <span>{{ 'lecturerGrading.chooseFile' | translate }}</span>
+                   </button>
+                }
+  
+                <!-- File selected state -->
+                @if (solutionFileName()) {
+                   <div class="active-file-card">
+                     <div class="file-icon-wrapper">
+                       <mat-icon>fact_check</mat-icon>
+                     </div>
+                     <div class="file-info">
+                       <span class="file-label">{{ 'lecturerGrading.sampleSolution' | translate }}</span>
+                       <span class="file-name" [matTooltip]="solutionFileName()">{{ solutionFileName() }}</span>
+                     </div>
+                     <div class="file-card-actions">
+                       <button type="button" class="action-btn download" (click)="downloadFile('solution')" matTooltip="Download">
+                         <mat-icon>download</mat-icon>
+                       </button>
+                       <button type="button" class="action-btn change" (click)="solutionFileInput.click()" 
+                               [disabled]="course.examStatus !== ExamStatus.OPEN && course.examStatus !== ExamStatus.PROVIDED"
+                               matTooltip="Change">
+                         <mat-icon>refresh</mat-icon>
+                       </button>
+                       <button type="button" class="action-btn delete" (click)="clearFile('solution')" 
+                               [disabled]="course.examStatus !== ExamStatus.OPEN && course.examStatus !== ExamStatus.PROVIDED"
+                               matTooltip="Remove">
+                         <mat-icon>delete_outline</mat-icon>
+                       </button>
+                     </div>
+                   </div>
+                }
+                <input #solutionFileInput type="file" (change)="onFileSelected($event, 'solution')" hidden accept=".pdf,.doc,.docx,.txt">
+              </div>
+            </div>
+          </div>
+  
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'lecturerGrading.lecturerNotes' | translate }}</mat-label>
+            <textarea matInput [ngModel]="lecturerNotes()" (ngModelChange)="lecturerNotes.set($event)" rows="4" 
+                      [disabled]="course.examStatus !== ExamStatus.OPEN && course.examStatus !== ExamStatus.PROVIDED"></textarea>
+          </mat-form-field>
+        </div>
+        </mat-card-content>
+        <mat-card-actions align="end">
+          <button mat-button (click)="backToOverview()">{{ 'common.cancel' | translate }}</button>
+          <button mat-raised-button color="primary" (click)="submitMaterials()" 
+                  [disabled]="(course.examStatus !== ExamStatus.OPEN && course.examStatus !== ExamStatus.PROVIDED)">
+            <mat-icon>save</mat-icon>
+            {{ 'lecturerGrading.saveAndProvide' | translate }}
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  }
+
+  <!-- GRADING VIEW -->
+  @if (view() === 'grading' && selectedCourse(); as course) {
+    <div class="detail-view grading-interface">
+      <div class="header">
+        <div class="header-main">
+          <button mat-icon-button (click)="backToOverview()" matTooltip="Back to Courses">
+            <mat-icon>arrow_back</mat-icon>
+          </button>
+          <div class="header-info">
+            <h1>{{ (course.examStatus === ExamStatus.COMPLETED ? 'lecturerGrading.gradePublication' : 'lecturerGrading.gradingInterface') | translate }}</h1>
+            <div class="exam-meta">
+              <span class="course-name">{{ course.moduleName }}</span>
+              <span class="bubble status-bubble" [class]="getStatusColor(course.examStatus)">{{ 'lecturerGrading.status' + course.examStatus | translate }}</span>
+              <span class="bubble type-bubble">{{ course.examTypeName }}</span>
+              <div class="save-status-indicator" [class.saving]="isSaving()">
+                <mat-icon>{{ isSaving() ? 'sync' : 'cloud_done' }}</mat-icon>
+                <span>{{ (isSaving() ? 'common.saving' : 'common.saved') | translate }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        @if (submissions().length > 0) {
+           <div class="grading-stats glass">
+             <div class="stat">
+               <span class="val">{{ submissions().length }}</span>
+               <span class="lab">{{ 'userManagement.students' | translate }}</span>
+             </div>
+             <div class="stat-divider"></div>
+             <div class="stat">
+               <span class="val">{{ gradedCount() }}</span>
+               <span class="lab">{{ 'lecturerGrading.statusGRADED' | translate }}</span>
+             </div>
+           </div>
+        }
+      </div>
+  
+      <!-- STUDENT SEARCH -->
+      <div class="grading-actions-bar glass">
+        <div class="student-search">
+          <mat-icon>person_search</mat-icon>
+          <input type="text" [ngModel]="studentSearchQuery()" (ngModelChange)="studentSearchQuery.set($event)" [placeholder]="'Search Student Name or ID...'">
+        </div>
+        <div class="spacer"></div>
+        @if (course.examStatus !== ExamStatus.COMPLETED) {
+           <p class="grading-hint">
+             <mat-icon>info_outline</mat-icon>
+             {{ 'lecturerGrading.gradingHint' | translate }}
+           </p>
+        }
+      </div>
+  
+      <div class="grade-sheet">
+        <div class="sheet-header">
+          <span class="col-student">STUDENT</span>
+          <span class="col-status">SUBMISSION</span>
+          <span class="col-points">{{ 'lecturerGrading.points' | translate }}</span>
+          <span class="col-grade">GRADE</span>
+          <span class="col-feedback">FEEDBACK</span>
+        </div>
+  
+        <div class="sheet-body">
+          @if (isLoadingSubmissions()) {
+             <div class="loading-state">
+               <mat-spinner diameter="48"></mat-spinner>
+               <p>Loading Submissions...</p>
+             </div>
+          } @else {
+            @for (student of filteredSubmissions(); track student.studentId) {
+             <div class="student-row" 
+                  [class.completed]="student.status === SubmissionStatus.SUBMITTED"
+                  [class.is-graded]="!!student.grade">
+               
+               <div class="col-student">
+                 <div class="student-profile">
+                   <div class="avatar">{{ student.studentName.charAt(0) }}</div>
+                   <div class="details">
+                     <span class="name">{{ student.studentName }}</span>
+                     <span class="id">{{ student.studentNumber }}</span>
+                   </div>
+                 </div>
+               </div>
+     
+               <div class="col-status">
+                 <div class="status-header">
+                   <span class="bubble status-bubble" [class]="getStatusColor(student.status)">
+                     {{ 'lecturerGrading.status' + student.status | translate }}
+                   </span>
+                   @if (student.documentUrl) {
+                      <button mat-icon-button (click)="downloadStudentSubmission(student)" matTooltip="Download Submission" class="sub-dl-btn">
+                        <mat-icon>file_download</mat-icon>
+                      </button>
+                   }
+                 </div>
+                 @if (student.submissionDate) {
+                    <span class="date">{{ student.submissionDate | date:'dd.MM HH:mm' }}</span>
+                 }
+               </div>
+     
+               <div class="col-points">
+                 <div class="points-input-wrapper">
+                   <input type="number" 
+                          [(ngModel)]="student.points" 
+                          (blur)="saveSingleGrade(student)"
+                          [disabled]="course.examStatus === ExamStatus.COMPLETED"
+                          placeholder="Pkt."
+                          min="0" step="1">
+                   <span class="unit">Pkt.</span>
+                 </div>
+               </div>
+     
+               <div class="col-grade">
+                 <div class="grade-input-wrapper">
+                   <mat-select [(ngModel)]="student.grade" 
+                               (selectionChange)="onGradeManualChange(student)"
+                               [disabled]="course.examStatus === ExamStatus.COMPLETED"
+                               placeholder="-"
+                               class="grade-select">
+                     <mat-option [value]="undefined">-</mat-option>
+                     @for (g of ALLOWED_GRADES; track g) {
+                        <mat-option [value]="g">
+                          {{ g | number:'1.1-1' }}
+                        </mat-option>
+                     }
+                   </mat-select>
+                 </div>
+               </div>
+     
+               <div class="col-feedback">
+                 <div class="feedback-input-wrapper">
+                   <textarea [(ngModel)]="student.feedback" rows="1" 
+                             (blur)="saveSingleGrade(student)"
+                             [disabled]="course.examStatus === ExamStatus.COMPLETED"
+                             [placeholder]="'Add feedback...'"></textarea>
+                 </div>
+               </div>
+             </div>
+          } @empty {
+             <div class="empty-results">
+               <mat-icon>no_accounts</mat-icon>
+               <p>No students found matching your search.</p>
+             </div>
+          }
+        }
+        </div>
+      </div>
+  
+      @if (course.examStatus !== ExamStatus.COMPLETED) {
+         <div class="footer-actions">
+           <button mat-button (click)="backToOverview()">{{ 'common.cancel' | translate }}</button>
+           <div class="spacer"></div>
+           <button mat-raised-button color="primary" (click)="finalizeGrades()" class="publish-btn"
+                   [disabled]="!allStudentsGraded()"
+                   [matTooltip]="!allStudentsGraded() ? ('lecturerGrading.publishDisabledHint' | translate) : ''">
+             <mat-icon>auto_awesome</mat-icon>
+             {{ 'lecturerGrading.finalizeAndPublish' | translate }}
+           </button>
+         </div>
+      }
+    </div>
+  }
+</div>

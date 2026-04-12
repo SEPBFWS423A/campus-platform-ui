@@ -662,7 +662,8 @@
     "save": "Save",
     "cancel": "Cancel",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "saved": "Saved"
   },
   "info": {
     "subtitle": "Important contacts and information",
@@ -707,18 +708,22 @@
     "subtitle": "Manage your exams, provide materials, and publish student grades.",
     "totalCourses": "Total Courses",
     "searchPlaceholder": "Search module or study group...",
-    "filterCategory": "Category",
     "filterStatus": "Status Filter",
     "filterExamType": "Exam Form",
-    "allCategories": "All Categories",
+    "filterLecturer": "Lecturer",
+    "filterStudyGroup": "Study Group",
+    "filterSubmission": "Submission Mode",
+    "allSubmissionModes": "All Modes",
     "allStatus": "All Status",
     "allExamTypes": "All Forms",
+    "allLecturers": "All Lecturers",
+    "allStudyGroups": "All Study Groups",
     "statusOPEN": "Open",
     "statusPROVIDED": "Grades provided",
     "statusGRADING": "Grading",
     "statusCOMPLETED": "Grades published",
-    "categoryWRITTEN": "Written",
-    "categorySUBMISSION": "Submission",
+    "submissionRequired": "Submission required",
+    "noSubmissionRequired": "No submission",
     "materials": "Materials",
     "gradeNow": "Enter Grades",
     "viewGrades": "View Grades",
@@ -749,14 +754,15 @@
     "examMaterialsError": "Failed to update materials",
     "gradesApplySuccess": "Grades applied successfully",
     "gradesApplyError": "Failed to apply grades",
-    "points": "Points"
+    "publishDisabledHint": "Please grade all students before publishing the results.",
+    "points": "Points",
+    "studentsSubmitted": "{{count}} students submitted"
   },
   "academicTitle": {
     "DR": "Dr.",
     "PROF": "Prof.",
     "PROF_DR": "Prof. Dr.",
-    "points": "Points",
-    "studentsSubmitted": "{{count}} students submitted"
+    "points": "Points"
   },
   "timetable": {
     "title": "Timetable",

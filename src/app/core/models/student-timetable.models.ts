@@ -7,6 +7,7 @@ export interface StudentEventResponse {
   moduleName: string;
   lecturerName: string;
   rooms: string[];
+  submission: boolean;
 }
 
 export interface StudentActiveCourseResponse {
@@ -15,6 +16,6 @@ export interface StudentActiveCourseResponse {
   lecturerName: string;
   status: string;
   examTypeName: string;
-  isSubmission: boolean;
+  submission: boolean;
   submissionDeadline?: string;
 }

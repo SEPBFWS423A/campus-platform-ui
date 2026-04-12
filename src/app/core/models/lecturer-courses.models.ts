@@ -15,7 +15,7 @@ export interface LecturerActiveCourseResponse {
   studyGroups: string[];
   status: string;
   examTypeName: string;
-  isSubmission: boolean;
+  submission: boolean;
   submissionDeadline?: string;
   attendeeCount: number;
 }
