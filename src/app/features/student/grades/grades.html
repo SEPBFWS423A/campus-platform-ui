@@ -1,1 +1,215 @@
-<p>grades works!</p>
+<section class="grades-page">
+  <div class="grades-shell">
+    <header class="grades-header">
+      <div class="grades-header__content">
+        <p class="grades-header__eyebrow">{{ 'navigation.grades.eyebrow' | translate }}</p>
+        <h1>{{ 'navigation.grades.title' | translate }}</h1>
+        <p class="grades-header__subtitle">{{ 'navigation.grades.subtitle' | translate }}</p>
+      </div>
+
+      <button type="button" class="grades-header__action" (click)="openGradeScale()">
+        <span class="grades-header__action-icon">📁</span>
+        <span>{{ 'navigation.grades.actions.gradeScale' | translate }}</span>
+      </button>
+    </header>
+
+    @if (loading) {
+      <section class="grades-state-card">
+        <p>{{ 'navigation.grades.states.loading' | translate }}</p>
+      </section>
+    } @else if (errorKey) {
+      <section class="grades-state-card grades-state-card--error">
+        <p>{{ errorKey | translate }}</p>
+        <button type="button" class="grades-state-card__retry" (click)="loadOverview()">
+          {{ 'navigation.grades.actions.retry' | translate }}
+        </button>
+      </section>
+    } @else if (!overview || !overview.semesters.length) {
+      <section class="grades-state-card">
+        <p>{{ 'navigation.grades.states.empty' | translate }}</p>
+      </section>
+    } @else {
+      <section class="grades-summary">
+        <article class="summary-card">
+          <div class="summary-card__icon summary-card__icon--blue">Σ</div>
+          <div class="summary-card__text">
+            <span class="summary-card__label">{{ 'navigation.grades.summary.currentAverage' | translate }}</span>
+            <strong class="summary-card__value">
+              {{ overview.summary.currentAverage !== null ? (overview.summary.currentAverage | number:'1.1-1') : '—' }}
+            </strong>
+          </div>
+        </article>
+
+        @if (hasVisibleEctsSummary) {
+          <article class="summary-card">
+            <div class="summary-card__icon summary-card__icon--green">◌</div>
+            <div class="summary-card__text">
+              <span class="summary-card__label">{{ 'navigation.grades.summary.ects' | translate }}</span>
+              <strong class="summary-card__value">
+                {{ overview.summary.achievedEcts }} / {{ overview.summary.totalEcts }}
+              </strong>
+            </div>
+          </article>
+        }
+
+        <article class="summary-card">
+          <div class="summary-card__icon summary-card__icon--violet">✓</div>
+          <div class="summary-card__text">
+            <span class="summary-card__label">{{ 'navigation.grades.summary.passedModules' | translate }}</span>
+            <strong class="summary-card__value">{{ overview.summary.passedModulesCount }}</strong>
+          </div>
+        </article>
+
+        <article class="summary-card">
+          <div class="summary-card__icon summary-card__icon--red">✕</div>
+          <div class="summary-card__text">
+            <span class="summary-card__label">{{ 'navigation.grades.summary.failedModules' | translate }}</span>
+            <strong class="summary-card__value">{{ overview.summary.failedModulesCount }}</strong>
+          </div>
+        </article>
+      </section>
+
+      <div class="semester-sections">
+        @for (semester of overview.semesters; track trackSemester($index, semester)) {
+          <section class="semester-section">
+            <button
+              type="button"
+              class="semester-section__header"
+              (click)="toggleSemester(semester)"
+              [attr.aria-expanded]="isSemesterExpanded(semester)">
+
+              <div class="semester-section__header-left">
+                <span
+                  class="semester-section__chevron"
+                  [class.semester-section__chevron--collapsed]="!isSemesterExpanded(semester)">
+                  ▾
+                </span>
+
+                <div>
+                  <h2>{{ getSectionTitle(semester) }}</h2>
+                  <p>{{ getSectionMeta(semester) }}</p>
+                </div>
+              </div>
+
+              <div class="semester-section__header-right">
+                <span>
+                  Ø
+                  @if (getSectionAverage(semester) !== null) {
+                    {{ getSectionAverage(semester) | number:'1.1-1' }}
+                  } @else {
+                    —
+                  }
+                </span>
+                <span>•</span>
+                <span>{{ getSectionAchievedEcts(semester) }} {{ 'navigation.grades.summary.ects' | translate }}</span>
+              </div>
+            </button>
+
+            @if (isSemesterExpanded(semester)) {
+              <div class="semester-table">
+                <div class="semester-table__head">
+                  <span>{{ 'navigation.grades.columns.module' | translate }}</span>
+                  <span>{{ 'navigation.grades.columns.examDate' | translate }}</span>
+                  <span>{{ 'navigation.grades.summary.ects' | translate }}</span>
+                  <span>{{ 'navigation.grades.columns.status' | translate }}</span>
+                  <span>{{ 'navigation.grades.item.attempt' | translate }}</span>
+                  <span>{{ 'navigation.grades.columns.grade' | translate }}</span>
+                </div>
+
+                <div class="semester-table__body">
+                  @for (item of semester.items; track trackGradeItem($index, item)) {
+                    <article class="grade-row" [class.grade-row--expanded]="isExpanded(item)">
+                      <button
+                        type="button"
+                        class="grade-row__summary"
+                        (click)="toggleItem(item)"
+                        [attr.aria-expanded]="isExpanded(item)">
+
+                        <div class="grade-row__cell grade-row__cell--module">
+                          <div class="grade-row__module-title">{{ item.moduleName }}</div>
+                          <div class="grade-row__module-subtitle">
+                            {{ getLocalizedAssessmentType(item.assessmentType) }}
+                          </div>
+                        </div>
+
+                        <div class="grade-row__cell">
+                          {{ item.examDate ? (item.examDate | date:'dd.MM.yyyy') : ('navigation.grades.common.notAvailable' | translate) }}
+                        </div>
+
+                        <div class="grade-row__cell">
+                          @if (item.ects !== null && item.ects !== undefined) {
+                            <span class="grade-row__ects-pill">{{ item.ects }} CP</span>
+                          } @else {
+                            <span class="grade-row__empty">—</span>
+                          }
+                        </div>
+
+                        <div class="grade-row__cell">
+                          <span [class]="getStatusClass(item.status)">
+                            {{ ('navigation.grades.status.' + item.status) | translate }}
+                          </span>
+                        </div>
+
+                        <div class="grade-row__cell">
+                          {{ 'navigation.grades.item.attemptValue' | translate:{ count: item.attemptNumber || 1 } }}
+                        </div>
+
+                        <div class="grade-row__cell grade-row__cell--grade">
+                          <span [class]="getGradeBadgeClass(item.grade)">
+                            {{ item.grade !== null ? (item.grade | number:'1.1-1') : '–' }}
+                          </span>
+                        </div>
+                      </button>
+
+                      @if (isExpanded(item)) {
+                        <section class="grade-row__details">
+                          <div class="grade-row__details-grid">
+                            <div class="grade-row__field">
+                              <span class="grade-row__field-label">{{ 'navigation.grades.item.studyGroups' | translate }}</span>
+                              <span class="grade-row__field-value">{{ formatStudyGroups(item.studyGroupNames) }}</span>
+                            </div>
+
+                            <div class="grade-row__field">
+                              <span class="grade-row__field-label">{{ 'navigation.grades.item.academicTerm' | translate }}</span>
+                              <span class="grade-row__field-value">
+                                @if (item.academicTerm) {
+                                  {{ getTermTranslationKey(item.academicTerm) | translate }}
+                                  {{ formatAcademicTermYears(item.academicTerm) }}
+                                } @else {
+                                  {{ 'navigation.grades.common.notAvailable' | translate }}
+                                }
+                              </span>
+                            </div>
+
+                            <div class="grade-row__field">
+                              <span class="grade-row__field-label">{{ 'navigation.grades.item.updatedAt' | translate }}</span>
+                              <span class="grade-row__field-value">
+                                {{ item.lastUpdatedAt ? (item.lastUpdatedAt | date:'dd.MM.yyyy, HH:mm') : ('navigation.grades.common.notAvailable' | translate) }}
+                              </span>
+                            </div>
+                          </div>
+
+                          @if (item.reviewerComment) {
+                            <div class="grade-row__comment">
+                              <span class="grade-row__comment-title">{{ 'navigation.grades.item.reviewerComment' | translate }}</span>
+                              <p>{{ item.reviewerComment }}</p>
+                            </div>
+                          }
+                        </section>
+                      }
+                    </article>
+                  }
+                </div>
+              </div>
+            }
+          </section>
+        }
+      </div>
+    }
+
+    <app-grade-scale-model
+      [open]="gradeScaleOpen"
+      (closed)="closeGradeScale()">
+    </app-grade-scale-model>
+  </div>
+</section>

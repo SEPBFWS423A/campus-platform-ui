@@ -122,6 +122,90 @@
         }
       }
     },
+    "grades": {
+      "columns": {
+        "module": "Modul",
+        "assessmentType": "Prüfungsform",
+        "examDate": "Prüfungsdatum",
+        "status": "Status",
+        "grade": "Note"
+      },
+      "eyebrow": "Studium",
+      "title": "Notenübersicht",
+      "subtitle": "Hier sehen Sie alle Ihnen zugeteilten Kurse, Ihren aktuellen Leistungsstand und bereits eingetragene Bewertungen.",
+      "actions": {
+        "gradeScale": "Notenskala",
+        "retry": "Erneut laden"
+      },
+      "states": {
+        "loading": "Notenübersicht wird geladen.",
+        "loadError": "Die Notenübersicht konnte nicht geladen werden.",
+        "empty": "Für Sie sind aktuell noch keine Kurse oder Bewertungen vorhanden."
+      },
+      "summary": {
+        "currentAverage": "Aktueller Durchschnitt",
+        "ects": "ECTS",
+        "passedModules": "Bestandene Module",
+        "failedModules": "Nicht bestandene Module",
+        "gradedAssessments": "Bewertete Leistungen",
+        "pendingAssessments": "Offene Leistungen",
+        "excusedAbsenceAssessments": "Entschuldigt gefehlt",
+        "unexcusedAbsenceAssessments": "Unentschuldigt gefehlt",
+        "excludedAssessments": "Ausgeschlossen"
+      },
+      "semester": {
+        "title": "{{count}}. Semester",
+        "courseCount": "{{count}} Kurse"
+      },
+      "item": {
+        "studyGroups": "Studiengruppen",
+        "assessmentType": "Prüfungsform",
+        "academicTerm": "Zeitsemester",
+        "examDate": "Prüfungsdatum",
+        "ects": "ECTS",
+        "attempt": "Prüfungsversuch",
+        "attemptValue": "{{count}}. Versuch",
+        "grade": "Note",
+        "updatedAt": "Letzte Aktualisierung",
+        "reviewerComment": "Kommentar des Prüfers"
+      },
+      "status": {
+        "PENDING": "Offen",
+        "PASSED": "Bestanden",
+        "FAILED": "Nicht bestanden",
+        "EXCUSED_ABSENCE": "Entschuldigt gefehlt",
+        "UNEXCUSED_ABSENCE": "Unentschuldigt gefehlt",
+        "EXCLUDED": "Ausgeschlossen"
+      },
+      "term": {
+        "SUMMER": "Sommersemester",
+        "WINTER": "Wintersemester"
+      },
+      "common": {
+        "notAvailable": "Nicht verfügbar"
+      }
+    },
+    "gradeScale": {
+      "title": "Notenskala",
+      "subtitle": "Übersicht der Noten und zugehörigen Mindestpunktzahlen.",
+      "actions": {
+        "close": "Schließen",
+        "retry": "Erneut laden"
+      },
+      "states": {
+        "loading": "Notenskala wird geladen.",
+        "loadError": "Die Notenskala konnte nicht geladen werden.",
+        "empty": "Es sind keine Einträge für die Notenskala vorhanden."
+      },
+      "columns": {
+        "grade": "Note",
+        "minimumPoints": "Ab Punkte",
+        "label": "Bezeichnung"
+      },
+      "common": {
+        "notAvailable": "Nicht verfügbar"
+      }
+    },
     "profileAndSettings": {
       "profileAndSettingsName": "Profil & Einstellungen",
       "logout": "Abmelden",
