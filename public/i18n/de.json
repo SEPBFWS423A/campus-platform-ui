@@ -185,27 +185,6 @@
         "notAvailable": "Nicht verfügbar"
       }
     },
-    "gradeScale": {
-      "title": "Notenskala",
-      "subtitle": "Übersicht der Noten und zugehörigen Mindestpunktzahlen.",
-      "actions": {
-        "close": "Schließen",
-        "retry": "Erneut laden"
-      },
-      "states": {
-        "loading": "Notenskala wird geladen.",
-        "loadError": "Die Notenskala konnte nicht geladen werden.",
-        "empty": "Es sind keine Einträge für die Notenskala vorhanden."
-      },
-      "columns": {
-        "grade": "Note",
-        "minimumPoints": "Ab Punkte",
-        "label": "Bezeichnung"
-      },
-      "common": {
-        "notAvailable": "Nicht verfügbar"
-      }
-    },
     "profileAndSettings": {
       "profileAndSettingsName": "Profil & Einstellungen",
       "logout": "Abmelden",
