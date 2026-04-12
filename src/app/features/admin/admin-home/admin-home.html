@@ -1,1 +1,64 @@
-<p>admin-home works!</p>
+<div class="admin-home">
+  <div class="header">
+    <div>
+      <h1>Home</h1>
+      <p>Willkommen zurück, Anna Schmidt!</p>
+    </div>
+    <div class="date">📅 {{ today }}</div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card" *ngFor="let stat of stats">
+      <span class="icon">{{ stat.icon }}</span>
+      <p class="label">{{ stat.label }}</p>
+      <h2>{{ stat.value }}</h2>
+      <p class="sub">{{ stat.sub }}</p>
+    </div>
+  </div>
+
+  <div class="content-grid">
+    <div class="card">
+      <h3>Systemübersicht</h3>
+      <div class="overview-item">
+        <span>Studierende</span>
+        <div class="bar-wrap">
+          <div class="bar" style="width: 29%; background: #3b5bdb;"></div>
+        </div>
+        <span>2 (29%)</span>
+      </div>
+      <div class="overview-item">
+        <span>Dozenten</span>
+        <div class="bar-wrap">
+          <div class="bar" style="width: 29%; background: #f59f00;"></div>
+        </div>
+        <span>2 (29%)</span>
+      </div>
+      <div class="overview-item">
+        <span>Verwaltung</span>
+        <div class="bar-wrap">
+          <div class="bar" style="width: 43%; background: #2f9e44;"></div>
+        </div>
+        <span>3 (43%)</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Aktivitäten-Feed</h3>
+      <div *ngFor="let activity of activities" class="activity-item">
+        <strong>{{ activity.name }}</strong>
+        <span *ngIf="activity.type">{{ activity.type }}</span>
+        <p>{{ activity.date }}<span *ngIf="activity.room"> • {{ activity.room }}</span></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card quick-card">
+    <h3>Schnellzugriff</h3>
+    <div class="quick-grid">
+      <div *ngFor="let link of quickLinks" class="quick-btn">
+        <span>{{ link.icon }}</span>
+        <p>{{ link.label }}</p>
+      </div>
+    </div>
+  </div>
+</div>
