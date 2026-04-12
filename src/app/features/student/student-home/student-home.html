@@ -23,7 +23,7 @@
       <p>Willkommen zurück, {{ data.firstName }} {{ data.lastName }}!</p>
     </div>
     <div class="current-date">
-      <mat-icon>today</mat-icon>
+      <mat-icon>calendar_today</mat-icon>
       <span>{{ currentDate | date:'EEEE, d. MMMM yyyy' }}</span>
     </div>
   </header>
@@ -31,122 +31,106 @@
   <!-- Stats Row -->
   <div class="stats-row">
     <!-- Notenschnitt -->
-    <div class="card stat-card">
+    <div class="stat-card">
       <div class="stat-icon primary-bg">
         <mat-icon>bar_chart</mat-icon>
       </div>
-      <div class="stat-info">
-        <span class="stat-label">Notenschnitt</span>
-        @if (data.averageGrade != null) {
-          <span class="stat-value">{{ data.averageGrade }}</span>
-        } @else {
-          <span class="stat-value stat-placeholder">–</span>
-          <span class="stat-desc">Noch keine Noten</span>
-        }
-      </div>
+      <span class="stat-label">Notenschnitt</span>
+      @if (data.averageGrade != null) {
+        <span class="stat-value">{{ data.averageGrade }}</span>
+      } @else {
+        <span class="stat-value">–</span>
+        <span class="stat-subtext">Noch keine Noten</span>
+      }
     </div>
 
     <!-- ECTS Fortschritt -->
-    <div class="card stat-card">
+    <div class="stat-card">
       <div class="stat-icon success-bg">
         <mat-icon>school</mat-icon>
       </div>
-      <div class="stat-info">
-        <span class="stat-label">ECTS Fortschritt</span>
-        @if (data.ectsEarned != null) {
-          <span class="stat-value">{{ ectsLabel() }}</span>
+      <span class="stat-label">ECTS Fortschritt</span>
+      @if (data.ectsEarned != null) {
+        <span class="stat-value">{{ ectsLabel() }}</span>
+        <div class="progress-container">
           <div class="progress-bar">
             <div class="progress-fill" [style.width.%]="ectsProgress()"></div>
           </div>
-        } @else {
-          <span class="stat-value stat-placeholder">–</span>
-          <span class="stat-desc">ECTS-Daten noch nicht verfügbar</span>
-        }
-      </div>
+        </div>
+      } @else {
+        <span class="stat-value">–</span>
+        <span class="stat-subtext">Daten noch nicht verfügbar</span>
+      }
     </div>
 
     <!-- Anstehende Prüfungen -->
-    <div class="card stat-card">
+    <div class="stat-card">
       <div class="stat-icon warning-bg">
-        <mat-icon>event</mat-icon>
+        <mat-icon>event_note</mat-icon>
       </div>
-      <div class="stat-info">
-        <span class="stat-label">Anstehende Prüfungen</span>
-        <span class="stat-value">{{ data.upcomingExamCount }}</span>
-        <span class="stat-desc">
-          {{ data.upcomingExamCount > 0 ? 'Viel Erfolg!' : 'Keine Termine' }}
-        </span>
-      </div>
+      <span class="stat-label">Anstehende Prüfungen</span>
+      <span class="stat-value">{{ data.upcomingExamCount }}</span>
+      <span class="stat-trend">
+        {{ data.upcomingExamCount > 0 ? 'Viel Erfolg!' : 'Keine Termine' }}
+      </span>
     </div>
   </div>
 
   <!-- Dashboard Grid -->
   <div class="dashboard-grid">
-
     <!-- Heutiger Stundenplan -->
-    <div class="card card-glass schedule-card">
+    <div class="card schedule-card">
       <div class="card-header">
         <h3>Heutiger Stundenplan</h3>
-        <a class="icon-btn text-btn" routerLink="/student/timetable">Alle ansehen</a>
+        <a routerLink="/student/timetable" class="all-link">Alle ansehen</a>
       </div>
-      <div class="timeline">
+      
+      <div class="schedule-content">
         @if (todayEvents().length === 0) {
-          <div class="timeline-item">
-            <div class="content">
-              <p class="empty-hint">
-                <mat-icon>event_available</mat-icon>
-                Keine Veranstaltungen heute.
-              </p>
-            </div>
+          <div class="empty-schedule">
+            <mat-icon>event_available</mat-icon>
+            <p>Keine Veranstaltungen heute.</p>
           </div>
-        }
-        @for (event of todayEvents(); track event.eventId) {
-          <div class="timeline-item" [class]="event.status">
-            <div class="time">{{ formatTime(event.startTime) }}</div>
-            <div class="marker"></div>
-            <div class="content">
-              @if (event.status === 'current') {
-                <span class="badge badge-sm">Jetzt</span>
-              }
-              <h4>{{ event.moduleName }}</h4>
-              <p>
-                @if (event.roomName) { {{ event.roomName }} &bull; }
-                {{ event.eventName }}
-                @if (event.eventType === 'KLAUSUR') {
-                  &bull; <span class="exam-badge">Klausur</span>
-                }
-              </p>
+        } @else {
+          @for (event of todayEvents(); track event.eventId) {
+            <div class="timeline-event">
+              <span class="event-time">{{ formatTime(event.startTime) }}</span>
+              <div class="event-info">
+                <h4>{{ event.moduleName }}</h4>
+                <p>
+                  @if (event.roomName) { {{ event.roomName }} &bull; }
+                  {{ event.eventName }}
+                </p>
+              </div>
             </div>
-          </div>
+          }
         }
       </div>
     </div>
 
-    <!-- Rechte Spalte -->
+    <!-- Right Column -->
     <div class="right-col-stack">
-
       <!-- Neuigkeiten -->
-      <div class="card card-glass activity-card">
+      <div class="card">
         <div class="card-header">
           <h3>Neuigkeiten</h3>
         </div>
         <ul class="activity-list">
           @if (data.notifications.length === 0) {
-            <li class="no-notifications">
-              <mat-icon>notifications_none</mat-icon>
-              <span>Keine aktuellen Benachrichtigungen</span>
+            <li class="activity-item">
+              <div class="activity-content">
+                <p class="activity-text">Keine aktuellen Benachrichtigungen</p>
+              </div>
             </li>
           }
           @for (n of data.notifications; track n.text) {
-            <li>
-              <div class="activity-icon" [class]="n.colorClass">
+            <li class="activity-item">
+              <div class="activity-icon-small" [class]="n.colorClass + '-bg'">
                 <mat-icon>{{ n.icon }}</mat-icon>
               </div>
               <div class="activity-content">
                 <p class="activity-text" [innerHTML]="n.text"></p>
-                @if (n.detail) {
-                  <span class="activity-time">{{ n.detail }}</span>
-                }
+                <span class="activity-time">{{ n.detail }}</span>
               </div>
             </li>
           }
@@ -154,17 +138,19 @@
       </div>
 
       <!-- Schnellzugriff -->
-      <div class="card card-elevated actions-card">
-        <h3>Schnellzugriff</h3>
-        <div class="action-buttons">
+      <div class="card">
+        <div class="card-header">
+          <h3>Schnellzugriff</h3>
+        </div>
+        <div class="quick-access-grid">
           @for (action of quickActions; track action.label) {
             @if (!action.external) {
-              <a class="btn-action" [routerLink]="action.route">
+              <a class="action-btn" [routerLink]="action.route">
                 <mat-icon>{{ action.icon }}</mat-icon>
                 <span>{{ action.label }}</span>
               </a>
             } @else {
-              <a class="btn-action" [href]="action.href" target="_blank" rel="noopener">
+              <a class="action-btn" [href]="action.href" target="_blank" rel="noopener">
                 <mat-icon>{{ action.icon }}</mat-icon>
                 <span>{{ action.label }}</span>
               </a>
@@ -172,7 +158,6 @@
           }
         </div>
       </div>
-
     </div>
   </div>
 }
