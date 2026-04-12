@@ -1,1 +1,188 @@
-<p>timetable works!</p>
+<div class="timetable-container" [class.loading]="isLoading()">
+  <header class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">{{ 'timetable.title' | translate }}</h1>
+      <p class="subtitle">{{ 'timetable.subtitle' | translate }}</p>
+    </div>
+    
+    <div class="header-actions">
+      <div class="view-toggle-group standard-panel">
+        <button [class.active]="viewMode() === 'calendar'" (click)="setViewMode('calendar')">
+          <i class="material-icons">calendar_view_month</i>
+          <span>{{ 'timetable.views.calendar' | translate }}</span>
+        </button>
+        <button [class.active]="viewMode() === 'list'" (click)="setViewMode('list')">
+          <i class="material-icons">format_list_bulleted</i>
+          <span>{{ 'timetable.views.list' | translate }}</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="main-layout" [class.calendar-layout]="viewMode() === 'calendar'">
+    <!-- Main Content Section -->
+    <section class="events-section">
+      
+      @if (viewMode() === 'calendar') {
+        <div class="calendar-wrapper standard-panel">
+          <div class="calendar-header">
+            <div class="month-nav">
+              <h3>{{ currentDate() | date:'MMMM yyyy' }}</h3>
+              <div class="nav-buttons">
+                <button class="nav-btn" (click)="prevMonth()" [title]="'timetable.prevMonth' | translate">
+                  <i class="material-icons">chevron_left</i>
+                </button>
+                <button class="nav-btn today" (click)="goToToday()">
+                  {{ 'timetable.today' | translate }}
+                </button>
+                <button class="nav-btn" (click)="nextMonth()" [title]="'timetable.nextMonth' | translate">
+                  <i class="material-icons">chevron_right</i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="calendar-grid">
+            <!-- Weekday headers -->
+            <div class="grid-header">
+              @for (day of weekDayKeys; track day) {
+                <div class="weekday">{{ 'timetable.weekDays.' + day | translate }}</div>
+              }
+            </div>
+
+            <!-- Day cells -->
+            <div class="grid-body">
+              @for (day of calendarDays(); track day.dateString) {
+                <div class="day-cell" 
+                     [class.today]="day.isToday" 
+                     [class.other-month]="!day.isCurrentMonth"
+                     [class.has-events]="day.events.length > 0">
+                  <span class="day-number">{{ day.date | date:'d' }}</span>
+                  
+                  <div class="day-events">
+                    @for (event of day.events.slice(0, 3); track event.id) {
+                      <div class="event-pill" 
+                           [class]="event.eventType.toLowerCase()" 
+                           [title]="event.name + ' - ' + event.lecturerName"
+                           (click)="openEventDetails(event)">
+                        <span class="time">{{ event.startTime | date:'HH:mm' }}</span>
+                        <span class="name">{{ event.name }}</span>
+                      </div>
+                    }
+                    @if (day.events.length > 3) {
+                      <div class="more-events">+{{ day.events.length - 3 }}</div>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      } @else {
+        <!-- List View (Original) -->
+        <div class="section-header">
+          <h2>{{ 'timetable.upcomingEvents' | translate }}</h2>
+        </div>
+
+        @if (getGroupKeys().length === 0 && !isLoading()) {
+          <div class="empty-state standard-panel">
+            <i class="material-icons large-icon">calendar_today</i>
+            <p>{{ 'timetable.noEvents' | translate }}</p>
+          </div>
+        }
+
+        <div class="day-groups">
+          @for (key of getGroupKeys(); track key) {
+            <div class="day-group">
+              <h3 class="day-label">
+                @if (key === 'today') {
+                  {{ 'timetable.today' | translate }}
+                } @else if (key === 'tomorrow') {
+                  {{ 'timetable.tomorrow' | translate }}
+                } @else {
+                  {{ key | date:'fullDate' }}
+                }
+              </h3>
+
+              <div class="event-list">
+                @for (event of groupedEvents()[key]; track event.id) {
+                  <div class="event-card standard-panel" [class]="event.eventType.toLowerCase()">
+                    <div class="event-time">
+                      <span class="start">{{ event.startTime | date:'HH:mm' }}</span>
+                      <span class="duration">{{ event.durationMinutes }} {{ 'timetable.mins' | translate }}</span>
+                    </div>
+                    
+                    <div class="event-content">
+                      <div class="event-type-badge">
+                        {{ 'timetable.eventTypes.' + event.eventType | translate }}
+                      </div>
+                      <h4>{{ event.name }}</h4>
+                      <p class="module-name">{{ event.moduleName }}</p>
+                      
+                      <div class="event-footer">
+                        <span class="lecturer">
+                          <i class="material-icons">person</i>
+                          {{ event.lecturerName }}
+                        </span>
+                        @if (event.rooms.length > 0) {
+                          <span class="room">
+                            <i class="material-icons">place</i>
+                            {{ 'timetable.room' | translate }}: {{ event.rooms.join(', ') }}
+                          </span>
+                        }
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </section>
+
+    <!-- Sidebar / Courses Section -->
+    <aside class="courses-sidebar">
+      <div class="section-header">
+        <h2>{{ 'timetable.activeCourses' | translate }}</h2>
+      </div>
+
+      <div class="course-list">
+        @if (activeCourses().length === 0 && !isLoading()) {
+          <div class="empty-state standard-panel small">
+            <p>{{ 'timetable.noCourses' | translate }}</p>
+          </div>
+        }
+
+        @for (course of activeCourses(); track course.id) {
+          <div class="course-card standard-panel">
+            <div class="course-info">
+              <h4>{{ course.moduleName }}</h4>
+              <p class="lecturer">
+                <i class="material-icons">person</i>
+                {{ course.lecturerName }}
+              </p>
+              <p class="exam-type">
+                <i class="material-icons">description</i>
+                {{ course.examTypeName }}
+              </p>
+            </div>
+            
+            @if (course.isSubmission && course.submissionDeadline) {
+              <div class="course-deadline">
+                <span class="label">{{ 'timetable.deadline' | translate }}</span>
+                <span class="date">{{ course.submissionDeadline | date:'shortDate' }}</span>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </aside>
+  </div>
+</div>
+
+@if (isLoading()) {
+  <div class="loading-overlay">
+    <div class="spinner"></div>
+  </div>
+}

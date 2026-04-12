@@ -757,5 +757,40 @@
     "PROF_DR": "Prof. Dr.",
     "points": "Points",
     "studentsSubmitted": "{{count}} students submitted"
+  },
+  "timetable": {
+    "title": "Timetable",
+    "subtitle": "Overview of your upcoming lectures and exams.",
+    "upcomingEvents": "Upcoming Events",
+    "activeCourses": "My Courses",
+    "noEvents": "No upcoming events scheduled.",
+    "noCourses": "You are not enrolled in any active courses.",
+    "eventTypes": {
+      "LEHRVERANSTALTUNG": "Lecture",
+      "KLAUSUR": "Exam"
+    },
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "nextWeek": "Next Week",
+    "room": "Room",
+    "lecturer": "Lecturer",
+    "duration": "Duration",
+    "mins": "min",
+    "deadline": "Deadline",
+    "views": {
+      "list": "List",
+      "calendar": "Calendar"
+    },
+    "weekDays": {
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat",
+      "sun": "Sun"
+    },
+    "prevMonth": "Previous Month",
+    "nextMonth": "Next Month"
   }
 }
