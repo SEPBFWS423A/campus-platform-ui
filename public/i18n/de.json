@@ -730,6 +730,7 @@
     "saved": "Gespeichert"
   },
   "info": {
+    "pageTitle": "Info",
     "subtitle": "Wichtige Kontakte und Informationen",
     "subtitleCitySuffix": " für {{city}}",
     "loadingInstitutionTitle": "Allgemeine Informationen werden geladen",
