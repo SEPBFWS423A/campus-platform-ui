@@ -1,0 +1,60 @@
+<div class="event-details-container">
+  <header class="dialog-header">
+    <div class="title-group">
+      <div class="event-type-badge" [class]="data.eventType.toLowerCase()">
+        {{ 'timetable.eventTypes.' + data.eventType | translate }}
+      </div>
+      <h2 mat-dialog-title>{{ data.name }}</h2>
+    </div>
+    <button class="close-btn" (click)="close()">
+      <i class="material-icons">close</i>
+    </button>
+  </header>
+
+  <mat-dialog-content class="dialog-body">
+    <div class="info-grid">
+      <div class="info-item full">
+        <label>{{ 'academicStructure.module' | translate }}</label>
+        <p>{{ data.moduleName }}</p>
+      </div>
+
+      <div class="info-item">
+        <label>{{ 'eventManagement.studyGroups' | translate }}</label>
+        <div class="value-with-icon">
+          <i class="material-icons">groups</i>
+          <span>{{ data.studyGroups.join(', ') }}</span>
+        </div>
+      </div>
+
+      <div class="info-item">
+        <label>{{ 'timetable.room' | translate }}</label>
+        <div class="value-with-icon">
+          <i class="material-icons">place</i>
+          <span>{{ data.rooms.length > 0 ? data.rooms.join(', ') : ('academicStructure.none' | translate) }}</span>
+        </div>
+      </div>
+
+      <div class="info-item">
+        <label>{{ 'eventManagement.eventTime' | translate }}</label>
+        <div class="value-with-icon">
+          <i class="material-icons">access_time</i>
+          <span>{{ data.startTime | date:'HH:mm' }} - {{ data.startTime | date:'shortDate' }}</span>
+        </div>
+      </div>
+
+      <div class="info-item">
+        <label>{{ 'timetable.duration' | translate }}</label>
+        <div class="value-with-icon">
+          <i class="material-icons">schedule</i>
+          <span>{{ data.durationMinutes }} {{ 'timetable.mins' | translate }}</span>
+        </div>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="dialog-actions">
+    <button class="primary-btn glass-panel" (click)="close()">
+      {{ 'common.close' | translate }}
+    </button>
+  </mat-dialog-actions>
+</div>

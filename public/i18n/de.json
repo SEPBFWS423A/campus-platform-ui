@@ -793,5 +793,20 @@
     },
     "prevMonth": "Vorheriger Monat",
     "nextMonth": "Nächster Monat"
+  },
+  "lecturer-courses": {
+    "title": "Module & Lehrveranstaltungen",
+    "subtitle": "Hier können Sie Ihre aktiven Kursreihen verwalten, Teilnehmerlisten einsehen und Ihren persönlichen Stundenplan koordinieren.",
+    "attendees": "Studierende",
+    "upcomingEvents": "Anstehende Lehrveranstaltungen",
+    "activeCourses": "Aktive Vorlesungsreihen",
+    "noEvents": "Es sind derzeit keine anstehenden Termine für Sie geplant.",
+    "noCourses": "Sie sind aktuell keinen aktiven Vorlesungsreihen als Dozent zugeordnet.",
+    "details": {
+      "title": "Kursdetails",
+      "attendeeList": "Teilnehmerliste",
+      "noAttendees": "Noch keine Studierenden in diesem Kurs.",
+      "seriesInfo": "Informationen zur Vorlesungsreihe"
+    }
   }
 }
