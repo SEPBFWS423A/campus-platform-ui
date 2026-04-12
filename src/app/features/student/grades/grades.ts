@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { finalize } from 'rxjs';
-import { GradeScaleModelComponent } from '../../../shared/components/grade-scale-model/grade-scale-model';
 import { GradesService } from '../../../core/services/grades.services';
 import {
   AcademicTermResponse,
@@ -13,12 +12,10 @@ import {
   StudentGradeStatus
 } from '../../../core/models/grades.models';
 
-
-
 @Component({
   selector: 'app-grades',
   standalone: true,
-  imports: [CommonModule, TranslateModule, GradeScaleModelComponent],
+  imports: [CommonModule, TranslateModule],
   templateUrl: './grades.html',
   styleUrl: './grades.scss'
 })
@@ -27,7 +24,6 @@ export class Grades implements OnInit {
   loading = false;
   errorKey: string | null = null;
 
-  gradeScaleOpen = false;
   expandedItemId: number | null = null;
   expandedSemesters = new Set<number>();
 
@@ -65,16 +61,6 @@ export class Grades implements OnInit {
           this.cdr.detectChanges();
         }
       });
-  }
-
-  openGradeScale(): void {
-    this.gradeScaleOpen = true;
-    this.cdr.detectChanges();
-  }
-
-  closeGradeScale(): void {
-    this.gradeScaleOpen = false;
-    this.cdr.detectChanges();
   }
 
   toggleItem(item: StudentGradeOverviewItemResponse): void {
