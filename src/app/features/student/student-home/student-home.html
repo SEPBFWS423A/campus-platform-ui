@@ -31,7 +31,7 @@
   <!-- Stats Row -->
   <div class="stats-row">
     <!-- Notenschnitt -->
-    <div class="stat-card">
+    <mat-card class="stat-card">
       <div class="stat-icon primary-bg">
         <mat-icon>bar_chart</mat-icon>
       </div>
@@ -42,10 +42,10 @@
         <span class="stat-value">–</span>
         <span class="stat-subtext">Noch keine Noten</span>
       }
-    </div>
+    </mat-card>
 
     <!-- ECTS Fortschritt -->
-    <div class="stat-card">
+    <mat-card class="stat-card">
       <div class="stat-icon success-bg">
         <mat-icon>school</mat-icon>
       </div>
@@ -61,10 +61,10 @@
         <span class="stat-value">–</span>
         <span class="stat-subtext">Daten noch nicht verfügbar</span>
       }
-    </div>
+    </mat-card>
 
     <!-- Anstehende Prüfungen -->
-    <div class="stat-card">
+    <mat-card class="stat-card">
       <div class="stat-icon warning-bg">
         <mat-icon>event_note</mat-icon>
       </div>
@@ -73,13 +73,13 @@
       <span class="stat-trend">
         {{ data.upcomingExamCount > 0 ? 'Viel Erfolg!' : 'Keine Termine' }}
       </span>
-    </div>
+    </mat-card>
   </div>
 
   <!-- Dashboard Grid -->
   <div class="dashboard-grid">
     <!-- Heutiger Stundenplan -->
-    <div class="card schedule-card">
+    <mat-card class="schedule-card card-content">
       <div class="card-header">
         <h3>Heutiger Stundenplan</h3>
         <a routerLink="/student/timetable" class="all-link">Alle ansehen</a>
@@ -106,12 +106,12 @@
           }
         }
       </div>
-    </div>
+    </mat-card>
 
     <!-- Right Column -->
     <div class="right-col-stack">
       <!-- Neuigkeiten -->
-      <div class="card">
+      <mat-card class="card-content">
         <div class="card-header">
           <h3>Neuigkeiten</h3>
         </div>
@@ -135,10 +135,10 @@
             </li>
           }
         </ul>
-      </div>
+      </mat-card>
 
       <!-- Schnellzugriff -->
-      <div class="card">
+      <mat-card class="card-content">
         <div class="card-header">
           <h3>Schnellzugriff</h3>
         </div>
@@ -157,7 +157,7 @@
             }
           }
         </div>
-      </div>
+      </mat-card>
     </div>
   </div>
 }

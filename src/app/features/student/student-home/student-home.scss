@@ -22,11 +22,11 @@
     display: flex;
     align-items: center;
     gap: 0.6rem;
-    color: #4f46e5;
+    color: var(--mat-sys-primary);
     font-size: 0.95rem;
     font-weight: 600;
     padding: 0.75rem 1.25rem;
-    background-color: #f1f5f9;
+    background-color: var(--mat-sys-surface-container-high);
     border-radius: 12px;
 }
 
@@ -44,22 +44,22 @@
 }
 
 .stat-card {
-    background: white;
-    border-radius: 1rem;
-    padding: 1.75rem;
+    background-color: var(--mat-sys-surface-container) !important;
+    border-radius: 1rem !important;
+    padding: 1.75rem !important;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.02);
-    border: 1px solid #f1f5f9;
+    box-shadow: var(--shadow-sm) !important;
+    border: 1px solid var(--mat-sys-outline-variant) !important;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .stat-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+    box-shadow: var(--shadow-md) !important;
 }
 
 .stat-icon {
@@ -78,29 +78,31 @@
     height: 1.5rem;
 }
 
-.primary-bg { background-color: #e0e7ff; color: #4338ca; }
-.success-bg { background-color: #dcfce7; color: #15803d; }
-.warning-bg { background-color: #ffedd5; color: #9a3412; }
+/* Theme-aware icon backgrounds */
+.primary-bg { background-color: rgba(37, 99, 235, 0.15); color: #6366f1; }
+.success-bg { background-color: rgba(16, 185, 129, 0.15); color: #10b981; }
+.warning-bg { background-color: rgba(245, 158, 11, 0.15); color: #f59e0b; }
 
 .stat-label {
     font-size: 0.875rem;
     font-weight: 600;
-    color: #64748b;
+    color: var(--mat-sys-on-surface-variant);
     margin-bottom: 0.5rem;
 }
 
 .stat-value {
     font-size: 2rem;
     font-weight: 800;
-    color: #1e293b;
+    color: var(--mat-sys-on-surface);
     line-height: 1;
 }
 
 .stat-subtext {
     font-size: 0.875rem;
     font-weight: 600;
-    color: #94a3b8;
+    color: var(--mat-sys-on-surface-variant);
     margin-top: 0.5rem;
+    opacity: 0.7;
 }
 
 .stat-trend {
@@ -110,10 +112,8 @@
     font-size: 0.875rem;
     font-weight: 700;
     margin-top: 0.5rem;
+    color: var(--mat-sys-on-surface-variant);
 }
-
-.stat-trend.positive { color: #10b981; }
-.stat-trend.negative { color: #f43f5e; }
 
 .progress-container {
     width: 100%;
@@ -122,7 +122,7 @@
 
 .progress-bar {
     height: 8px;
-    background-color: #f1f5f9;
+    background-color: var(--mat-sys-surface-container-highest);
     border-radius: 999px;
     overflow: hidden;
 }
@@ -140,12 +140,12 @@
     gap: 1.5rem;
 }
 
-.card {
-    background: white;
-    border-radius: 1rem;
-    padding: 1.5rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-    border: 1px solid #f1f5f9;
+.card-content {
+    background-color: var(--mat-sys-surface-container) !important;
+    border-radius: 1rem !important;
+    padding: 1.5rem !important;
+    box-shadow: var(--shadow-sm) !important;
+    border: 1px solid var(--mat-sys-outline-variant) !important;
 }
 
 .card-header {
@@ -158,13 +158,13 @@
 .card-header h3 {
     font-size: 1.125rem;
     font-weight: 700;
-    color: #1e293b;
+    color: var(--mat-sys-on-surface);
 }
 
 .all-link {
     font-size: 0.875rem;
     font-weight: 600;
-    color: #4f46e5;
+    color: var(--mat-sys-primary);
     text-decoration: none;
 }
 
@@ -173,13 +173,14 @@
 }
 
 .empty-schedule {
-    border: 1px solid #f1f5f9;
+    border: 1px solid var(--mat-sys-outline-variant);
     border-radius: 0.75rem;
     padding: 2.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #94a3b8;
+    color: var(--mat-sys-on-surface-variant);
+    opacity: 0.7;
     font-size: 0.95rem;
     text-align: center;
 }
@@ -204,8 +205,8 @@
 .activity-item {
     display: flex;
     gap: 1rem;
-    padding: 0.75rem 0;
-    border-bottom: 1px solid #f8fafc;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
 }
 
 .activity-item:last-child {
@@ -235,18 +236,19 @@
 .activity-text {
     font-size: 0.9rem;
     font-weight: 600;
-    color: #1e293b;
+    color: var(--mat-sys-on-surface);
     margin: 0 0 0.25rem 0;
 }
 
 .activity-text strong {
-    color: #0f172a;
+    color: var(--mat-sys-primary);
 }
 
 .activity-time {
     font-size: 0.75rem;
-    color: #94a3b8;
+    color: var(--mat-sys-on-surface-variant);
     font-weight: 500;
+    opacity: 0.8;
 }
 
 .quick-access-grid {
@@ -263,20 +265,19 @@
     gap: 0.5rem;
     padding: 1.25rem;
     border-radius: 0.75rem;
-    border: 1px solid #f1f5f9;
-    background: white;
+    border: 1px solid var(--mat-sys-outline-variant);
+    background-color: var(--mat-sys-surface-container-low);
     text-decoration: none;
     transition: all 0.2s ease;
 }
 
 .action-btn:hover {
-    background-color: #f8fafc;
-    border-color: #e2e8f0;
+    background-color: var(--mat-sys-surface-container-highest);
     transform: translateY(-1px);
 }
 
 .action-btn mat-icon {
-    color: #4f46e5;
+    color: var(--mat-sys-primary);
     font-size: 1.5rem;
     width: 1.5rem;
     height: 1.5rem;
@@ -285,41 +286,43 @@
 .action-btn span {
     font-size: 0.8125rem;
     font-weight: 600;
-    color: #64748b;
+    color: var(--mat-sys-on-surface-variant);
 }
 
 /* Timeline/Schedule item styles */
 .timeline-event {
     display: flex;
     gap: 1.25rem;
-    padding: 1rem;
+    padding: 1.25rem;
     border-radius: 0.75rem;
-    border: 1px solid #f1f5f9;
+    border: 1px solid var(--mat-sys-outline-variant);
     margin-bottom: 1rem;
-    transition: border-color 0.2s ease;
+    background-color: var(--mat-sys-surface-container-low);
+    transition: all 0.2s ease;
 }
 
 .timeline-event:hover {
-    border-color: #e2e8f0;
+    background-color: var(--mat-sys-surface-container-highest);
+    border-color: var(--mat-sys-primary);
 }
 
 .event-time {
     font-size: 0.875rem;
     font-weight: 700;
-    color: #64748b;
+    color: var(--mat-sys-primary);
     min-width: 50px;
 }
 
 .event-info h4 {
     font-size: 1rem;
     font-weight: 700;
-    color: #1e293b;
+    color: var(--mat-sys-on-surface);
     margin: 0 0 0.25rem 0;
 }
 
 .event-info p {
     font-size: 0.875rem;
-    color: #94a3b8;
+    color: var(--mat-sys-on-surface-variant);
     margin: 0;
 }
 
