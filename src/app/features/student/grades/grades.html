@@ -7,7 +7,7 @@
         <p class="grades-header__subtitle">{{ 'navigation.grades.subtitle' | translate }}</p>
       </div>
 
-      <button type="button" class="grades-header__action" (click)="openGradeScale()">
+      <button type="button" class="grades-header__action">
         <span class="grades-header__action-icon">📁</span>
         <span>{{ 'navigation.grades.actions.gradeScale' | translate }}</span>
       </button>
@@ -206,10 +206,5 @@
         }
       </div>
     }
-
-    <app-grade-scale-model
-      [open]="gradeScaleOpen"
-      (closed)="closeGradeScale()">
-    </app-grade-scale-model>
   </div>
 </section>
