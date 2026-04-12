@@ -185,27 +185,6 @@
         "notAvailable": "Not available"
       }
     },
-    "gradeScale": {
-      "title": "Grade scale",
-      "subtitle": "Overview of grades and their minimum point thresholds.",
-      "actions": {
-        "close": "Close",
-        "retry": "Retry"
-      },
-      "states": {
-        "loading": "Loading grade scale.",
-        "loadError": "The grade scale could not be loaded.",
-        "empty": "No entries are available for the grade scale."
-      },
-      "columns": {
-        "grade": "Grade",
-        "minimumPoints": "Minimum points",
-        "label": "Label"
-      },
-      "common": {
-        "notAvailable": "Not available"
-      }
-    },
     "profileAndSettings": {
       "profileAndSettingsName": "Profile & Settings",
       "logout": "Logout",
