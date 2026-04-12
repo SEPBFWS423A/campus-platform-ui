@@ -792,5 +792,20 @@
     },
     "prevMonth": "Previous Month",
     "nextMonth": "Next Month"
+  },
+  "lecturer-courses": {
+    "title": "Modules & Lectures",
+    "subtitle": "Here you can manage your active course series, view attendee lists, and coordinate your personal schedule.",
+    "attendees": "Students",
+    "upcomingEvents": "Upcoming Lectures",
+    "activeCourses": "Active Course Series",
+    "noEvents": "There are currently no upcoming appointments scheduled for you.",
+    "noCourses": "You are currently not assigned to any active course series as a lecturer.",
+    "details": {
+      "title": "Course Details",
+      "attendeeList": "Attendee List",
+      "noAttendees": "No students in this course yet.",
+      "seriesInfo": "Course Series Information"
+    }
   }
 }

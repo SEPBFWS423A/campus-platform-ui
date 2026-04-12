@@ -1,0 +1,98 @@
+<div class="dialog-header">
+  <div class="header-content">
+    <h2 mat-dialog-title>{{ data.moduleName }}</h2>
+  </div>
+  <button mat-icon-button (click)="close()" class="close-x">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<mat-dialog-content>
+  <div class="content-grid">
+    <!-- Info Section -->
+    <section class="info-section standard-panel">
+      <h3>{{ 'lecturer-courses.details.seriesInfo' | translate }}</h3>
+      
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="label">{{ 'eventManagement.status' | translate }}</span>
+          <span class="value status-badge" [class]="data.status.toLowerCase()">
+            {{ 'eventManagement.status' + data.status | translate }}
+          </span>
+        </div>
+
+        <div class="info-item">
+          <span class="label">{{ 'eventManagement.examType' | translate }}</span>
+          <span class="value">{{ data.examTypeName }}</span>
+        </div>
+
+        <div class="info-item">
+          <span class="label">{{ 'eventManagement.studyGroups' | translate }}</span>
+          <span class="value">{{ data.studyGroups.join(', ') }}</span>
+        </div>
+
+        @if (data.isSubmission && data.submissionDeadline) {
+          <div class="info-item">
+            <span class="label">{{ 'eventManagement.submissionDeadline' | translate }}</span>
+            <span class="value deadline">{{ data.submissionDeadline | date:'medium' }}</span>
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- Attendees Section -->
+    <section class="attendees-section">
+      <div class="section-header">
+        <h3>{{ 'lecturer-courses.details.attendeeList' | translate }}</h3>
+        <span class="count-badge">{{ attendees().length }}</span>
+      </div>
+
+      <div class="attendee-list standard-panel">
+        @if (isLoading()) {
+          <div class="loader">
+            <div class="spinner"></div>
+          </div>
+        } @else if (attendees().length === 0) {
+          <div class="empty-state">
+            <i class="material-icons">person_off</i>
+            <p>{{ 'lecturer-courses.details.noAttendees' | translate }}</p>
+          </div>
+        } @else {
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>{{ 'userManagement.studentName' | translate }}</th>
+                  <th>{{ 'userManagement.studentNumber' | translate }}</th>
+                  <th>{{ 'userManagement.studyGroup' | translate }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (student of attendees(); track student.studentId) {
+                  <tr>
+                    <td class="name-cell">
+                      <div class="avatar">{{ student.studentName.charAt(0) }}</div>
+                      <span>{{ student.studentName }}</span>
+                    </td>
+                    <td>{{ student.studentNumber }}</td>
+                    <td>
+                      <span class="study-group-name">
+                        {{ student.studyGroupName || ('academicStructure.none' | translate) }}
+                      </span>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+    </section>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-flat-button color="primary" (click)="close()">
+    {{ 'common.close' | translate }}
+  </button>
+</mat-dialog-actions>
