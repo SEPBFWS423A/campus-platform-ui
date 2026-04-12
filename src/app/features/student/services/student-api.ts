@@ -36,7 +36,7 @@ export interface StudentDashboard {
 @Injectable({ providedIn: 'root' })
 export class StudentApi {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/api/users`;
+  private apiUrl = `${environment.apiUrl}/users`;
 
   getDashboard(): Observable<StudentDashboard> {
     return this.http.get<StudentDashboard>(`${this.apiUrl}/dashboard`);
