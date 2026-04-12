@@ -186,6 +186,30 @@ export interface CourseEventRequest {
   durationMinutes?: number;
 }
 
+export interface RoomScheduleEvent {
+  eventId: number;
+  eventName: string;
+  eventType: string;        // 'LEHRVERANSTALTUNG' | 'KLAUSUR'
+  roomId: number;
+  roomName: string;
+  startTime: string;        // ISO-DateTime-String
+  durationMinutes: number;
+  courseSeriesId: number;
+  moduleName: string;
+}
+
+export interface RoomUtilizationData {
+  roomId: number;
+  roomName: string;
+  seats: number;
+  examSeats: number;
+  utilizationPercent: number;
+  bookedMinutes: number;
+  totalAvailableMinutes: number;
+  plannedEventCount: number;
+  pastEventCount: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -326,6 +350,18 @@ export class AdminService {
 
   deleteRoom(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/rooms/${id}`);
+  }
+
+  getRoomSchedule(start: string, end: string): Observable<RoomScheduleEvent[]> {
+    return this.http.get<RoomScheduleEvent[]>(`${this.apiUrl}/rooms/schedule`, {
+      params: { start, end }
+    });
+  }
+
+  getRoomUtilizations(startDate: string, endDate: string): Observable<RoomUtilizationData[]> {
+    return this.http.get<RoomUtilizationData[]>(`${this.apiUrl}/rooms/utilization`, {
+      params: { startDate, endDate }
+    });
   }
 
   // --- FAQ Management ---

@@ -169,6 +169,50 @@
   }
 }
 
+.booking-chip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--mat-sys-primary);
+  background: color-mix(in srgb, var(--mat-sys-primary) 8%, transparent);
+  border-radius: var(--radius-md);
+  padding: 4px 10px;
+  margin-bottom: 4px;
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+
+  &.klausur {
+    color: var(--mat-sys-error);
+    background: color-mix(in srgb, var(--mat-sys-error) 8%, transparent);
+  }
+}
+
+.event-block {
+  height: 100%;
+  width: 100%;
+  background: color-mix(in srgb, var(--mat-sys-primary) 15%, transparent);
+  color: var(--mat-sys-primary);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 4px;
+  border-left: 3px solid var(--mat-sys-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  
+  &.klausur {
+    background: color-mix(in srgb, var(--mat-sys-error) 15%, transparent);
+    color: var(--mat-sys-error);
+    border-left-color: var(--mat-sys-error);
+  }
+}
+
 // ── Kalender-Ansicht ────────────────────────────────────
 .calendar-scroll-wrapper {
   overflow-x: auto;

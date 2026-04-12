@@ -9,7 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
-import { AdminService, Room } from '../admin.service';
+import { AdminService, Room, RoomUtilizationData } from '../admin.service';
 import { RoomEditDialog } from './room-edit.dialog/room-edit.dialog';
 import { RoomDeleteDialog } from './room-delete.dialog/room-delete.dialog';
 import { RoomSchedule } from './room-schedule/room-schedule';
@@ -39,9 +39,15 @@ export class RoomManagement implements OnInit {
   private fb = inject(FormBuilder);
 
   rooms = signal<Room[]>([]);
+  utilizationData = signal<RoomUtilizationData[]>([]);
   totalRooms = computed(() => this.rooms().length);
   totalSeats = computed(() => this.rooms().reduce((s, r) => s + r.seats, 0));
-  totalUtilization = computed(() => '0%');
+  totalUtilization = computed(() => {
+    const data = this.utilizationData();
+    if (!data || data.length === 0) return '0%';
+    const avg = data.reduce((sum, r) => sum + r.utilizationPercent, 0) / data.length;
+    return `${Math.round(avg)}%`;
+  });
 
   displayedColumns = ['name', 'seats', 'examSeats', 'actions'];
 
@@ -54,6 +60,7 @@ export class RoomManagement implements OnInit {
 
   ngOnInit(): void {
     this.loadRooms();
+    this.loadTotalUtilization();
   }
 
   onCreateRoom(): void {
@@ -107,5 +114,23 @@ export class RoomManagement implements OnInit {
       next: (rooms) => { this.rooms.set(rooms); },
       error: () => this.createError.set('Räume konnten nicht geladen werden.'),
     });
+  }
+
+  private loadTotalUtilization(): void {
+    const now = new Date();
+    const start = new Date(now.getFullYear(), now.getMonth(), 1);
+    const end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    
+    const startStr = this.toLocalIsoDate(start);
+    const endStr   = this.toLocalIsoDate(end);
+    
+    this.adminService.getRoomUtilizations(startStr, endStr).subscribe(data => this.utilizationData.set(data));
+  }
+
+  private toLocalIsoDate(date: Date): string {
+    const pad = (num: number) => (num < 10 ? '0' : '') + num;
+    return date.getFullYear() +
+      '-' + pad(date.getMonth() + 1) +
+      '-' + pad(date.getDate());
   }
 }

@@ -26,70 +26,80 @@
 
   <!-- ── Kachel-Ansicht ── -->
   @if (currentView() === 'kachel') {
-    @if (rooms().length === 0) {
-      <div class="empty-state">
-        <mat-icon>meeting_room</mat-icon>
-        <p>Keine Räume vorhanden.</p>
+  @if (rooms().length === 0) {
+  <div class="empty-state">
+    <mat-icon>meeting_room</mat-icon>
+    <p>Keine Räume vorhanden.</p>
+  </div>
+  } @else {
+  <div class="tiles-grid">
+    @for (room of rooms(); track room.id) {
+    <div class="room-tile">
+      <div class="tile-icon-row">
+        <span class="tile-icon"><mat-icon>meeting_room</mat-icon></span>
+        <span class="tile-name">{{ room.name }}</span>
       </div>
-    } @else {
-      <div class="tiles-grid">
-        @for (room of rooms(); track room.id) {
-          <div class="room-tile">
-            <div class="tile-icon-row">
-              <span class="tile-icon"><mat-icon>meeting_room</mat-icon></span>
-              <span class="tile-name">{{ room.name }}</span>
-            </div>
-            <div class="tile-stats">
-              <div class="tile-stat">
-                <mat-icon>event_seat</mat-icon>
-                <span>{{ room.seats }} Plätze</span>
-              </div>
-              <div class="tile-stat">
-                <mat-icon>assignment</mat-icon>
-                <span>{{ room.examSeats }} Klausurplätze</span>
-              </div>
-            </div>
-            <div class="tile-footer">
-              <span class="no-booking-chip">
-                <mat-icon>event_busy</mat-icon> Keine Belegung
-              </span>
-            </div>
-          </div>
+      <div class="tile-stats">
+        <div class="tile-stat">
+          <mat-icon>event_seat</mat-icon>
+          <span>{{ room.seats }} Plätze</span>
+        </div>
+        <div class="tile-stat">
+          <mat-icon>assignment</mat-icon>
+          <span>{{ room.examSeats }} Klausurplätze</span>
+        </div>
+      </div>
+      <div class="tile-footer">
+        @if (getEventsForRoomInWeek(room.id).length === 0) {
+        <span class="no-booking-chip">
+          <mat-icon>event_busy</mat-icon> Keine Belegung diese Woche
+        </span>
+        } @else {
+        @for (event of getEventsForRoomInWeek(room.id); track event.eventId) {
+        <span class="booking-chip" [class.klausur]="event.eventType === 'KLAUSUR'">
+          <mat-icon>event</mat-icon> {{ formatEventTime(event.startTime) }} – {{ event.eventName }}
+        </span>
+        }
         }
       </div>
+    </div>
     }
+  </div>
+  }
   }
 
   <!-- ── Kalender-Ansicht ── -->
   @if (currentView() === 'kalender') {
-    <div class="calendar-scroll-wrapper">
-      <div class="week-calendar">
+  <div class="calendar-scroll-wrapper">
+    <div class="week-calendar">
 
-        <!-- Zeitspalte -->
-        <div class="time-col">
-          <div class="cal-corner"></div>
-          @for (h of hours; track h) {
-            <div class="time-cell">{{ h }}</div>
-          }
-        </div>
-
-        <!-- Tagesspalten -->
-        @for (day of weekData().days; track day.short) {
-          <div class="day-col">
-            <div class="day-header">{{ day.short }}</div>
-            <div class="day-body">
-              @for (h of hours; track h) {
-                <div class="hour-cell"></div>
-              }
-            </div>
-          </div>
+      <!-- Zeitspalte -->
+      <div class="time-col">
+        <div class="cal-corner"></div>
+        @for (h of hours; track h) {
+        <div class="time-cell">{{ h }}</div>
         }
       </div>
+
+      <!-- Tagesspalten -->
+      @for (day of weekData().days; track day.short; let dayIdx = $index) {
+      <div class="day-col">
+        <div class="day-header">{{ day.short }}</div>
+        <div class="day-body">
+          @for (h of hours; track h) {
+          <div class="hour-cell">
+            @if (getEventAtHour(h, getDayDate(dayIdx)); as event) {
+            <div class="event-block" [class.klausur]="event.eventType === 'KLAUSUR'">
+              {{ event.eventName }}
+            </div>
+            }
+          </div>
+          }
+        </div>
+      </div>
+      }
     </div>
-    <div class="calendar-hint">
-      <mat-icon>info</mat-icon>
-      Belegungsdetails werden angezeigt, sobald das Buchungs-API verfügbar ist.
-    </div>
+  </div>
   }
 
 </mat-card>
