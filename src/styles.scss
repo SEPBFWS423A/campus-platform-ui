@@ -233,3 +233,17 @@ html[style*="color-scheme: dark"] {
     scroll-behavior: auto;
   }
 }
+
+/* Glass Dialog Support */
+.glass-dialog-panel {
+  .mat-mdc-dialog-container {
+    background: transparent !important;
+    box-shadow: none !important;
+    --mdc-dialog-container-color: transparent !important;
+
+    .mdc-dialog__surface {
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+  }
+}

@@ -1,0 +1,130 @@
+:host {
+  display: block;
+}
+
+.event-details-container {
+  background: var(--mat-sys-surface);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-6);
+  min-width: 400px;
+  max-width: 100%;
+}
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--space-6);
+
+  .title-group {
+    h2 {
+      margin: var(--space-1) 0 0;
+      font-size: var(--text-2xl);
+      font-weight: 800;
+      color: var(--mat-sys-on-surface);
+      letter-spacing: -0.02em;
+    }
+  }
+
+  .close-btn {
+    background: transparent;
+    border: none;
+    color: var(--mat-sys-on-surface-variant);
+    cursor: pointer;
+    padding: var(--space-1);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast) var(--ease-smooth);
+
+    &:hover {
+      background: var(--mat-sys-surface-container-high);
+      color: var(--mat-sys-error);
+    }
+  }
+}
+
+.event-type-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+
+  &.lehrveranstaltung {
+    background: var(--mat-sys-primary-container);
+    color: var(--mat-sys-on-primary-container);
+  }
+
+  &.klausur {
+    background: var(--mat-sys-error-container);
+    color: var(--mat-sys-on-error-container);
+  }
+}
+
+.dialog-body {
+  padding: 0 !important;
+  margin-bottom: var(--space-6);
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-6);
+
+  .info-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+
+    &.full {
+      grid-column: span 2;
+    }
+
+    label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--mat-sys-on-surface-variant);
+      opacity: 0.7;
+    }
+
+    p, .value-with-icon {
+      font-size: var(--text-base);
+      font-weight: 600;
+      color: var(--mat-sys-on-surface);
+      margin: 0;
+    }
+
+    .value-with-icon {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+
+      i {
+        font-size: 1.2rem;
+        color: var(--mat-sys-primary);
+      }
+    }
+  }
+}
+
+.dialog-actions {
+  padding: 0;
+  margin-top: var(--space-4);
+
+  .primary-btn {
+    padding: var(--space-3) var(--space-8);
+    background: var(--mat-sys-primary);
+    color: var(--mat-sys-on-primary);
+    border: none;
+    font-weight: 700;
+    cursor: pointer;
+    border-radius: var(--radius-lg);
+
+    &:hover {
+      filter: brightness(1.1);
+    }
+  }
+}

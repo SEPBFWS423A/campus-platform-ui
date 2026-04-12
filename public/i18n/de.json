@@ -758,5 +758,40 @@
     "PROF_DR": "Prof. Dr.",
     "points": "Punkte",
     "studentsSubmitted": "{{count}} Studenten haben abgegeben"
+  },
+  "timetable": {
+    "title": "Stundenplan",
+    "subtitle": "Übersicht deiner anstehenden Vorlesungen und Prüfungen.",
+    "upcomingEvents": "Anstehende Termine",
+    "activeCourses": "Meine Kurse",
+    "noEvents": "Keine anstehenden Termine geplant.",
+    "noCourses": "Du bist aktuell in keinen aktiven Kursen eingeschrieben.",
+    "eventTypes": {
+      "LEHRVERANSTALTUNG": "Vorlesung",
+      "KLAUSUR": "Prüfung"
+    },
+    "today": "Heute",
+    "tomorrow": "Morgen",
+    "nextWeek": "Nächste Woche",
+    "room": "Raum",
+    "lecturer": "Dozent",
+    "duration": "Dauer",
+    "mins": "Min",
+    "deadline": "Abgabefrist",
+    "views": {
+      "list": "Liste",
+      "calendar": "Kalender"
+    },
+    "weekDays": {
+      "mon": "Mo",
+      "tue": "Di",
+      "wed": "Mi",
+      "thu": "Do",
+      "fri": "Fr",
+      "sat": "Sa",
+      "sun": "So"
+    },
+    "prevMonth": "Vorheriger Monat",
+    "nextMonth": "Nächster Monat"
   }
 }
