@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import {FaqModel} from '../../../core/models/faqModel';
-import {FaqService} from '../../../core/services/faq.service';
-import  {InstitutionService} from '../../../core/services/insitution.service';
 import { Subscription } from 'rxjs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+
+import { FaqModel } from '../../../core/models/faqModel';
+import { FaqService } from '../../../core/services/faq.service';
+import { InstitutionService } from '../../../core/services/insitution.service';
 
 @Component({
   selector: 'app-info',
@@ -32,7 +33,8 @@ export class InfoComponent implements OnInit, OnDestroy {
   constructor(
     private faqService: FaqService,
     private institutionService: InstitutionService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -42,6 +44,7 @@ export class InfoComponent implements OnInit, OnDestroy {
     this.langSubscription = this.translate.onLangChange.subscribe((event) => {
       this.openFaqId = null;
       this.loadFaqs(event.lang);
+      this.cdr.detectChanges();
     });
   }
 
@@ -57,11 +60,13 @@ export class InfoComponent implements OnInit, OnDestroy {
       next: (institution) => {
         this.institution = institution;
         this.institutionLoading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Fehler beim Laden der Institutionsdaten', err);
         this.institutionError = 'info.loadInstitutionError';
         this.institutionLoading = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -74,11 +79,13 @@ export class InfoComponent implements OnInit, OnDestroy {
       next: (faqs) => {
         this.faqs = [...faqs].sort((a, b) => a.sortOrder - b.sortOrder || a.id - b.id);
         this.faqLoading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Fehler beim Laden der FAQs', err);
         this.faqError = 'info.loadFaqError';
         this.faqLoading = false;
+        this.cdr.detectChanges();
       }
     });
   }
