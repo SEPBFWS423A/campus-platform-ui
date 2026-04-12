@@ -122,6 +122,90 @@
         }
       }
     },
+    "grades": {
+      "columns": {
+        "module": "Module",
+        "assessmentType": "Assessment type",
+        "examDate": "Exam date",
+        "status": "Status",
+        "grade": "Grade"
+      },
+      "eyebrow": "Studies",
+      "title": "Grade overview",
+      "subtitle": "Here you can see all courses assigned to you, your current academic status, and recorded grades.",
+      "actions": {
+        "gradeScale": "Grade scale",
+        "retry": "Retry"
+      },
+      "states": {
+        "loading": "Loading grade overview.",
+        "loadError": "The grade overview could not be loaded.",
+        "empty": "There are currently no assigned courses or grades available for you."
+      },
+      "summary": {
+        "currentAverage": "Current average",
+        "ects": "ECTS",
+        "passedModules": "Passed modules",
+        "failedModules": "Failed modules",
+        "gradedAssessments": "Graded assessments",
+        "pendingAssessments": "Open assessments",
+        "excusedAbsenceAssessments": "Excused absence",
+        "unexcusedAbsenceAssessments": "Unexcused absence",
+        "excludedAssessments": "Excluded"
+      },
+      "semester": {
+        "title": "Semester {{count}}",
+        "courseCount": "{{count}} courses"
+      },
+      "item": {
+        "studyGroups": "Study groups",
+        "assessmentType": "Assessment type",
+        "academicTerm": "Academic term",
+        "examDate": "Exam date",
+        "ects": "ECTS",
+        "attempt": "Attempt",
+        "attemptValue": "Attempt {{count}}",
+        "grade": "Grade",
+        "updatedAt": "Last updated",
+        "reviewerComment": "Reviewer comment"
+      },
+      "status": {
+        "PENDING": "Open",
+        "PASSED": "Passed",
+        "FAILED": "Failed",
+        "EXCUSED_ABSENCE": "Excused absence",
+        "UNEXCUSED_ABSENCE": "Unexcused absence",
+        "EXCLUDED": "Excluded"
+      },
+      "term": {
+        "SUMMER": "Summer semester",
+        "WINTER": "Winter semester"
+      },
+      "common": {
+        "notAvailable": "Not available"
+      }
+    },
+    "gradeScale": {
+      "title": "Grade scale",
+      "subtitle": "Overview of grades and their minimum point thresholds.",
+      "actions": {
+        "close": "Close",
+        "retry": "Retry"
+      },
+      "states": {
+        "loading": "Loading grade scale.",
+        "loadError": "The grade scale could not be loaded.",
+        "empty": "No entries are available for the grade scale."
+      },
+      "columns": {
+        "grade": "Grade",
+        "minimumPoints": "Minimum points",
+        "label": "Label"
+      },
+      "common": {
+        "notAvailable": "Not available"
+      }
+    },
     "profileAndSettings": {
       "profileAndSettingsName": "Profile & Settings",
       "logout": "Logout",
