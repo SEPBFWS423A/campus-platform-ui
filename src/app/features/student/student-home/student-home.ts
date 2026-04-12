@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
+import { MatCardModule } from '@angular/material/card';
 import { StudentApi, StudentDashboard, StudentTodayEvent } from '../services/student-api';
 
 type EventStatus = 'past' | 'current' | 'future';
@@ -13,7 +14,7 @@ interface TodayEventWithStatus extends StudentTodayEvent {
 
 @Component({
   selector: 'app-student-home',
-  imports: [CommonModule, RouterLink, MatIconModule, DatePipe],
+  imports: [CommonModule, RouterLink, MatIconModule, MatCardModule, DatePipe],
   templateUrl: './student-home.html',
   styleUrl: './student-home.scss',
 })
