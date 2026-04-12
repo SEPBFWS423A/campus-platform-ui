@@ -172,7 +172,7 @@
               </p>
             </div>
             
-            @if (course.isSubmission && course.submissionDeadline) {
+            @if (course.submission && course.submissionDeadline) {
               <div class="course-deadline">
                 <span class="label">{{ 'timetable.deadline' | translate }}</span>
                 <span class="date">{{ course.submissionDeadline | date:'shortDate' }}</span>

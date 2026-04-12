@@ -124,11 +124,16 @@
                           <i class="material-icons">person</i>
                           {{ event.lecturerName }}
                         </span>
-                        @if (event.rooms.length > 0) {
-                          <span class="room">
-                            <i class="material-icons">place</i>
-                            {{ 'timetable.room' | translate }}: {{ event.rooms.join(', ') }}
-                          </span>
+                        @if (event.submission) {
+                          <div class="meta-item deadline">
+                            <mat-icon>event_busy</mat-icon>
+                            <span>Deadline: {{ event.startTime | date:'dd.MM.yyyy HH:mm' }}</span>
+                          </div>
+                        } @else {
+                          <div class="meta-item room">
+                            <mat-icon>place</mat-icon>
+                            <span>{{ event.rooms.join(', ') }}</span>
+                          </div>
                         }
                       </div>
                     </div>
@@ -168,7 +173,7 @@
               </p>
             </div>
             
-            @if (course.isSubmission && course.submissionDeadline) {
+            @if (course.submission && course.submissionDeadline) {
               <div class="course-deadline">
                 <span class="label">{{ 'timetable.deadline' | translate }}</span>
                 <span class="date">{{ course.submissionDeadline | date:'shortDate' }}</span>

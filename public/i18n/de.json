@@ -663,7 +663,8 @@
     "save": "Speichern",
     "cancel": "Abbrechen",
     "yes": "Ja",
-    "no": "Nein"
+    "no": "Nein",
+    "saved": "Gespeichert"
   },
   "info": {
     "subtitle": "Wichtige Kontakte und Informationen",
@@ -708,18 +709,22 @@
     "subtitle": "Verwalten Sie Ihre Prüfungen, stellen Sie Materialien bereit und veröffentlichen Sie studentische Noten.",
     "totalCourses": "Gesamt Kurse",
     "searchPlaceholder": "Modul oder Studiengruppe suchen...",
-    "filterCategory": "Kategorie",
     "filterStatus": "Status-Filter",
     "filterExamType": "Prüfungsform",
-    "allCategories": "Alle Kategorien",
+    "filterLecturer": "Dozent",
+    "filterStudyGroup": "Studiengruppe",
+    "filterSubmission": "Abgabe-Modus",
+    "allSubmissionModes": "Alle Modi",
     "allStatus": "Alle Zustände",
     "allExamTypes": "Alle Formen",
+    "allLecturers": "Alle Dozenten",
+    "allStudyGroups": "Alle Gruppen",
     "statusOPEN": "Offen",
     "statusPROVIDED": "Noten bereitgestellt",
     "statusGRADING": "In Korrektur",
     "statusCOMPLETED": "Noten veröffentlicht",
-    "categoryWRITTEN": "Schriftlich",
-    "categorySUBMISSION": "Abgabe",
+    "submissionRequired": "Abgabe erforderlich",
+    "noSubmissionRequired": "Keine Abgabe",
     "materials": "Materialien",
     "gradeNow": "Noten eintragen",
     "viewGrades": "Noten ansehen",
@@ -750,14 +755,15 @@
     "examMaterialsError": "Fehler beim Aktualisieren der Materialien",
     "gradesApplySuccess": "Noten erfolgreich angewendet",
     "gradesApplyError": "Fehler beim Anwenden der Noten",
-    "points": "Punkte"
+    "publishDisabledHint": "Bitte bewerten Sie alle Studenten, bevor Sie die Noten veröffentlichen.",
+    "points": "Punkte",
+    "studentsSubmitted": "{{count}} Studenten haben abgegeben"
   },
   "academicTitle": {
     "DR": "Dr.",
     "PROF": "Prof.",
     "PROF_DR": "Prof. Dr.",
-    "points": "Punkte",
-    "studentsSubmitted": "{{count}} Studenten haben abgegeben"
+    "points": "Punkte"
   },
   "timetable": {
     "title": "Stundenplan",

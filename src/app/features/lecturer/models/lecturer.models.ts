@@ -25,7 +25,7 @@ export interface LecturerCourseResponse {
   moduleName: string;
   studyGroupNames: string[];
   examTypeName: string;
-  isSubmission: boolean;
+  submission: boolean;
   examStatus: ExamStatus;
   examFileName?: string;
   solutionFileName?: string;
@@ -33,7 +33,10 @@ export interface LecturerCourseResponse {
   submissionDeadline?: string;
   events: LecturerCourseEvent[];
   submissionCount: number;
+  lecturerName?: string;
+  lecturerId?: number;
 }
+
 
 export interface StudentSubmissionResponse {
   studentId: number;

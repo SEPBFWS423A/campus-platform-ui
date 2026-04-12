@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
 import { StudentTimetableService } from '../../../core/services/student-timetable.service';
 import { StudentActiveCourseResponse, StudentEventResponse } from '../../../core/models/student-timetable.models';
 import { EventDetailsDialog } from './event-details-dialog/event-details-dialog';
@@ -17,7 +18,7 @@ export interface CalendarDay {
 @Component({
   selector: 'app-timetable',
   standalone: true,
-  imports: [CommonModule, TranslateModule, MatDialogModule],
+  imports: [CommonModule, TranslateModule, MatDialogModule, MatIconModule],
   templateUrl: './timetable.html',
   styleUrl: './timetable.scss'
 })

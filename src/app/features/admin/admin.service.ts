@@ -7,6 +7,7 @@ import { UserRole } from '../../core/models/user-role';
 import { FaqAdminResponse, FaqUpsertRequest } from '../../core/models/faqModel';
 import { Salutation } from '../../core/models/salutation';
 import { AcademicTitle } from '../../core/models/academic-title';
+import { ExamStatus } from '../lecturer/models/lecturer.models';
 
 export { UserRole, Salutation, AcademicTitle };
 
@@ -151,11 +152,25 @@ export interface CourseSeries {
   assignedLecturerId: number;
   assignedLecturerName: string;
   status: CourseStatus;
+  examStatus: ExamStatus;
   selectedExamTypeId?: number;
   selectedExamTypeName?: string;
+  submission: boolean;
   submissionStartDate?: string;
   submissionDeadline?: string;
   studyGroups: { id: number; name: string }[];
+  examFileName?: string;
+  solutionFileName?: string;
+  lecturerNotes?: string;
+  submissionCount?: number;
+  events?: {
+    id: number;
+    type: string;
+    start: string;
+    end: string;
+    roomName: string;
+    roomExamSeats: number;
+  }[];
 }
 
 export interface CourseSeriesRequest {
