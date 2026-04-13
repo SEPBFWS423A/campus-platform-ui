@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { AdminApi, AdminUserStats } from '../services/admin-api';
 
 @Component({
   selector: 'app-admin-home',
@@ -7,11 +8,19 @@ import { CommonModule } from '@angular/common';
   templateUrl: './admin-home.html',
   styleUrl: './admin-home.scss',
 })
-export class AdminHome {
-  today = new Date().toLocaleDateString('de-DE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+export class AdminHome implements OnInit {
+  private adminApi = inject(AdminApi);
 
+  today = new Date().toLocaleDateString('de-DE', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+  });
+
+  loading = signal(true);
+  error = signal(false);
+
+  // Normales Array statt Signal – kompatibel mit *ngFor
   stats = [
-    { label: 'Benutzer gesamt', value: '7', sub: '2 Stud. • 2 Doz. • 3 Verw.', icon: '👥' },
+    { label: 'Benutzer gesamt', value: '…', sub: '…', icon: '👥' },
     { label: 'Räume', value: '9', sub: '7 belegt • 2 frei', icon: '🏛️' },
     { label: 'Veranstaltungsreihen', value: '5', sub: '11 Events insgesamt', icon: '📅' },
     { label: 'Prüfungsergebnisse', value: '5', sub: '2 Prüfungen bewertet', icon: '📊' },
@@ -31,4 +40,22 @@ export class AdminHome {
     { label: 'Veranstaltungen', icon: '📅' },
     { label: 'Prüfungsamt', icon: '📝' },
   ];
+
+  ngOnInit(): void {
+    this.adminApi.getUserStats().subscribe({
+      next: (data) => {
+        this.stats[0] = {
+          label: 'Benutzer gesamt',
+          value: String(data.total),
+          sub: `${data.students} Stud. • ${data.staff} Mitarb.`,
+          icon: '👥',
+        };
+        this.loading.set(false);
+      },
+      error: () => {
+        this.error.set(true);
+        this.loading.set(false);
+      },
+    });
+  }
 }
