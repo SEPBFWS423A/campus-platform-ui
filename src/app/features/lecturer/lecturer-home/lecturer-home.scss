@@ -1,0 +1,112 @@
+.lecturer-home {
+  padding: 2rem;
+  background: #f0f4f8;
+  min-height: 100vh;
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+
+    h1 { font-size: 2rem; margin: 0; }
+    p { color: #666; margin: 0; }
+    .date {
+      background: white;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+    }
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+
+    .stat-card {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+
+      .icon { font-size: 1.5rem; }
+      .label { color: #888; font-size: 0.85rem; margin: 0.5rem 0 0; }
+      h2 { font-size: 2rem; margin: 0.25rem 0; }
+      .sub { color: #aaa; font-size: 0.8rem; margin: 0; }
+    }
+  }
+
+  .content-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    margin-bottom: 1rem;
+
+    h3 { margin: 0 0 1rem; font-size: 1.1rem; }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      h3 { margin: 0; }
+      a { color: #3b5bdb; font-size: 0.85rem; text-decoration: none; }
+    }
+  }
+
+  .empty {
+    text-align: center;
+    color: #aaa;
+    padding: 2rem;
+  }
+
+  .event-item {
+    padding: 0.75rem;
+    border-left: 3px solid #3b5bdb;
+    margin-bottom: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    span { color: #888; font-size: 0.85rem; }
+  }
+
+  .activity-item {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f0f0f0;
+    strong { display: block; font-size: 0.9rem; }
+    span { color: #e67e00; font-size: 0.8rem; }
+    p { color: #888; font-size: 0.8rem; margin: 0.2rem 0 0; }
+  }
+
+  .quick-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+
+    .quick-btn {
+      background: #f8f9ff;
+      border: 1px solid #e0e4ff;
+      border-radius: 10px;
+      padding: 1rem;
+      cursor: pointer;
+      text-align: center;
+      span { font-size: 1.5rem; }
+      p { margin: 0.5rem 0 0; font-size: 0.85rem; color: #3b5bdb; }
+      &:hover { background: #e8edff; }
+    }
+  }
+
+  .right-column {
+    display: flex;
+    flex-direction: column;
+  }
+}

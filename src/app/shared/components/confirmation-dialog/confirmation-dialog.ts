@@ -24,9 +24,9 @@ export interface ConfirmationDialogData {
     </div>
   `,
 })
-export class ConfirmationDialogComponent {
+export class ConfirmationDialog {
   constructor(
-    public dialogRef: MatDialogRef<ConfirmationDialogComponent>,
+    public dialogRef: MatDialogRef<ConfirmationDialog>,
     @Inject(MAT_DIALOG_DATA) public data: ConfirmationDialogData
   ) {}
 

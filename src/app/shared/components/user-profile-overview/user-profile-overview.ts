@@ -23,7 +23,7 @@ import { User, StudyGroup } from '../../../features/admin/admin.service';
   templateUrl: './user-profile-overview.html',
   styleUrl: './user-profile-overview.scss'
 })
-export class UserProfileOverviewComponent {
+export class UserProfileOverview {
   private translate = inject(TranslateService);
 
   @Input({ required: true }) user!: User;

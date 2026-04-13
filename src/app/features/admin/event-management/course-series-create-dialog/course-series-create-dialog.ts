@@ -17,10 +17,10 @@ import { AdminService, CourseStatus, Module, User, StudyGroup } from '../../admi
     CommonModule, ReactiveFormsModule, MatDialogModule, MatFormFieldModule,
     MatInputModule, MatSelectModule, MatButtonModule, TranslateModule
   ],
-  templateUrl: './course-series-create-dialog.component.html',
-  styleUrl: './course-series-create-dialog.component.scss'
+  templateUrl: './course-series-create-dialog.html',
+  styleUrl: './course-series-create-dialog.scss'
 })
-export class CourseSeriesCreateDialogComponent implements OnInit {
+export class CourseSeriesCreateDialog implements OnInit {
   form: FormGroup;
   modules = signal<Module[]>([]);
   lecturers: User[] = [];
@@ -47,7 +47,7 @@ export class CourseSeriesCreateDialogComponent implements OnInit {
     private fb: FormBuilder,
     private adminService: AdminService,
     public translateService: TranslateService,
-    public dialogRef: MatDialogRef<CourseSeriesCreateDialogComponent>
+    public dialogRef: MatDialogRef<CourseSeriesCreateDialog>
   ) {
     this.form = this.fb.group({
       moduleId: [null, Validators.required],

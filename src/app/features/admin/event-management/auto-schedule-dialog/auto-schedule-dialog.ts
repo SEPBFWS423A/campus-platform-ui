@@ -26,10 +26,10 @@ import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
     MatTooltipModule,
     TranslateModule
   ],
-  templateUrl: './auto-schedule-dialog.component.html',
-  styleUrl: './auto-schedule-dialog.component.scss'
+  templateUrl: './auto-schedule-dialog.html',
+  styleUrl: './auto-schedule-dialog.scss'
 })
-export class AutoScheduleDialogComponent implements OnInit {
+export class AutoScheduleDialog implements OnInit {
   scheduleForm: FormGroup;
 
   defaultSlots = [
@@ -39,7 +39,7 @@ export class AutoScheduleDialogComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private dialogRef: MatDialogRef<AutoScheduleDialogComponent>,
+    private dialogRef: MatDialogRef<AutoScheduleDialog>,
     @Inject(MAT_DIALOG_DATA) public data: { seriesId: number }
   ) {
     const startDate = this.getDefaultStartDate();
