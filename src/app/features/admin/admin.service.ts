@@ -472,8 +472,8 @@ export class AdminService {
   }
 
   getLecturerAbsences(lecturerId?: number): Observable<LecturerAbsence[]> {
-    const params: any = {};
-    if (lecturerId) params.lecturerId = lecturerId;
+    const params: { lecturerId?: number } = {};
+    if (lecturerId !== undefined) params.lecturerId = lecturerId;
     return this.http.get<LecturerAbsence[]>(`${this.apiUrl}/lecturer-absences`, { params });
   }
 }
