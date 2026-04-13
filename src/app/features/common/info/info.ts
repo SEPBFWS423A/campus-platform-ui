@@ -15,7 +15,7 @@ import { InstitutionService } from '../../../core/services/insitution.service';
   templateUrl: './info.html',
   styleUrl: './info.scss'
 })
-export class InfoComponent implements OnInit, OnDestroy {
+export class Info implements OnInit, OnDestroy {
   faqs: FaqModel[] = [];
   institution: any | null = null;
 

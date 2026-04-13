@@ -11,7 +11,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { signal, computed } from '@angular/core';
 
 import { AdminService, CourseSeries } from '../admin.service';
-import { CourseSeriesCreateDialogComponent } from './course-series-create-dialog/course-series-create-dialog.component';
+import { CourseSeriesCreateDialog } from './course-series-create-dialog/course-series-create-dialog';
 
 @Component({
   selector: 'app-confirm-dialog',
@@ -26,7 +26,7 @@ import { CourseSeriesCreateDialogComponent } from './course-series-create-dialog
     </mat-dialog-actions>
   `
 })
-export class ConfirmDialogComponent {}
+export class ConfirmDialog {}
 
 import { RouterModule } from '@angular/router';
 
@@ -79,7 +79,7 @@ export class EventManagement implements OnInit {
   }
 
   openAddDialog() {
-    const dialogRef = this.dialog.open(CourseSeriesCreateDialogComponent, { width: '500px' });
+    const dialogRef = this.dialog.open(CourseSeriesCreateDialog, { width: '500px' });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.adminService.createCourseSeries(result).subscribe({
@@ -97,7 +97,7 @@ export class EventManagement implements OnInit {
   }
 
   deleteItem(id: number) {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, { width: '350px' });
+    const dialogRef = this.dialog.open(ConfirmDialog, { width: '350px' });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         // Optimistic UI Update using signals

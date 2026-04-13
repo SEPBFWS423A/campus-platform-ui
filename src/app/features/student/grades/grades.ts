@@ -1,5 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { GradeScaleDialog } from '../../../shared/components/grade-scale-dialog/grade-scale-dialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { finalize } from 'rxjs';
 import { GradesService } from '../../../core/services/grades.services';
@@ -26,6 +28,8 @@ export class Grades implements OnInit {
 
   expandedItemId: number | null = null;
   expandedSemesters = new Set<number>();
+
+  private readonly dialog = inject(MatDialog);
 
   constructor(
     private readonly gradesService: GradesService,
@@ -244,5 +248,14 @@ export class Grades implements OnInit {
 
   trackGradeItem(_: number, item: StudentGradeOverviewItemResponse): number {
     return item.courseSeriesId;
+  }
+
+  openGradeScale(): void {
+    this.gradesService.getGradeScale().subscribe(entries => {
+      this.dialog.open(GradeScaleDialog, {
+        width: '600px',
+        data: { entries }
+      });
+    });
   }
 }

@@ -15,8 +15,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { ConfirmationDialogComponent } from '../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
-import { AutoScheduleDialogComponent } from '../auto-schedule-dialog/auto-schedule-dialog.component';
+import { ConfirmationDialog } from '../../../../shared/components/confirmation-dialog/confirmation-dialog';
+import { AutoScheduleDialog } from '../auto-schedule-dialog/auto-schedule-dialog';
 
 import { AdminService, CourseSeries, CourseEvent, Room, Module, User, StudyGroup } from '../../admin.service';
 
@@ -29,10 +29,10 @@ import { AdminService, CourseSeries, CourseEvent, Room, Module, User, StudyGroup
     MatNativeDateModule, MatTableModule, MatIconModule, MatDividerModule, 
     MatCardModule, MatSnackBarModule, MatDialogModule, TranslateModule
   ],
-  templateUrl: './course-series-details.component.html',
-  styleUrl: './course-series-details.component.scss'
+  templateUrl: './course-series-details.html',
+  styleUrl: './course-series-details.scss'
 })
-export class CourseSeriesDetailsComponent implements OnInit {
+export class CourseSeriesDetails implements OnInit {
   @ViewChild('seriesFormDirective') seriesFormDirective!: FormGroupDirective;
   @ViewChild('eventFormDirective') eventFormDirective!: FormGroupDirective;
 
@@ -325,7 +325,7 @@ export class CourseSeriesDetailsComponent implements OnInit {
 
   deleteEvent(id: number) {
     this.translateService.get(['eventManagement.confirmAction', 'eventManagement.confirmDeleteMsg', 'eventManagement.delete', 'eventManagement.cancel', 'eventManagement.deletedSuccessfully', 'common.close']).subscribe(translations => {
-      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      const dialogRef = this.dialog.open(ConfirmationDialog, {
         data: {
           title: translations['eventManagement.confirmAction'],
           message: translations['eventManagement.confirmDeleteMsg'],
@@ -350,7 +350,7 @@ export class CourseSeriesDetailsComponent implements OnInit {
   }
 
   openAutoScheduleDialog() {
-    const dialogRef = this.dialog.open(AutoScheduleDialogComponent, {
+    const dialogRef = this.dialog.open(AutoScheduleDialog, {
       width: '750px',
       maxWidth: '90vw',
       maxHeight: '90vh',

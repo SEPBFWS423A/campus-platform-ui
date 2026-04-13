@@ -1,0 +1,102 @@
+.grade-dialog {
+  padding: 8px;
+}
+
+.grade-dialog__header {
+  margin-bottom: 24px;
+}
+
+h2[mat-dialog-title] {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: var(--mat-sys-on-surface);
+}
+
+.header-icon {
+  font-size: 2rem;
+  width: 2rem;
+  height: 2rem;
+  color: var(--mat-sys-primary);
+}
+
+.grade-table-wrapper {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--mat-sys-outline-variant);
+  background: var(--mat-sys-surface-container-low);
+}
+
+.grade-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.grade-table th {
+  background: var(--mat-sys-surface-container-high);
+  text-align: left;
+  padding: 16px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.grade-table td {
+  padding: 16px;
+  border-top: 1px solid var(--mat-sys-outline-variant);
+  vertical-align: middle;
+}
+
+.grade-row:hover {
+  background: var(--mat-sys-surface-container);
+}
+
+.grade-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 28px;
+  border-radius: 6px;
+  background: var(--mat-sys-error-container);
+  color: var(--mat-sys-on-error-container);
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.grade-badge--passed {
+  background: var(--mat-sys-primary-container);
+  color: var(--mat-sys-on-primary-container);
+}
+
+.points-column {
+  white-space: nowrap;
+}
+
+.points-value {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--mat-sys-on-surface);
+}
+
+.points-label {
+  font-size: 0.75rem;
+  color: var(--mat-sys-on-surface-variant);
+  margin-left: 4px;
+}
+
+.label-column {
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+.close-btn {
+  padding: 0 24px;
+  font-weight: 600;
+}

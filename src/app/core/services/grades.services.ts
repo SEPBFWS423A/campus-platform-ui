@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { StudentGradeOverviewResponse } from '../models/grades.models';
+import { StudentGradeOverviewResponse, GradeScaleEntryResponse } from '../models/grades.models';
 
 @Injectable({
   providedIn: 'root'
@@ -13,5 +13,9 @@ export class GradesService {
 
   getOverview(): Observable<StudentGradeOverviewResponse> {
     return this.http.get<StudentGradeOverviewResponse>(`${this.apiUrl}/users/grades/overview`);
+  }
+
+  getGradeScale(): Observable<GradeScaleEntryResponse[]> {
+    return this.http.get<GradeScaleEntryResponse[]>(`${this.apiUrl}/users/grade-scale`);
   }
 }
