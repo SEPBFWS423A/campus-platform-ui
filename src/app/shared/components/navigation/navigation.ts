@@ -37,12 +37,14 @@ const NAVIGATION_CONFIG: Record<string, NavLink[]> = {
     { path: '/admin/academic-structure', label: 'navigation.admin.academicStructure', icon: 'school', exact: false },
     { path: '/admin/room-management', label: 'navigation.admin.roomManagement', icon: 'room_preferences', exact: false },
     { path: '/admin/event-management', label: 'navigation.admin.eventManagement', icon: 'event', exact: false },
-    { path: '/admin/exam-management', label: 'navigation.admin.examManagement', icon: 'insert_chart', exact: false }
+    { path: '/admin/exam-management', label: 'navigation.admin.examManagement', icon: 'insert_chart', exact: false },
+    { path: '/admin/lecturer-absences', label: 'nav.lecturerAbsences', icon: 'event_busy', exact: false }
   ],
   [UserRole.Lecturer]: [
     { path: '/lecturer', label: 'navigation.lecturer.home', icon: 'home', exact: true },
     { path: '/lecturer/courses', label: 'navigation.lecturer.myCourses', icon: 'library_books', exact: false },
-    { path: '/lecturer/grading', label: 'navigation.lecturer.grading', icon: 'assessment', exact: false }
+    { path: '/lecturer/grading', label: 'navigation.lecturer.grading', icon: 'assessment', exact: false },
+    { path: '/lecturer/absences', label: 'nav.absences', icon: 'event_busy', exact: false }
   ],
   [UserRole.Student]: [
     { path: '/student', label: 'navigation.student.home', icon: 'home', exact: true },

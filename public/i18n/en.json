@@ -877,5 +877,44 @@
       "noAttendees": "No students in this course yet.",
       "seriesInfo": "Course Series Information"
     }
+  },
+  "nav": {
+    "absences": "Absences",
+    "lecturerAbsences": "Lecturer Absences"
+  },
+  "absences": {
+    "title": "My Absences",
+    "adminTitle": "Lecturer Absences",
+    "form": {
+      "type": "Absence Type",
+      "startDate": "From",
+      "endDate": "To",
+      "note": "Note (optional)",
+      "submit": "Submit"
+    },
+    "types": {
+      "URLAUB": "Vacation",
+      "KRANKMELDUNG": "Sick Leave",
+      "DIENSTREISE": "Business Trip",
+      "SONSTIGES": "Other"
+    },
+    "status": {
+      "VERGANGEN": "Past",
+      "AKTUELL": "Current",
+      "GEPLANT": "Planned"
+    },
+    "table": {
+      "lecturer": "Lecturer",
+      "status": "Status",
+      "type": "Type",
+      "startDate": "From",
+      "endDate": "To",
+      "note": "Note",
+      "actions": "Actions"
+    },
+    "deleteConfirm": "Really delete absence?",
+    "deleteSuccess": "Absence was deleted.",
+    "createSuccess": "Absence was added.",
+    "conflictError": "Scheduling conflict: The lecturer has an absence booked during this time."
   }
 }
