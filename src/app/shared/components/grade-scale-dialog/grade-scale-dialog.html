@@ -1,0 +1,46 @@
+<div class="grade-dialog">
+  <header class="grade-dialog__header">
+    <h2 mat-dialog-title>
+      <mat-icon class="header-icon">assessment</mat-icon>
+      {{ 'navigation.grades.actions.gradeScale' | translate }}
+    </h2>
+  </header>
+
+  <mat-dialog-content>
+    <div class="grade-table-wrapper">
+      <table class="grade-table">
+        <thead>
+          <tr>
+            <th>{{ 'academicStructure.academicGrade' | translate }}</th>
+            <th>{{ 'academicStructure.minPoints' | translate }}</th>
+            <th>{{ 'academicStructure.labelDescription' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (entry of data.entries; track entry.grade) {
+          <tr class="grade-row">
+            <td>
+              <span class="grade-badge" [class.grade-badge--passed]="entry.grade <= 4.0">
+                {{ entry.grade.toFixed(1) }}
+              </span>
+            </td>
+            <td class="points-column">
+              <span class="points-value">{{ entry.minimumPoints }}</span>
+              <span class="points-label">pts</span>
+            </td>
+            <td class="label-column">
+              <span class="label-text">{{ entry.label || ('academicStructure.noLabel' | translate) }}</span>
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="onClose()" class="close-btn">
+      {{ 'common.close' | translate }}
+    </button>
+  </mat-dialog-actions>
+</div>

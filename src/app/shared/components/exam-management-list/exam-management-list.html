@@ -339,15 +339,21 @@
       </div>
 
       @if (submissions().length > 0) {
-      <div class="grading-stats glass">
-        <div class="stat">
-          <span class="val">{{ submissions().length }}</span>
-          <span class="lab">{{ 'userManagement.students' | translate }}</span>
-        </div>
-        <div class="stat-divider"></div>
-        <div class="stat">
-          <span class="val">{{ gradedCount() }}</span>
-          <span class="lab">{{ 'lecturerGrading.statusGRADED' | translate }}</span>
+      <div class="header-actions">
+        <button mat-stroked-button color="primary" class="grade-scale-btn glass" (click)="openGradeScale()">
+          <mat-icon class="header-icon">assessment</mat-icon>
+          {{ 'navigation.grades.actions.gradeScale' | translate }}
+        </button>
+        <div class="grading-stats glass">
+          <div class="stat">
+            <span class="val">{{ submissions().length }}</span>
+            <span class="lab">{{ 'userManagement.students' | translate }}</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat">
+            <span class="val">{{ gradedCount() }}</span>
+            <span class="lab">{{ 'lecturerGrading.statusGRADED' | translate }}</span>
+          </div>
         </div>
       </div>
       }

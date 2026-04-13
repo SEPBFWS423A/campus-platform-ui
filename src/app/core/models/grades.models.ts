@@ -60,3 +60,10 @@ export interface StudentGradeOverviewResponse {
   summary: StudentGradeSummaryResponse;
   semesters: StudentGradeSemesterGroupResponse[];
 }
+
+export interface GradeScaleEntryResponse {
+  grade: number;
+  minimumPoints: number;
+  label?: string;
+}
+

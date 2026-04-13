@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import {Downloads} from './downloads/downloads';
-import {InfoComponent} from './info/info';
+import {Info} from './info/info';
 import {ChangePassword} from './change-password/change-password';
 
 export const commonRoutes: Routes = [
@@ -10,7 +10,7 @@ export const commonRoutes: Routes = [
   },
   {
     path: 'info',
-    component: InfoComponent
+    component: Info
   },
   {
     path: 'change-password',
