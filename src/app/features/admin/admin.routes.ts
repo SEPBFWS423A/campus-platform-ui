@@ -6,6 +6,7 @@ import {UserManagement} from './user-management/user-management';
 import {ExamManagement} from './exam-management/exam-management';
 import {AcademicStructure} from './academic-structure/academic-structure';
 import {CourseSeriesDetails} from './event-management/course-series-details/course-series-details';
+import {LecturerAbsencesAdmin} from './lecturer-absences/lecturer-absences';
 
 export const adminRoutes: Routes = [
   {
@@ -35,5 +36,9 @@ export const adminRoutes: Routes = [
   {
     path: 'exam-management',
     component: ExamManagement
+  },
+  {
+    path: 'lecturer-absences',
+    component: LecturerAbsencesAdmin
   },
 ];
