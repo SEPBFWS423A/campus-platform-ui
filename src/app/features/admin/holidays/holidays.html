@@ -1,0 +1,67 @@
+<div class="holidays-page">
+  <div class="header">
+    <div>
+      <h1>Ferien & Schließzeiten</h1>
+      <p>Geplante Ferien und geschlossene Uni-Zeiten verwalten</p>
+    </div>
+    <button class="btn-add" (click)="showForm = !showForm">+ Hinzufügen</button>
+  </div>
+
+  <div class="form-card" *ngIf="showForm">
+    <h3>Neuer Eintrag</h3>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Bezeichnung</label>
+        <input type="text" [(ngModel)]="newHoliday.name" placeholder="z.B. Weihnachtsferien" />
+      </div>
+      <div class="form-group">
+        <label>Typ</label>
+        <select [(ngModel)]="newHoliday.type">
+          <option value="holiday">Ferien</option>
+          <option value="closed">Schließzeit</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Startdatum</label>
+        <input type="date" [(ngModel)]="newHoliday.startDate" />
+      </div>
+      <div class="form-group">
+        <label>Enddatum</label>
+        <input type="date" [(ngModel)]="newHoliday.endDate" />
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn-save" (click)="add()">Speichern</button>
+      <button class="btn-cancel" (click)="showForm = false">Abbrechen</button>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th>Bezeichnung</th>
+          <th>Typ</th>
+          <th>Startdatum</th>
+          <th>Enddatum</th>
+          <th>Aktion</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let h of holidays">
+          <td>{{ h.name }}</td>
+          <td>
+            <span class="badge" [ngClass]="h.type">
+              {{ h.type === 'holiday' ? 'Ferien' : 'Schließzeit' }}
+            </span>
+          </td>
+          <td>{{ h.startDate }}</td>
+          <td>{{ h.endDate }}</td>
+          <td>
+            <button class="btn-delete" (click)="delete(h.id)">🗑️</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
