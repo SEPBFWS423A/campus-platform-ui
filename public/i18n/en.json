@@ -34,7 +34,8 @@
       "home": "Home",
       "myCourses": "My Courses",
       "grading": "Grading",
-      "submissionsOverview": "Submissions Overview"
+      "submissionsOverview": "Submissions Overview",
+      "absences": "Absences"
     },
     "student": {
       "home": "Home",
@@ -876,6 +877,41 @@
       "attendeeList": "Attendee List",
       "noAttendees": "No students in this course yet.",
       "seriesInfo": "Course Series Information"
+    }
+  },
+  "absences": {
+    "title": "My Absences",
+    "subtitle": "Enter your planned absences so they can be taken into account during scheduling.",
+    "addButton": "Add Absence",
+    "infoBanner": "Your entered absences will be respected during automatic scheduling. Please enter all planned absences in time.",
+    "empty": "No absences recorded. Click \"Add Absence\" to add a new absence.",
+    "deleteButton": "Delete absence",
+    "addDialog": {
+      "title": "Add Absence",
+      "startDate": "From",
+      "endDate": "To",
+      "startDateRequired": "Start date is required.",
+      "endDateRequired": "End date is required.",
+      "dateRangeInvalid": "The end date must not be before the start date.",
+      "reason": "Reason (optional)",
+      "reasonPlaceholder": "e.g. Conference, Vacation, Illness ...",
+      "save": "Save"
+    },
+    "deleteDialog": {
+      "title": "Delete Absence",
+      "message": "Do you really want to delete this absence?",
+      "confirm": "Delete"
+    },
+    "messages": {
+      "loadError": "Absences could not be loaded.",
+      "createSuccess": "Absence was successfully recorded.",
+      "createError": "Absence could not be recorded.",
+      "deleteSuccess": "Absence was successfully deleted.",
+      "deleteError": "Absence could not be deleted."
+    },
+    "admin": {
+      "title": "Planned Lecturer Absences",
+      "subtitle": "These absences will be respected during automatic scheduling."
     }
   }
 }

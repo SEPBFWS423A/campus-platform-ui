@@ -7,9 +7,15 @@ import { UserRole } from '../../core/models/user-role';
 import { FaqAdminResponse, FaqUpsertRequest } from '../../core/models/faqModel';
 import { Salutation } from '../../core/models/salutation';
 import { AcademicTitle } from '../../core/models/academic-title';
-import { ExamStatus } from '../lecturer/models/lecturer.models';
+import { ExamStatus, LecturerAbsence } from '../lecturer/models/lecturer.models';
 
 export { UserRole, Salutation, AcademicTitle };
+
+export interface LecturerAbsenceAdminResponse {
+  lecturerId: number;
+  lecturerName: string;
+  absences: LecturerAbsence[];
+}
 
 export interface User {
   id: string;
@@ -463,5 +469,11 @@ export class AdminService {
 
   deleteGradeScaleEntry(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/grade-scale/${id}`);
+  }
+
+  getLecturerAbsences(lecturerId?: number): Observable<LecturerAbsence[]> {
+    const params: any = {};
+    if (lecturerId) params.lecturerId = lecturerId;
+    return this.http.get<LecturerAbsence[]>(`${this.apiUrl}/lecturer-absences`, { params });
   }
 }

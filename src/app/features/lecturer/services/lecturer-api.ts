@@ -8,7 +8,9 @@ import {
   GradeBulkRequest,
   SingleGradeRequest,
   ExamDocumentResponse,
-  SubmissionDocumentDownloadData
+  SubmissionDocumentDownloadData,
+  LecturerAbsence,
+  LecturerAbsenceRequest
 } from '../models/lecturer.models';
 
 import { environment } from '../../../../environments/environment';
@@ -52,5 +54,17 @@ export class LecturerApi {
 
   downloadStudentSubmission(seriesId: number, studentId: number): Observable<SubmissionDocumentDownloadData> {
     return this.http.get<SubmissionDocumentDownloadData>(`${this.baseUrl}/course-series/${seriesId}/student-submissions/${studentId}/download`);
+  }
+
+  getAbsences(): Observable<LecturerAbsence[]> {
+    return this.http.get<LecturerAbsence[]>(`${this.baseUrl}/absences`);
+  }
+
+  createAbsence(request: LecturerAbsenceRequest): Observable<LecturerAbsence> {
+    return this.http.post<LecturerAbsence>(`${this.baseUrl}/absences`, request);
+  }
+
+  deleteAbsence(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/absences/${id}`);
   }
 }

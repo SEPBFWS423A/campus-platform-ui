@@ -1,0 +1,63 @@
+<div class="absences-container" [class.loading]="isLoading()">
+  <header class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">{{ 'absences.title' | translate }}</h1>
+      <p class="subtitle">{{ 'absences.subtitle' | translate }}</p>
+    </div>
+    <div class="header-actions">
+      <button mat-raised-button color="primary" (click)="openAddDialog()">
+        <i class="material-icons">add</i>
+        {{ 'absences.addButton' | translate }}
+      </button>
+    </div>
+  </header>
+
+  <div class="info-banner standard-panel">
+    <i class="material-icons">info</i>
+    <span>{{ 'absences.infoBanner' | translate }}</span>
+  </div>
+
+  @if (absences().length === 0 && !isLoading()) {
+    <div class="empty-state standard-panel">
+      <i class="material-icons large-icon">event_busy</i>
+      <p>{{ 'absences.empty' | translate }}</p>
+      <button mat-raised-button color="primary" (click)="openAddDialog()">
+        <i class="material-icons">add</i>
+        {{ 'absences.addButton' | translate }}
+      </button>
+    </div>
+  }
+
+  <div class="absence-list">
+    @for (absence of absences(); track absence.id) {
+      <div class="absence-card standard-panel">
+        <div class="absence-icon">
+          <i class="material-icons">event_busy</i>
+        </div>
+        <div class="absence-info">
+          <div class="date-range">
+            <span class="date">{{ absence.startDate | date:'mediumDate' }}</span>
+            @if (absence.startDate !== absence.endDate) {
+              <i class="material-icons arrow-icon">arrow_forward</i>
+              <span class="date">{{ absence.endDate | date:'mediumDate' }}</span>
+            }
+          </div>
+          @if (absence.reason) {
+            <p class="reason">{{ absence.reason }}</p>
+          }
+        </div>
+        <div class="absence-actions">
+          <button mat-icon-button color="warn" (click)="deleteAbsence(absence)" [title]="'absences.deleteButton' | translate">
+            <i class="material-icons">delete</i>
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+</div>
+
+@if (isLoading()) {
+  <div class="loading-overlay">
+    <div class="spinner"></div>
+  </div>
+}

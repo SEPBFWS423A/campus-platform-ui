@@ -42,7 +42,8 @@ const NAVIGATION_CONFIG: Record<string, NavLink[]> = {
   [UserRole.Lecturer]: [
     { path: '/lecturer', label: 'navigation.lecturer.home', icon: 'home', exact: true },
     { path: '/lecturer/courses', label: 'navigation.lecturer.myCourses', icon: 'library_books', exact: false },
-    { path: '/lecturer/grading', label: 'navigation.lecturer.grading', icon: 'assessment', exact: false }
+    { path: '/lecturer/grading', label: 'navigation.lecturer.grading', icon: 'assessment', exact: false },
+    { path: '/lecturer/absences', label: 'navigation.lecturer.absences', icon: 'event_busy', exact: false }
   ],
   [UserRole.Student]: [
     { path: '/student', label: 'navigation.student.home', icon: 'home', exact: true },

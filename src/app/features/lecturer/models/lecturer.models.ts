@@ -99,3 +99,16 @@ export interface SubmissionDocumentDownloadData {
   fileSize: number;
   content: string;
 }
+
+export interface LecturerAbsence {
+  id: number;
+  startDate: string;
+  endDate: string;
+  reason?: string;
+}
+
+export interface LecturerAbsenceRequest {
+  startDate: string;
+  endDate: string;
+  reason?: string;
+}

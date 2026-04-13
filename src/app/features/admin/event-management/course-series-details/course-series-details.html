@@ -108,6 +108,36 @@
         </mat-card-content>
       </mat-card>
 
+      <!-- Lecturer Absences (Issue #193: View planned absences) -->
+      @if (lecturerAbsences().length > 0) {
+        <mat-card class="absences-card">
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon>event_busy</mat-icon>
+              {{ 'absences.admin.title' | translate }}
+            </mat-card-title>
+            <mat-card-subtitle>{{ 'absences.admin.subtitle' | translate }}</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="absence-chips">
+              @for (absence of lecturerAbsences(); track absence.id) {
+                <div class="absence-chip">
+                  <mat-icon>calendar_month</mat-icon>
+                  <span>{{ absence.startDate | date:'shortDate' }}</span>
+                  @if (absence.startDate !== absence.endDate) {
+                    <span class="separator">–</span>
+                    <span>{{ absence.endDate | date:'shortDate' }}</span>
+                  }
+                  @if (absence.reason) {
+                    <span class="reason">· {{ absence.reason }}</span>
+                  }
+                </div>
+              }
+            </div>
+          </mat-card-content>
+        </mat-card>
+      }
+
       <!-- Events Schedule -->
       <mat-card class="events-card">
         <mat-card-header>

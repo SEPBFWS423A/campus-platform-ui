@@ -19,6 +19,7 @@ import { ConfirmationDialog } from '../../../../shared/components/confirmation-d
 import { AutoScheduleDialog } from '../auto-schedule-dialog/auto-schedule-dialog';
 
 import { AdminService, CourseSeries, CourseEvent, Room, Module, User, StudyGroup } from '../../admin.service';
+import { LecturerAbsence } from '../../../lecturer/models/lecturer.models';
 
 @Component({
   selector: 'app-course-series-details',
@@ -38,6 +39,7 @@ export class CourseSeriesDetails implements OnInit {
 
   seriesId!: number;
   series = signal<CourseSeries | null>(null);
+  lecturerAbsences = signal<LecturerAbsence[]>([]);
 
   // Series Edit Config
   seriesForm!: FormGroup;
@@ -152,11 +154,21 @@ export class CourseSeriesDetails implements OnInit {
           submissionDeadline: res.submissionDeadline ? new Date(res.submissionDeadline) : null,
           studyGroupIds: res.studyGroups?.map(sg => sg.id) || []
         });
+        if (res.assignedLecturerId) {
+          this.loadLecturerAbsences(res.assignedLecturerId);
+        }
       },
       error: () => this.goBack()
     });
 
     this.loadEvents();
+  }
+
+  loadLecturerAbsences(lecturerId: number): void {
+    this.adminService.getLecturerAbsences(lecturerId).subscribe({
+      next: (absences) => this.lecturerAbsences.set(absences),
+      error: () => this.lecturerAbsences.set([])
+    });
   }
 
   loadEvents() {

@@ -34,7 +34,8 @@
       "home": "Home",
       "myCourses": "Meine Kurse",
       "grading": "Notenvergabe",
-      "submissionsOverview": "Abgabenübersicht"
+      "submissionsOverview": "Abgabenübersicht",
+      "absences": "Abwesenheiten"
     },
     "student": {
       "home": "Home",
@@ -877,6 +878,41 @@
       "attendeeList": "Teilnehmerliste",
       "noAttendees": "Noch keine Studierenden in diesem Kurs.",
       "seriesInfo": "Informationen zur Vorlesungsreihe"
+    }
+  },
+  "absences": {
+    "title": "Meine Abwesenheiten",
+    "subtitle": "Tragen Sie Ihre geplanten Abwesenheiten ein, damit diese bei der Terminplanung berücksichtigt werden können.",
+    "addButton": "Abwesenheit eintragen",
+    "infoBanner": "Ihre eingetragenen Abwesenheiten werden bei der automatischen Terminplanung berücksichtigt. Bitte tragen Sie alle geplanten Abwesenheiten rechtzeitig ein.",
+    "empty": "Keine Abwesenheiten eingetragen. Klicken Sie auf \"Abwesenheit eintragen\", um eine neue Abwesenheit hinzuzufügen.",
+    "deleteButton": "Abwesenheit löschen",
+    "addDialog": {
+      "title": "Abwesenheit eintragen",
+      "startDate": "Von",
+      "endDate": "Bis",
+      "startDateRequired": "Startdatum ist erforderlich.",
+      "endDateRequired": "Enddatum ist erforderlich.",
+      "dateRangeInvalid": "Das Enddatum darf nicht vor dem Startdatum liegen.",
+      "reason": "Grund (optional)",
+      "reasonPlaceholder": "z.B. Konferenz, Urlaub, Krankheit ...",
+      "save": "Speichern"
+    },
+    "deleteDialog": {
+      "title": "Abwesenheit löschen",
+      "message": "Möchten Sie diese Abwesenheit wirklich löschen?",
+      "confirm": "Löschen"
+    },
+    "messages": {
+      "loadError": "Abwesenheiten konnten nicht geladen werden.",
+      "createSuccess": "Abwesenheit wurde erfolgreich eingetragen.",
+      "createError": "Abwesenheit konnte nicht eingetragen werden.",
+      "deleteSuccess": "Abwesenheit wurde erfolgreich gelöscht.",
+      "deleteError": "Abwesenheit konnte nicht gelöscht werden."
+    },
+    "admin": {
+      "title": "Geplante Abwesenheiten des Dozenten",
+      "subtitle": "Diese Abwesenheiten werden bei der automatischen Terminplanung berücksichtigt."
     }
   }
 }
