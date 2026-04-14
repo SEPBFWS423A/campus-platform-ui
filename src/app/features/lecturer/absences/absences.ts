@@ -16,7 +16,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
-import { AbsenceType, ConflictingEventDto, LecturerAbsenceResponse } from '../models/lecturer.models';
+import { AbsenceType, AbsencePriority, ConflictingEventDto, LecturerAbsenceResponse } from '../models/lecturer.models';
 import { LecturerAbsenceService } from '../services/lecturer-absence.service';
 import { AbsenceConflictDialog } from './absence-conflict.dialog';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -25,7 +25,7 @@ import { debounceTime, switchMap, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 
 // ---------------------------------------------------------------------------
-// Einfacher Bestätigungs-Dialog (Löschen)
+// Bestätigungs-Dialog (Löschen)
 // ---------------------------------------------------------------------------
 @Component({
   selector: 'app-confirm-dialog',
@@ -67,10 +67,8 @@ export class Absences implements OnInit, OnDestroy {
   isLoading = signal(false);
   isCheckingConflicts = signal(false);
 
-  // Sub-Issue #283 – Vorab-Prüfung: Signal wird nach Debounce befüllt
+  // Conflict preview (Issue #9)
   conflictPreview = signal<ConflictingEventDto[]>([]);
-
-  // Sub-Issue #285 – Severity-Schwellwerte
   conflictSeverity = computed(() => {
     const count = this.conflictPreview().length;
     if (count === 0) return 'NONE';
@@ -79,14 +77,21 @@ export class Absences implements OnInit, OnDestroy {
   });
 
   absenceForm = new FormGroup({
-    type: new FormControl<AbsenceType | null>(null, Validators.required),
+    type:      new FormControl<AbsenceType | null>(null, Validators.required),
     startDate: new FormControl<Date | null>(null, Validators.required),
-    endDate: new FormControl<Date | null>(null, Validators.required),
-    note: new FormControl('')
+    endDate:   new FormControl<Date | null>(null, Validators.required),
+    note:      new FormControl(''),
+    priority:  new FormControl<AbsencePriority>('MEDIUM')
   });
 
-  displayedColumns = ['status', 'type', 'startDate', 'endDate', 'note', 'actions'];
-  absenceTypes = Object.values(AbsenceType);
+  displayedColumns = ['approvalStatus', 'type', 'startDate', 'endDate', 'note', 'docs', 'actions'];
+  absenceTypes  = Object.values(AbsenceType);
+  priorityOptions: { value: AbsencePriority; label: string }[] = [
+    { value: 'LOW',      label: 'Niedrig' },
+    { value: 'MEDIUM',   label: 'Mittel' },
+    { value: 'HIGH',     label: 'Hoch' },
+    { value: 'CRITICAL', label: 'Kritisch' }
+  ];
 
   ngOnInit() {
     this.loadAbsences();
@@ -98,25 +103,21 @@ export class Absences implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  // Sub-Issue #283 – Debounced Vorab-Prüfung bei Datumseingabe
+  // Debounced Vorab-Prüfung (Issue #9)
   private setupConflictPreview(): void {
-    const startDate$ = this.absenceForm.controls.startDate.valueChanges;
-    const endDate$   = this.absenceForm.controls.endDate.valueChanges;
-
-    combineLatest([startDate$, endDate$])
+    combineLatest([
+      this.absenceForm.controls.startDate.valueChanges,
+      this.absenceForm.controls.endDate.valueChanges
+    ])
       .pipe(
         debounceTime(700),
         switchMap(([start, end]) => {
-          if (!start || !end) {
-            this.conflictPreview.set([]);
-            return of([]);
-          }
-          const startStr = this.toIsoLocalDateTime(start, false);
-          const endStr   = this.toIsoLocalDateTime(end, true);
+          if (!start || !end) { this.conflictPreview.set([]); return of([]); }
           this.isCheckingConflicts.set(true);
-          return this.absenceService.checkConflicts(startStr, endStr).pipe(
-            catchError(() => of([]))
-          );
+          return this.absenceService.checkConflicts(
+            this.toIsoLocalDateTime(start, false),
+            this.toIsoLocalDateTime(end, true)
+          ).pipe(catchError(() => of([])));
         })
       )
       .subscribe(conflicts => {
@@ -128,30 +129,20 @@ export class Absences implements OnInit, OnDestroy {
   loadAbsences() {
     this.isLoading.set(true);
     this.absenceService.getMyAbsences().subscribe({
-      next: (data) => {
-        this.absences.set(data);
-        this.isLoading.set(false);
-      },
-      error: () => {
-        this.isLoading.set(false);
-      }
+      next: (data) => { this.absences.set(data); this.isLoading.set(false); },
+      error: () => { this.isLoading.set(false); }
     });
   }
 
-  getStatus(absence: LecturerAbsenceResponse): 'VERGANGEN' | 'AKTUELL' | 'GEPLANT' {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const start = new Date(absence.startDate);
-    start.setHours(0, 0, 0, 0);
-    const end = new Date(absence.endDate);
-    end.setHours(23, 59, 59, 999);
-
+  getTimeStatus(absence: LecturerAbsenceResponse): 'VERGANGEN' | 'AKTUELL' | 'GEPLANT' {
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const start = new Date(absence.startDate); start.setHours(0, 0, 0, 0);
+    const end   = new Date(absence.endDate);   end.setHours(23, 59, 59, 999);
     if (end < today) return 'VERGANGEN';
     if (start <= today && end >= today) return 'AKTUELL';
     return 'GEPLANT';
   }
 
-  // Öffnet den Conflict-Dialog im Read-Only-Modus (Vorab-Info)
   openConflictPreviewDialog(): void {
     this.dialog.open(AbsenceConflictDialog, {
       data: { conflictingEvents: this.conflictPreview(), readOnly: true },
@@ -161,43 +152,38 @@ export class Absences implements OnInit, OnDestroy {
 
   onSubmit(): void {
     if (this.absenceForm.invalid) return;
-
     this.isLoading.set(true);
-    const formVal = this.absenceForm.value;
-
+    const fv = this.absenceForm.value;
     const req = {
-      type: formVal.type!,
-      startDate: this.parseLocalDate(formVal.startDate!),
-      endDate: this.parseLocalDate(formVal.endDate!),
-      note: formVal.note || ''
+      type:      fv.type!,
+      startDate: this.parseLocalDate(fv.startDate!),
+      endDate:   this.parseLocalDate(fv.endDate!),
+      note:      fv.note || '',
+      priority:  fv.priority ?? 'MEDIUM'
     };
 
     this.absenceService.createAbsence(req, false).subscribe({
       next: (res) => this.handleCreateSuccess(res),
       error: (err: HttpErrorResponse) => {
         if (err.status === 409) {
-          // Sub-Issue #281 – Konflikt-Detail-Dialog statt generischer Snackbar
           const body = err.error as { message?: string; conflictingEvents?: ConflictingEventDto[] };
-          const events: ConflictingEventDto[] = body?.conflictingEvents ?? [];
+          const events = body?.conflictingEvents ?? [];
           this.isLoading.set(false);
-
-          const dialogRef = this.dialog.open(AbsenceConflictDialog, {
-            data: { conflictingEvents: events, readOnly: false },
-            width: '560px'
-          });
-
-          dialogRef.afterClosed().subscribe((force: boolean) => {
+          this.dialog.open(AbsenceConflictDialog, {
+            data: { conflictingEvents: events, readOnly: false }, width: '560px'
+          }).afterClosed().subscribe((force: boolean) => {
             if (force) {
               this.isLoading.set(true);
               this.absenceService.createAbsence(req, true).subscribe({
                 next: (res) => this.handleCreateSuccess(res),
-                error: () => {
-                  this.snackBar.open('Fehler beim Eintragen.', 'OK', { duration: 3000 });
-                  this.isLoading.set(false);
-                }
+                error: () => { this.snackBar.open('Fehler beim Eintragen.', 'OK', { duration: 3000 }); this.isLoading.set(false); }
               });
             }
           });
+        } else if (err.status === 400) {
+          const msg = err.error?.message ?? 'Validierungsfehler – bitte Eingaben prüfen.';
+          this.snackBar.open(this.translateValidationError(msg), 'OK', { duration: 6000 });
+          this.isLoading.set(false);
         } else {
           this.snackBar.open('Fehler beim Eintragen.', 'OK', { duration: 3000 });
           this.isLoading.set(false);
@@ -207,22 +193,18 @@ export class Absences implements OnInit, OnDestroy {
   }
 
   private handleCreateSuccess(res: LecturerAbsenceResponse): void {
-    this.snackBar.open('Abwesenheit wurde eingetragen.', 'OK', { duration: 3000 });
+    this.snackBar.open('Abwesenheit wurde beantragt.', 'OK', { duration: 3000 });
     this.absences.update(old =>
       [...old, res].sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())
     );
-    this.absenceForm.reset();
-    Object.keys(this.absenceForm.controls).forEach(key => {
-      this.absenceForm.get(key)?.setErrors(null);
-    });
+    this.absenceForm.reset({ priority: 'MEDIUM' });
+    Object.keys(this.absenceForm.controls).forEach(k => this.absenceForm.get(k)?.setErrors(null));
     this.conflictPreview.set([]);
     this.isLoading.set(false);
   }
 
   onDelete(id: number): void {
-    const dialogRef = this.dialog.open(ConfirmDialog);
-
-    dialogRef.afterClosed().subscribe((result: boolean) => {
+    this.dialog.open(ConfirmDialog).afterClosed().subscribe((result: boolean) => {
       if (result) {
         this.isLoading.set(true);
         this.absenceService.deleteAbsence(id).subscribe({
@@ -231,10 +213,7 @@ export class Absences implements OnInit, OnDestroy {
             this.absences.update(old => old.filter(a => a.id !== id));
             this.isLoading.set(false);
           },
-          error: () => {
-            this.snackBar.open('Fehler beim Löschen.', 'OK', { duration: 3000 });
-            this.isLoading.set(false);
-          }
+          error: () => { this.snackBar.open('Fehler beim Löschen.', 'OK', { duration: 3000 }); this.isLoading.set(false); }
         });
       }
     });
@@ -246,20 +225,22 @@ export class Absences implements OnInit, OnDestroy {
 
   private parseLocalDate(dateFn: Date): string {
     const offset = dateFn.getTimezoneOffset();
-    const adjusted = new Date(dateFn.getTime() - offset * 60 * 1000);
-    return adjusted.toISOString().split('T')[0];
+    return new Date(dateFn.getTime() - offset * 60 * 1000).toISOString().split('T')[0];
   }
 
   private toIsoLocalDateTime(date: Date, endOfDay: boolean): string {
     const d = new Date(date);
-    if (endOfDay) {
-      d.setHours(23, 59, 59, 0);
-    } else {
-      d.setHours(0, 0, 0, 0);
-    }
-    // Offset bereinigen damit kein UTC-Versatz entsteht
+    endOfDay ? d.setHours(23, 59, 59, 0) : d.setHours(0, 0, 0, 0);
     const offset = d.getTimezoneOffset();
-    const local = new Date(d.getTime() - offset * 60 * 1000);
-    return local.toISOString().replace('Z', '').slice(0, 19);
+    return new Date(d.getTime() - offset * 60 * 1000).toISOString().replace('Z', '').slice(0, 19);
+  }
+
+  private translateValidationError(key: string): string {
+    const map: Record<string, string> = {
+      'absence.validation.urlaub.notice':          'Urlaub muss mindestens 14 Tage im Voraus beantragt werden.',
+      'absence.validation.urlaub.maxDuration':     'Urlaubsanträge dürfen maximal 30 Tage umfassen.',
+      'absence.validation.dienstreise.notice':     'Dienstreisen müssen mindestens 7 Tage im Voraus beantragt werden.'
+    };
+    return map[key] ?? key;
   }
 }

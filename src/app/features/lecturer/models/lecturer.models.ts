@@ -107,6 +107,9 @@ export enum AbsenceType {
   SONSTIGES = 'SONSTIGES'
 }
 
+export type AbsenceStatus = 'BEANTRAGT' | 'GENEHMIGT' | 'ABGELEHNT' | 'STORNIERT' | 'ABGESCHLOSSEN';
+export type AbsencePriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+
 export interface LecturerAbsenceResponse {
   id: number;
   type: AbsenceType;
@@ -114,6 +117,12 @@ export interface LecturerAbsenceResponse {
   endDate: string;
   note?: string;
   lecturerName?: string;
+  // Governance-Felder (Issue #10)
+  status: AbsenceStatus;
+  priority: AbsencePriority;
+  documentRequired: boolean;
+  approvedBy?: string;
+  rejectionReason?: string;
 }
 
 export interface LecturerAbsenceRequest {
@@ -121,6 +130,7 @@ export interface LecturerAbsenceRequest {
   startDate: string;
   endDate: string;
   note?: string;
+  priority?: AbsencePriority;
 }
 
 export interface ConflictingEventDto {

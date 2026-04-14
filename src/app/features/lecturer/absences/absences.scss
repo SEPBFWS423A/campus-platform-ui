@@ -386,3 +386,108 @@
   }
 }
 
+// -------------------------------------------------------------------
+// Governance Styles (Issue #10)
+// -------------------------------------------------------------------
+
+// Genehmigungsstatus-Badge
+.approval-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+
+  .status-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+
+  &.status-beantragt {
+    background-color: var(--mat-sys-primary-container);
+    color: var(--mat-sys-on-primary-container);
+  }
+  &.status-genehmigt {
+    background-color: color-mix(in srgb, #2e7d32 20%, transparent);
+    color: #1b5e20;
+  }
+  &.status-abgelehnt {
+    background-color: var(--mat-sys-error-container);
+    color: var(--mat-sys-on-error-container);
+  }
+  &.status-storniert,
+  &.status-abgeschlossen {
+    background-color: var(--mat-sys-surface-variant);
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+// Ablehnungsgrund unterhalb der Notiz
+.rejection-reason {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--mat-sys-error);
+
+  .rejection-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+}
+
+// Dokumentationspflicht-Badge
+.doc-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--mat-sys-on-tertiary-container, #4a3800);
+  background-color: var(--mat-sys-tertiary-container, #f5e6c8);
+  padding: 3px 8px;
+  border-radius: 8px;
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+}
+
+.doc-hint {
+  color: var(--mat-sys-on-surface-variant);
+  display: inline-flex;
+  align-items: center;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+}
+
+// Regelhinweis unterhalb des Formulars
+.rule-hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--mat-sys-on-surface-variant);
+  padding: 6px 12px;
+  background-color: var(--mat-sys-surface-container-low, rgba(0,0,0,0.03));
+  border-radius: 8px;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: var(--mat-sys-primary);
+    flex-shrink: 0;
+  }
+}

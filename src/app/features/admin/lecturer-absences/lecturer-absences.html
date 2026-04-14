@@ -13,9 +13,9 @@
           <mat-icon>filter_list</mat-icon>
         </div>
         <mat-card-title>Filter</mat-card-title>
-        <mat-card-subtitle>Abwesenheiten nach Dozent filtern</mat-card-subtitle>
+        <mat-card-subtitle>Abwesenheiten nach Dozent und Status filtern</mat-card-subtitle>
       </mat-card-header>
-      
+
       <mat-card-content>
         <div class="modern-form">
           <div class="form-row">
@@ -27,6 +27,14 @@
               </mat-select>
               <mat-icon matPrefix>person_search</mat-icon>
             </mat-form-field>
+
+            <mat-form-field appearance="outline" class="flex-field" subscriptSizing="dynamic">
+              <mat-label>Status filtern</mat-label>
+              <mat-select [formControl]="statusFilter">
+                <mat-option *ngFor="let opt of statusOptions" [value]="opt.value">{{ opt.label }}</mat-option>
+              </mat-select>
+              <mat-icon matPrefix>rule</mat-icon>
+            </mat-form-field>
           </div>
         </div>
       </mat-card-content>
@@ -34,12 +42,13 @@
 
     <mat-card class="table-card mat-elevation-z2">
       <div class="table-header-toolbar">
-         <mat-card-title>Erfasste Abwesenheiten</mat-card-title>
+        <mat-card-title>Erfasste Abwesenheiten</mat-card-title>
       </div>
-      
+
       <div class="table-container">
-        <table mat-table [dataSource]="filteredAbsences()" class="modern-table" *ngIf="filteredAbsences().length > 0; else noData">
-          
+        <table mat-table [dataSource]="filteredAbsences()" class="modern-table"
+               *ngIf="filteredAbsences().length > 0; else noData">
+
           <ng-container matColumnDef="lecturer">
             <th mat-header-cell *matHeaderCellDef>{{ 'absences.table.lecturer' | translate }}</th>
             <td mat-cell *matCellDef="let absence">
@@ -50,15 +59,27 @@
             </td>
           </ng-container>
 
-          <ng-container matColumnDef="status">
-            <th mat-header-cell *matHeaderCellDef>{{ 'absences.table.status' | translate }}</th>
+          <!-- Genehmigungsstatus (Issue #10) -->
+          <ng-container matColumnDef="approvalStatus">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
             <td mat-cell *matCellDef="let absence">
-              <div class="status-badge" [ngClass]="{
-                'status-aktuell': getStatus(absence) === 'AKTUELL',
-                'status-geplant': getStatus(absence) === 'GEPLANT',
-                'status-vergangen': getStatus(absence) === 'VERGANGEN'
+              <div class="approval-status" [ngClass]="{
+                'status-beantragt':     absence.status === 'BEANTRAGT',
+                'status-genehmigt':     absence.status === 'GENEHMIGT',
+                'status-abgelehnt':     absence.status === 'ABGELEHNT',
+                'status-storniert':     absence.status === 'STORNIERT',
+                'status-abgeschlossen': absence.status === 'ABGESCHLOSSEN'
               }">
-                {{ 'absences.status.' + getStatus(absence) | translate }}
+                <mat-icon class="status-icon">
+                  @switch (absence.status) {
+                    @case ('BEANTRAGT')     { hourglass_empty }
+                    @case ('GENEHMIGT')     { check_circle }
+                    @case ('ABGELEHNT')     { cancel }
+                    @case ('STORNIERT')     { remove_circle }
+                    @default               { history }
+                  }
+                </mat-icon>
+                {{ absence.status }}
               </div>
             </td>
           </ng-container>
@@ -88,6 +109,12 @@
             <td mat-cell *matCellDef="let absence">
               <span class="note-text" *ngIf="absence.note">{{ absence.note }}</span>
               <span class="note-placeholder" *ngIf="!absence.note">-</span>
+              @if (absence.rejectionReason) {
+                <div class="rejection-reason" [matTooltip]="absence.rejectionReason">
+                  <mat-icon>feedback</mat-icon>
+                  <span class="rejection-text">{{ absence.rejectionReason }}</span>
+                </div>
+              }
             </td>
           </ng-container>
 
@@ -114,12 +141,31 @@
             </td>
           </ng-container>
 
+          <!-- Aktionen inkl. Genehmigen/Ablehnen (Sub-Issue #292) -->
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef class="action-column"></th>
             <td mat-cell *matCellDef="let absence" class="action-column">
-              <button mat-icon-button class="delete-btn" (click)="onDelete(absence.id)" matTooltip="Löschen">
-                <mat-icon>delete_outline</mat-icon>
-              </button>
+              <div class="action-buttons">
+                @if (absence.status === 'BEANTRAGT') {
+                  <button mat-icon-button class="approve-btn"
+                          (click)="onApprove(absence)"
+                          [disabled]="isProcessing(absence.id)"
+                          matTooltip="Genehmigen" id="approve-{{absence.id}}">
+                    <mat-icon>check_circle_outline</mat-icon>
+                  </button>
+                  <button mat-icon-button class="reject-btn"
+                          (click)="onReject(absence)"
+                          [disabled]="isProcessing(absence.id)"
+                          matTooltip="Ablehnen" id="reject-{{absence.id}}">
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                }
+                <button mat-icon-button class="delete-btn"
+                        (click)="onDelete(absence.id)"
+                        matTooltip="Löschen">
+                  <mat-icon>delete_outline</mat-icon>
+                </button>
+              </div>
             </td>
           </ng-container>
 
