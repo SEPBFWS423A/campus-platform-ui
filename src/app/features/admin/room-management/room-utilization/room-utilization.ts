@@ -8,7 +8,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatSliderModule } from '@angular/material/slider';
+import { MatChipsModule } from '@angular/material/chips';
 import { Room, AdminService, RoomUtilizationData, RoomScheduleEvent } from '../../admin.service';
+import { OperationalStatusPipe } from '../../../../shared/pipes/operational-status.pipe';
 
 interface RoomCard extends Room {
   utilization: number;
@@ -31,6 +33,8 @@ const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
     MatNativeDateModule,
     MatButtonToggleModule,
     MatSliderModule,
+    MatChipsModule,
+    OperationalStatusPipe,
   ],
   templateUrl: './room-utilization.html',
   styleUrl: './room-utilization.scss',

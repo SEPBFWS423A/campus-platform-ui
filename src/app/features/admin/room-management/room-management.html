@@ -100,6 +100,21 @@
               <input matInput formControlName="name" placeholder="z.B. Hörsaal 3">
             </mat-form-field>
             <mat-form-field class="form-group" subscriptSizing="dynamic">
+              <mat-label>Gebäude</mat-label>
+              <input matInput formControlName="building" placeholder="z.B. B">
+            </mat-form-field>
+            <mat-form-field class="form-group" subscriptSizing="dynamic">
+              <mat-label>Typ</mat-label>
+              <mat-select formControlName="roomType">
+                <mat-option value="HOERSAAL">Hörsaal</mat-option>
+                <mat-option value="SEMINARRAUM">Seminarraum</mat-option>
+                <mat-option value="LABOR">Labor</mat-option>
+                <mat-option value="PRUEFUNGSRAUM">Prüfungsraum</mat-option>
+                <mat-option value="BUERO">Büro</mat-option>
+                <mat-option value="SONSTIGES">Sonstiges</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field class="form-group" subscriptSizing="dynamic">
               <mat-label>Plätze</mat-label>
               <input matInput type="number" formControlName="seats" min="0" placeholder="0">
             </mat-form-field>
@@ -121,10 +136,48 @@
             <h3>Alle Räume</h3>
           </div>
           <div class="room-table-wrapper">
-            <table mat-table [dataSource]="filteredRooms()" class="management-table" id="rooms-table">
+            <table mat-table [dataSource]="filteredRooms()" multiTemplateDataRows class="management-table" id="rooms-table">
               <ng-container matColumnDef="name">
                 <th mat-header-cell *matHeaderCellDef>Name</th>
-                <td mat-cell *matCellDef="let room" class="room-name-cell">{{ room.name }}</td>
+                <td mat-cell *matCellDef="let room" class="room-name-cell">
+                  <div style="display: flex; align-items: center; gap: 12px;">
+                    <div class="type-icon-wrapper">
+                      <mat-icon>{{ 
+                        room.roomType === 'HOERSAAL' ? 'school' : 
+                        room.roomType === 'SEMINARRAUM' ? 'meeting_room' :
+                        room.roomType === 'LABOR' ? 'science' :
+                        room.roomType === 'PRUEFUNGSRAUM' ? 'assignment' :
+                        room.roomType === 'BUERO' ? 'work' : 'layers'
+                      }}</mat-icon>
+                    </div>
+                    <div style="display: flex; flex-direction: column;">
+                      <div style="display: flex; align-items: center; gap: 6px;">
+                        <span>{{ room.name }}</span>
+                        @if (room.barrierefreiheit) {
+                          <mat-icon style="font-size: 14px; width: 14px; height: 14px; color: var(--mat-sys-primary);" title="Barrierefrei">accessible</mat-icon>
+                        }
+                      </div>
+                      <span style="font-size: 10px; color: var(--mat-sys-on-surface-variant); font-weight: normal;">
+                        {{ room.building }}{{ room.floor !== undefined ? ', Etage ' + room.floor : '' }} • {{ 
+                          room.roomType === 'HOERSAAL' ? 'Hörsaal' : 
+                          room.roomType === 'SEMINARRAUM' ? 'Seminarraum' :
+                          room.roomType === 'LABOR' ? 'Labor' :
+                          room.roomType === 'PRUEFUNGSRAUM' ? 'Prüfungsraum' :
+                          room.roomType === 'BUERO' ? 'Büro' : 'Sonstiges'
+                        }}
+                      </span>
+                    </div>
+                  </div>
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef>Status</th>
+                <td mat-cell *matCellDef="let room">
+                  <div class="status-badge" [class]="'status-' + room.operationalStatus">
+                    <mat-icon>{{ (room.operationalStatus | operationalStatus).icon }}</mat-icon>
+                    {{ (room.operationalStatus | operationalStatus).label }}
+                  </div>
+                </td>
               </ng-container>
               <ng-container matColumnDef="seats">
                 <th mat-header-cell *matHeaderCellDef>Plätze</th>
@@ -139,22 +192,67 @@
                 <td mat-cell *matCellDef="let room">
                   <div class="actions-cell">
                     <button mat-icon-button class="btn-icon-only info-room-btn" title="Belegungsplan"
-                      (click)="onFocusRoom(room.id)">
+                      (click)="onFocusRoom(room.id); $event.stopPropagation()">
                       <mat-icon>calendar_month</mat-icon>
                     </button>
                     <button mat-icon-button class="btn-icon-only edit-room-btn" title="Bearbeiten"
-                      (click)="onEditRoom(room.id)">
+                      (click)="onEditRoom(room.id); $event.stopPropagation()">
                       <mat-icon>edit</mat-icon>
                     </button>
                     <button mat-icon-button class="btn-icon-only danger delete-room-btn" title="Löschen"
-                      (click)="onDeleteRoom(room.id)">
+                      (click)="onDeleteRoom(room.id); $event.stopPropagation()">
                       <mat-icon>delete</mat-icon>
                     </button>
                   </div>
                 </td>
               </ng-container>
+
+              <ng-container matColumnDef="expandedDetail">
+                <td mat-cell *matCellDef="let room" [attr.colspan]="displayedColumns.length">
+                  <div class="room-detail-content" [class.is-expanded]="room === expandedElement()">
+                    <div class="detail-grid">
+                      <div class="detail-section">
+                        <span class="detail-label">Ausstattung</span>
+                        <div class="features-chips">
+                          @if (room.features && room.features.length > 0) {
+                            @for (feature of room.features; track feature) {
+                              <span class="feature-tag">{{ feature }}</span>
+                            }
+                          } @else {
+                            <span class="no-data">Keine Ausstattung hinterlegt</span>
+                          }
+                        </div>
+                      </div>
+                      <div class="detail-section" style="flex-grow: 1;">
+                        <span class="detail-label">Beschreibung</span>
+                        <p class="description-text">{{ room.description || 'Keine Beschreibung vorhanden' }}</p>
+                      </div>
+                      <div class="detail-section">
+                        <span class="detail-label">Stammdaten</span>
+                        <div class="stammdaten-list">
+                          <span>Gebäude: {{ room.building }}</span>
+                          <span>Etage: {{ room.floor !== undefined ? room.floor : '-' }}</span>
+                          <span>Typ: {{ 
+                            room.roomType === 'HOERSAAL' ? 'Hörsaal' : 
+                            room.roomType === 'SEMINARRAUM' ? 'Seminarraum' :
+                            room.roomType === 'LABOR' ? 'Labor' :
+                            room.roomType === 'PRUEFUNGSRAUM' ? 'Prüfungsraum' :
+                            room.roomType === 'BUERO' ? 'Büro' : 'Sonstiges'
+                          }}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+              </ng-container>
+
               <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-              <tr mat-row *matRowDef="let row; columns: displayedColumns" [attr.data-room-id]="row.id"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns" 
+                  class="room-row"
+                  [class.expanded-row]="expandedElement() === row"
+                  (click)="expandedElement.set(expandedElement() === row ? null : row)">
+              </tr>
+              <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="detail-row"></tr>
             </table>
           </div>
         </mat-card>

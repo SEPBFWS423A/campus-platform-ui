@@ -132,11 +132,21 @@ export interface InstitutionInfo {
   passwordResetEmailBodyEn?: string;
 }
 
+export type RoomType = 'HOERSAAL' | 'SEMINARRAUM' | 'LABOR' | 'PRUEFUNGSRAUM' | 'BUERO' | 'SONSTIGES';
+export type OperationalStatus = 'AKTIV' | 'EINGESCHRAENKT' | 'GESPERRT' | 'WARTUNG' | 'AUSSER_BETRIEB';
+
 export interface Room {
   id: number;
   name: string;
   seats: number;
   examSeats: number;
+  building: string;
+  floor?: number;
+  roomType: RoomType;
+  operationalStatus: OperationalStatus;
+  features: string[];
+  barrierefreiheit: boolean;
+  description?: string;
 }
 
 export enum CourseStatus {
@@ -366,6 +376,10 @@ export class AdminService {
 
   deleteRoom(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/rooms/${id}`);
+  }
+
+  updateRoomStatus(id: number, status: OperationalStatus): Observable<Room> {
+    return this.http.patch<Room>(`${this.apiUrl}/rooms/${id}/status`, { status });
   }
 
   getRoomSchedule(start: string, end: string): Observable<RoomScheduleEvent[]> {

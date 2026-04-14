@@ -3,7 +3,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
+import { MatChipsModule } from '@angular/material/chips';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { OperationalStatusPipe } from '../../../../shared/pipes/operational-status.pipe';
 import { Room, AdminService, RoomScheduleEvent } from '../../admin.service';
 
 type View = 'kachel' | 'kalender';
@@ -14,7 +16,7 @@ const HOURS = ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '1
 
 @Component({
   selector: 'app-room-schedule',
-  imports: [MatButtonModule, MatButtonToggleModule, MatCardModule, MatIconModule, MatDialogModule],
+  imports: [MatButtonModule, MatButtonToggleModule, MatCardModule, MatIconModule, MatDialogModule, MatChipsModule, OperationalStatusPipe],
   templateUrl: './room-schedule.html',
   styleUrl: './room-schedule.scss',
 })
