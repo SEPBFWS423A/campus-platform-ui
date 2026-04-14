@@ -43,12 +43,12 @@ export const adminRoutes: Routes = [
   path: 'applications',
   component: AdminApplications
 },
-{
-  path: 'holidays',
-  component: Holidays
-},
+  {
+    path: 'holidays',
+    component: Holidays
   },
+  {
     path: 'lecturer-absences',
     component: LecturerAbsencesAdmin
-  },
+  }
 ];
