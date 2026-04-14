@@ -1,105 +1,136 @@
-<mat-card class="card schedule-card">
-
-  <!-- Header mit View-Toggle -->
-  <div class="schedule-header">
-    <h3>Belegungsplan</h3>
-    <mat-button-toggle-group class="view-toggle" [value]="currentView()">
-      <mat-button-toggle value="kachel" (click)="currentView.set('kachel')">
-        <mat-icon>grid_view</mat-icon> Kacheln
-      </mat-button-toggle>
-      <mat-button-toggle value="kalender" (click)="currentView.set('kalender')">
-        <mat-icon>calendar_view_week</mat-icon> Kalender
-      </mat-button-toggle>
-    </mat-button-toggle-group>
-  </div>
-
-  <!-- Wochennavigation -->
-  <div class="week-nav">
-    <button mat-stroked-button class="nav-btn" (click)="prevWeek()">
-      <mat-icon>chevron_left</mat-icon> Vorige Woche
-    </button>
-    <span class="week-label">{{ weekData().label }}</span>
-    <button mat-stroked-button class="nav-btn" (click)="nextWeek()">
-      Nächste Woche <mat-icon>chevron_right</mat-icon>
-    </button>
-  </div>
-
-  <!-- ── Kachel-Ansicht ── -->
-  @if (currentView() === 'kachel') {
-  @if (rooms().length === 0) {
-  <div class="empty-state">
-    <mat-icon>meeting_room</mat-icon>
-    <p>Keine Räume vorhanden.</p>
-  </div>
-  } @else {
-  <div class="tiles-grid">
-    @for (room of rooms(); track room.id) {
-    <div class="room-tile">
-      <div class="tile-icon-row">
-        <span class="tile-icon"><mat-icon>meeting_room</mat-icon></span>
-        <span class="tile-name">{{ room.name }}</span>
+@if (mode() === 'overview') {
+  <div class="room-overview-grid">
+    @if (rooms().length === 0) {
+      <div class="empty-state">
+        <mat-icon>meeting_room</mat-icon>
+        <p>Keine Räume vorhanden.</p>
       </div>
-      <div class="tile-stats">
-        <div class="tile-stat">
-          <mat-icon>event_seat</mat-icon>
-          <span>{{ room.seats }} Plätze</span>
-        </div>
-        <div class="tile-stat">
-          <mat-icon>assignment</mat-icon>
-          <span>{{ room.examSeats }} Klausurplätze</span>
-        </div>
-      </div>
-      <div class="tile-footer">
-        @if (getEventsForRoomInWeek(room.id).length === 0) {
-        <span class="no-booking-chip">
-          <mat-icon>event_busy</mat-icon> Keine Belegung diese Woche
-        </span>
-        } @else {
-        @for (event of getEventsForRoomInWeek(room.id); track event.eventId) {
-        <span class="booking-chip" [class.klausur]="event.eventType === 'KLAUSUR'">
-          <mat-icon>event</mat-icon> {{ formatEventTime(event.startTime) }} – {{ event.eventName }}
-        </span>
-        }
-        }
-      </div>
-    </div>
+    } @else {
+      @for (room of rooms(); track room.id) {
+        <mat-card class="room-action-card" (click)="openRoomSchedule(room)">
+          <div class="card-bg-icon"><mat-icon>meeting_room</mat-icon></div>
+          <div class="card-content">
+            <span class="room-name">{{ room.name }}</span>
+            <div class="room-meta">
+              <span class="meta-item"><mat-icon>event_seat</mat-icon> {{ room.seats }} Sitze</span>
+              <span class="meta-item"><mat-icon>assignment</mat-icon> {{ room.examSeats }} Klausur</span>
+            </div>
+            <div class="room-availability">
+              @if (getEventsForRoomInWeek(room.id).length === 0) {
+                <span class="status-free">
+                  <mat-icon>check_circle</mat-icon> 
+                  Frei diese Woche
+                </span>
+              } @else {
+                <span class="status-busy">
+                  <mat-icon>event_available</mat-icon>
+                  {{ getEventsForRoomInWeek(room.id).length }} 
+                  {{ getEventsForRoomInWeek(room.id).length === 1 ? 'Termin' : 'Termine' }}
+                </span>
+              }
+            </div>
+          </div>
+          <div class="card-actions">
+            <button mat-button color="primary">
+              <mat-icon>calendar_month</mat-icon> Schedule ansehen
+            </button>
+          </div>
+        </mat-card>
+      }
     }
   </div>
-  }
-  }
+}
 
-  <!-- ── Kalender-Ansicht ── -->
-  @if (currentView() === 'kalender') {
-  <div class="calendar-scroll-wrapper">
-    <div class="week-calendar">
+@if (mode() === 'detail') {
+  <mat-card class="card schedule-card dialog-inner-card">
+    <!-- Header mit View-Toggle -->
+    <div class="schedule-header">
+      <div class="header-main">
+        <mat-button-toggle-group class="view-toggle" [value]="currentView()">
+          <mat-button-toggle value="kachel" (click)="currentView.set('kachel')">
+            <mat-icon>grid_view</mat-icon> Liste
+          </mat-button-toggle>
+          <mat-button-toggle value="kalender" (click)="currentView.set('kalender')">
+            <mat-icon>calendar_view_week</mat-icon> Kalender
+          </mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
+    </div>
 
-      <!-- Zeitspalte -->
-      <div class="time-col">
-        <div class="cal-corner"></div>
-        @for (h of hours; track h) {
-        <div class="time-cell">{{ h }}</div>
+    <!-- Wochennavigation -->
+    <div class="week-nav">
+      <button mat-stroked-button class="nav-btn" (click)="prevWeek()">
+        <mat-icon>chevron_left</mat-icon> Vorige
+      </button>
+      <span class="week-label">{{ weekData().label }}</span>
+      <button mat-stroked-button class="nav-btn" (click)="nextWeek()">
+        Nächste <mat-icon>chevron_right</mat-icon>
+      </button>
+    </div>
+
+    <!-- ── Kachel-Ansicht ── -->
+    @if (currentView() === 'kachel') {
+      <div class="detail-tiles-list">
+        @if (getEventsForRoomInWeek(selectedRoomId()!).length === 0) {
+          <div class="empty-state">
+            <mat-icon>event_busy</mat-icon>
+            <p>Keine Belegungen in dieser Woche.</p>
+          </div>
+        } @else {
+          @for (event of getEventsForRoomInWeek(selectedRoomId()!); track event.eventId) {
+            <div class="detail-booking-row" [class.klausur]="event.eventType === 'KLAUSUR'">
+              <div class="event-time">
+                <mat-icon>schedule</mat-icon>
+                {{ formatEventTime(event) }}
+              </div>
+              <div class="event-name">{{ event.eventName }}</div>
+              <div class="event-type-badge">{{ event.eventType }}</div>
+            </div>
+          }
         }
       </div>
+    }
 
-      <!-- Tagesspalten -->
-      @for (day of weekData().days; track day.short; let dayIdx = $index) {
-      <div class="day-col">
-        <div class="day-header">{{ day.short }}</div>
-        <div class="day-body">
-          @for (h of hours; track h) {
-          <div class="hour-cell">
-            @if (getEventAtHour(h, getDayDate(dayIdx)); as event) {
-            <div class="event-block" [class.klausur]="event.eventType === 'KLAUSUR'">
-              {{ event.eventName }}
-            </div>
+    <!-- ── Kalender-Ansicht ── -->
+    @if (currentView() === 'kalender') {
+      <div class="calendar-scroll-wrapper">
+        <div class="week-calendar">
+          <!-- Zeitspalte -->
+          <div class="time-col">
+            <div class="cal-corner"></div>
+            @for (h of hours; track h) {
+              <div class="time-cell">{{ h }}</div>
             }
           </div>
+
+          <!-- Tagesspalten -->
+          @for (day of weekData().days; track day.short; let dayIdx = $index) {
+            <div class="day-col">
+              <div class="day-header">{{ day.short }}</div>
+              <div class="day-body">
+                <!-- Hintergrund-Gitter -->
+                @for (h of hours; track h) {
+                  <div class="hour-cell"></div>
+                }
+                
+                <!-- Tatsächliche Events -->
+                @for (event of getEventsForRoomOnDay(selectedRoomId()!, getDayDate(dayIdx)); track event.eventId) {
+                  <div class="event-block-absolute" 
+                       [class.klausur]="event.eventType === 'KLAUSUR'" 
+                       [title]="event.eventName"
+                       [style.top.px]="getEventTop(event)"
+                       [style.height.px]="getEventHeight(event)">
+                    <div class="event-inner">
+                      <span class="event-name">{{ event.eventName }}</span>
+                      <span class="event-time-hint">{{ formatEventTimeOnly(event) }}</span>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
           }
         </div>
       </div>
-      }
-    </div>
-  </div>
-  }
-
-</mat-card>
+    }
+  </mat-card>
+}

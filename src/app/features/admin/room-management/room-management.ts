@@ -1,5 +1,5 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
@@ -9,6 +9,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 import { AdminService, Room, RoomUtilizationData } from '../admin.service';
 import { RoomEditDialog } from './room-edit.dialog/room-edit.dialog';
 import { RoomDeleteDialog } from './room-delete.dialog/room-delete.dialog';
@@ -27,6 +31,10 @@ import { RoomUtilization } from './room-utilization/room-utilization';
     MatSelectModule,
     MatTableModule,
     MatTabsModule,
+    MatExpansionModule,
+    MatAutocompleteModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
     RoomSchedule,
     RoomUtilization,
   ],
@@ -40,6 +48,29 @@ export class RoomManagement implements OnInit {
 
   rooms = signal<Room[]>([]);
   utilizationData = signal<RoomUtilizationData[]>([]);
+  focusedRoomId = signal<number | null>(null);
+  selectedTabIndex = signal(0);
+
+  // Filters
+  filterRoomId = signal<number | null>(null);
+  filterStart = signal<Date | null>(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
+  filterEnd = signal<Date | null>(new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0));
+
+  filteredRooms = computed(() => {
+    let list = this.rooms();
+    const rid = this.filterRoomId();
+    if (rid) {
+      list = list.filter(r => r.id === rid);
+    }
+    return list;
+  });
+
+  roomAutocompleteControl = new FormControl('');
+  filteredAutocompleteOptions = computed(() => {
+    const val = this.roomAutocompleteControl.value?.toLowerCase() || '';
+    return this.rooms().filter(r => r.name.toLowerCase().includes(val));
+  });
+
   totalRooms = computed(() => this.rooms().length);
   totalSeats = computed(() => this.rooms().reduce((s, r) => s + r.seats, 0));
   totalUtilization = computed(() => {
@@ -107,6 +138,23 @@ export class RoomManagement implements OnInit {
           error: () => this.createError.set('Raum konnte nicht gelöscht werden.'),
         });
       });
+  }
+
+  onFocusRoom(id: number): void {
+    this.focusedRoomId.set(id);
+    this.selectedTabIndex.set(1);
+  }
+
+  onResetFilters(): void {
+    this.filterRoomId.set(null);
+    this.roomAutocompleteControl.setValue('');
+    const now = new Date();
+    this.filterStart.set(new Date(now.getFullYear(), now.getMonth(), 1));
+    this.filterEnd.set(new Date(now.getFullYear(), now.getMonth() + 1, 0));
+  }
+
+  onRoomSelected(roomId: number): void {
+    this.filterRoomId.set(roomId);
   }
 
   private loadRooms(): void {

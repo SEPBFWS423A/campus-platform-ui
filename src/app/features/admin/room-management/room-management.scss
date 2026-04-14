@@ -19,7 +19,55 @@
 .admin-rooms-content {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
+  gap: var(--space-4);
+}
+
+.filter-panel {
+  background: var(--mat-sys-surface) !important;
+  border: 1px solid var(--mat-sys-outline-variant) !important;
+  border-radius: var(--radius-xl) !important;
+  box-shadow: var(--shadow-sm) !important;
+  overflow: hidden;
+
+  mat-expansion-panel-header {
+    height: 64px !important;
+    padding: 0 var(--space-6) !important;
+    
+    mat-panel-title {
+      align-items: center;
+      gap: var(--space-3);
+      font-weight: 600;
+      color: var(--mat-sys-on-surface);
+      
+      mat-icon {
+        color: var(--mat-sys-primary);
+      }
+    }
+
+    mat-panel-description {
+      font-size: var(--text-xs);
+      color: var(--mat-sys-on-surface-variant);
+    }
+  }
+
+  .filter-panel-content {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    padding: var(--space-5) var(--space-6);
+    background: var(--mat-sys-surface-container-low);
+    border-top: 1px solid var(--mat-sys-outline-variant);
+
+    mat-form-field {
+      flex: 1 1 240px;
+    }
+
+    button {
+      height: 56px;
+      padding: 0 var(--space-6);
+    }
+  }
 }
 
 .room-stats-row {
