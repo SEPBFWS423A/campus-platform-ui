@@ -899,85 +899,98 @@
 
 <!-- MODULE DIALOG TEMPLATE -->
 <ng-template #moduleDialogTemplate>
-   <h2 mat-dialog-title>
-      {{ (isEditingModule() ? "academicStructure.editAcademicModule" : "academicStructure.defineAcademicModule") | translate }}
-   </h2>
-   <mat-dialog-content>
-      <form [formGroup]="moduleForm" class="module-form" style="padding-top: 10px;">
-         <div class="form-row" style="display: flex; gap: 16px;">
-            <mat-form-field appearance="outline" style="flex: 2;">
-               <mat-label>{{ "academicStructure.moduleName" | translate }}</mat-label>
-               <input matInput formControlName="name">
-            </mat-form-field>
-            <mat-form-field appearance="outline" style="flex: 1;">
-               <mat-label>{{ "academicStructure.semester" | translate }}</mat-label>
-               <input matInput type="number" formControlName="semester">
-            </mat-form-field>
-         </div>
+  <h2 mat-dialog-title>
+    {{ (isEditingModule() ? "academicStructure.editAcademicModule" : "academicStructure.defineAcademicModule") | translate }}
+  </h2>
+  <mat-dialog-content>
+    <form [formGroup]="moduleForm" class="module-form" style="padding-top: 10px;">
+      <div class="form-row" style="display: flex; gap: 16px;">
+        <mat-form-field appearance="outline" style="flex: 2;">
+          <mat-label>{{ "academicStructure.moduleName" | translate }}</mat-label>
+          <input matInput formControlName="name">
+        </mat-form-field>
+        <mat-form-field appearance="outline" style="flex: 1;">
+          <mat-label>{{ "academicStructure.semester" | translate }}</mat-label>
+          <input matInput type="number" formControlName="semester">
+        </mat-form-field>
+      </div>
 
-         <div class="form-row" style="display: flex; gap: 16px;">
-            <mat-form-field appearance="outline" style="flex: 1;">
-               <mat-label>{{ "academicStructure.courseOfStudy" | translate }}</mat-label>
-               <mat-select formControlName="courseOfStudyId">
-                  @for (c of courses(); track c.id) {
-                     <mat-option [value]="c.id">{{ c.name }} ({{ c.degreeType }})</mat-option>
-                  }
-               </mat-select>
-            </mat-form-field>
-            <mat-form-field appearance="outline" style="flex: 1;">
-               <mat-label>{{ "academicStructure.associatedSpecialization" | translate }}</mat-label>
-               <mat-select formControlName="specializationId">
-                  <mat-option [value]="undefined">{{ "academicStructure.noSpecificSpecialization" | translate }}</mat-option>
-                  @for (s of availableSpecializationsForModuleForm(); track s.id) {
-                     <mat-option [value]="s.id">{{ s.name }}</mat-option>
-                  }
-               </mat-select>
-            </mat-form-field>
-         </div>
+      <div class="form-row" style="display: flex; gap: 16px;">
+        <mat-form-field appearance="outline" style="flex: 1;">
+          <mat-label>{{ "academicStructure.courseOfStudy" | translate }}</mat-label>
+          <mat-select formControlName="courseOfStudyId">
+            @for (c of courses(); track c.id) {
+              <mat-option [value]="c.id">{{ c.name }} ({{ c.degreeType }})</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline" style="flex: 1;">
+          <mat-label>{{ "academicStructure.associatedSpecialization" | translate }}</mat-label>
+          <mat-select formControlName="specializationId">
+            <mat-option [value]="undefined">{{ "academicStructure.noSpecificSpecialization" | translate }}</mat-option>
+            @for (s of availableSpecializationsForModuleForm(); track s.id) {
+              <mat-option [value]="s.id">{{ s.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
 
-         <div class="form-row" style="display: flex; gap: 16px;">
-            <mat-form-field appearance="outline" style="flex: 1;">
-               <mat-label>{{ "academicStructure.workloadHours" | translate }}</mat-label>
-               <input matInput type="number" formControlName="requiredTotalHours">
-            </mat-form-field>
-            <mat-form-field appearance="outline" style="flex: 1;">
-               <mat-label>{{ "academicStructure.examTypes" | translate }}</mat-label>
-               <mat-select formControlName="possibleExamTypes" multiple [compareWith]="compareExamTypes">
-                  @for (et of examTypes(); track et.id) {
-                     <mat-option [value]="et">{{ getExamTypeName(et) }}</mat-option>
-                  }
-               </mat-select>
-            </mat-form-field>
-            <mat-form-field appearance="outline" style="flex: 1;">
-               <mat-label>{{ "academicStructure.preferredExamType" | translate }}</mat-label>
-               <mat-select formControlName="preferredExamTypeId">
-                  <mat-option [value]="undefined">{{ "academicStructure.none" | translate }}</mat-option>
-                  @for (et of selectedPossibleExamTypes(); track et.id) {
-                     <mat-option [value]="et.id">{{ getExamTypeName(et) }}</mat-option>
-                  }
-               </mat-select>
-            </mat-form-field>
-         </div>
+      <div class="form-row" style="display: flex; gap: 16px;">
+        <mat-form-field appearance="outline" style="flex: 1;">
+          <mat-label>{{ "academicStructure.workloadHours" | translate }}</mat-label>
+          <input matInput type="number" formControlName="requiredTotalHours">
+        </mat-form-field>
+        <mat-form-field appearance="outline" style="flex: 1;">
+          <mat-label>{{ "academicStructure.ects" | translate }}</mat-label>
+          <mat-select formControlName="ects">
+            <mat-option [value]="null">{{ "academicStructure.none" | translate }}</mat-option>
+            @for (ects of ectsOptions; track ects) {
+              <mat-option [value]="ects">{{ ects }} ECTS</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline" style="flex: 1;">
+          <mat-label>{{ "academicStructure.examTypes" | translate }}</mat-label>
+          <mat-select formControlName="possibleExamTypes" multiple [compareWith]="compareExamTypes">
+            @for (et of examTypes(); track et.id) {
+              <mat-option [value]="et">{{ getExamTypeName(et) }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
 
-         <mat-form-field appearance="outline" style="width: 100%;">
-            <mat-label>{{ "academicStructure.qualifiedLecturers" | translate }}</mat-label>
-            <mat-select formControlName="lecturers" multiple [compareWith]="compareLecturers">
-               @for (l of lecturers(); track l.id) {
-                  <mat-option [value]="{ id: l.id, salutation: l.salutation, title: l.title, firstName: l.firstName, lastName: l.lastName }">
-                     {{ getFullDisplayName(l) }}
-                  </mat-option>
-               }
-            </mat-select>
-         </mat-form-field>
-      </form>
-   </mat-dialog-content>
-   <mat-dialog-actions align="end">
-      <button mat-button (click)="cancelModuleEdit()">{{ "academicStructure.cancel" | translate }}</button>
-      <button mat-flat-button color="primary" [disabled]="moduleForm.invalid" (click)="addModule()">
-         {{ (isEditingModule() ? "academicStructure.update" : "academicStructure.defineModule") | translate }}
-      </button>
-   </mat-dialog-actions>
+      <div class="form-row" style="display: flex; gap: 16px;">
+        <mat-form-field appearance="outline" style="flex: 1;">
+          <mat-label>{{ "academicStructure.preferredExamType" | translate }}</mat-label>
+          <mat-select formControlName="preferredExamTypeId">
+            <mat-option [value]="undefined">{{ "academicStructure.none" | translate }}</mat-option>
+            @for (et of selectedPossibleExamTypes(); track et.id) {
+              <mat-option [value]="et.id">{{ getExamTypeName(et) }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline" style="width: 100%;">
+        <mat-label>{{ "academicStructure.qualifiedLecturers" | translate }}</mat-label>
+        <mat-select formControlName="lecturers" multiple [compareWith]="compareLecturers">
+          @for (l of lecturers(); track l.id) {
+            <mat-option [value]="{ id: l.id, salutation: l.salutation, title: l.title, firstName: l.firstName, lastName: l.lastName }">
+              {{ getFullDisplayName(l) }}
+            </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </form>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="cancelModuleEdit()">{{ "academicStructure.cancel" | translate }}</button>
+    <button mat-flat-button color="primary" [disabled]="moduleForm.invalid" (click)="addModule()">
+      {{ (isEditingModule() ? "academicStructure.update" : "academicStructure.defineModule") | translate }}
+    </button>
+  </mat-dialog-actions>
 </ng-template>
+
 
 <!-- GRADE SCALE DIALOG TEMPLATE -->
 <ng-template #gradeScaleDialogTemplate>

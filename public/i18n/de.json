@@ -553,7 +553,8 @@
     "saveGradeScaleSuccess": "Noteneintrag erfolgreich gespeichert.",
     "deleteGradeScaleSuccess": "Noteneintrag erfolgreich gelöscht.",
     "deleteGradeScaleTitle": "Schwellenwert löschen",
-    "deleteGradeScaleMessage": "Sind Sie sicher, dass Sie diesen Schwellenwert löschen möchten?"
+    "deleteGradeScaleMessage": "Sind Sie sicher, dass Sie diesen Schwellenwert löschen möchten?",
+    "ects": "ECTS"
   },
   "user": {
     "firstname": "Vorname",
