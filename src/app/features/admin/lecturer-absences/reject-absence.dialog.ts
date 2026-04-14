@@ -24,7 +24,9 @@ import { MatIconModule } from '@angular/material/icon';
         <mat-label>Begründung</mat-label>
         <textarea matInput [formControl]="reasonCtrl" rows="4"
                   placeholder="Warum wird die Abwesenheit abgelehnt?"></textarea>
-        <mat-error *ngIf="reasonCtrl.invalid">Begründung ist erforderlich.</mat-error>
+        @if (reasonCtrl.invalid && reasonCtrl.touched) {
+          <mat-error>Begründung ist erforderlich.</mat-error>
+        }
       </mat-form-field>
     </mat-dialog-content>
 
