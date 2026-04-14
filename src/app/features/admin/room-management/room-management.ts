@@ -2,7 +2,7 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -18,6 +18,8 @@ import { RoomEditDialog } from './room-edit.dialog/room-edit.dialog';
 import { RoomDeleteDialog } from './room-delete.dialog/room-delete.dialog';
 import { RoomSchedule } from './room-schedule/room-schedule';
 import { RoomUtilization } from './room-utilization/room-utilization';
+import { MatChipsModule } from '@angular/material/chips';
+import { OperationalStatusPipe } from '../../../shared/pipes/operational-status.pipe';
 
 @Component({
   selector: 'app-room-management',
@@ -35,6 +37,9 @@ import { RoomUtilization } from './room-utilization/room-utilization';
     MatAutocompleteModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    MatChipsModule,
+    MatDialogModule,
+    OperationalStatusPipe,
     RoomSchedule,
     RoomUtilization,
   ],
@@ -50,6 +55,7 @@ export class RoomManagement implements OnInit {
   utilizationData = signal<RoomUtilizationData[]>([]);
   focusedRoomId = signal<number | null>(null);
   selectedTabIndex = signal(0);
+  expandedElement = signal<Room | null>(null);
 
   // Filters
   filterRoomId = signal<number | null>(null);
@@ -80,105 +86,112 @@ export class RoomManagement implements OnInit {
     return `${Math.round(avg)}%`;
   });
 
-  displayedColumns = ['name', 'seats', 'examSeats', 'actions'];
+  displayedColumns = ['name', 'status', 'seats', 'examSeats', 'actions'];
 
   createError = signal<string | null>(null);
   createForm: FormGroup = this.fb.group({
-    name: ['', Validators.required],
-    seats: [null, [Validators.required, Validators.min(0)]],
+    name: ['', [Validators.required, Validators.maxLength(50)]],
+    seats: [null, [Validators.required, Validators.min(1)]],
     examSeats: [null, [Validators.required, Validators.min(0)]],
+    building: ['', Validators.required],
+    floor: [0],
+    roomType: ['HOERSAAL', Validators.required],
+    operationalStatus: ['AKTIV', Validators.required],
+    features: [[]],
+    barrierefreiheit: [false],
+    description: ['', Validators.maxLength(500)]
   });
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.loadRooms();
-    this.loadTotalUtilization();
+    this.loadUtilization();
   }
 
-  onCreateRoom(): void {
-    if (this.createForm.invalid) return;
-    this.createError.set(null);
-    this.adminService.createRoom(this.createForm.value).subscribe({
-      next: (room) => {
-        this.rooms.update(rooms => [...rooms, room]);
-        this.createForm.reset();
-      },
-      error: () => this.createError.set('Raum konnte nicht angelegt werden.'),
+  loadRooms() {
+    this.adminService.getRooms().subscribe(rooms => {
+      this.rooms.set(rooms);
     });
   }
 
-  onEditRoom(id: number): void {
-    const room = this.rooms().find(r => r.id === id);
-    if (!room) return;
-
-    this.dialog.open(RoomEditDialog, { data: room, width: '560px', maxHeight: '95vh' })
-      .afterClosed()
-      .subscribe(result => {
-        if (!result) return;
-        this.adminService.updateRoom(id, result).subscribe({
-          next: (updated) => {
-            this.rooms.update(rooms => rooms.map(r => r.id === id ? updated : r));
-          },
-          error: () => this.createError.set('Raum konnte nicht aktualisiert werden.'),
-        });
-      });
+  loadUtilization() {
+    const start = this.filterStart()?.toISOString().split('T')[0] || '';
+    const end = this.filterEnd()?.toISOString().split('T')[0] || '';
+    this.adminService.getRoomUtilizations(start, end).subscribe(data => {
+      this.utilizationData.set(data);
+    });
   }
 
-  onDeleteRoom(id: number): void {
-    const room = this.rooms().find(r => r.id === id);
-    if (!room) return;
-
-    this.dialog.open(RoomDeleteDialog, { data: room, width: '400px' })
-      .afterClosed()
-      .subscribe(confirmed => {
-        if (!confirmed) return;
-        this.adminService.deleteRoom(id).subscribe({
-          next: () => {
-            this.rooms.update(rooms => rooms.filter(r => r.id !== id));
-          },
-          error: () => this.createError.set('Raum konnte nicht gelöscht werden.'),
-        });
-      });
-  }
-
-  onFocusRoom(id: number): void {
-    this.focusedRoomId.set(id);
-    this.selectedTabIndex.set(1);
-  }
-
-  onResetFilters(): void {
+  onResetFilters() {
     this.filterRoomId.set(null);
     this.roomAutocompleteControl.setValue('');
-    const now = new Date();
-    this.filterStart.set(new Date(now.getFullYear(), now.getMonth(), 1));
-    this.filterEnd.set(new Date(now.getFullYear(), now.getMonth() + 1, 0));
+    this.filterStart.set(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
+    this.filterEnd.set(new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0));
+    this.loadUtilization();
   }
 
-  onRoomSelected(roomId: number): void {
+  onRoomSelected(roomId: number) {
     this.filterRoomId.set(roomId);
   }
 
-  private loadRooms(): void {
-    this.adminService.getRooms().subscribe({
-      next: (rooms) => { this.rooms.set(rooms); },
-      error: () => this.createError.set('Räume konnten nicht geladen werden.'),
+  onFocusRoom(roomId: number) {
+    this.focusedRoomId.set(roomId);
+    this.selectedTabIndex.set(1);
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  onCreateRoom() {
+    if (this.createForm.invalid) return;
+
+    this.adminService.createRoom(this.createForm.value).subscribe({
+      next: () => {
+        this.loadRooms();
+        this.createForm.reset({
+          roomType: 'HOERSAAL',
+          operationalStatus: 'AKTIV',
+          floor: 0,
+          barrierefreiheit: false
+        });
+        this.createError.set(null);
+      },
+      error: (err) => {
+        this.createError.set('Raum konnte nicht erstellt werden. ' + (err.error?.message || ''));
+      }
     });
   }
 
-  private loadTotalUtilization(): void {
-    const now = new Date();
-    const start = new Date(now.getFullYear(), now.getMonth(), 1);
-    const end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-    
-    const startStr = this.toLocalIsoDate(start);
-    const endStr   = this.toLocalIsoDate(end);
-    
-    this.adminService.getRoomUtilizations(startStr, endStr).subscribe(data => this.utilizationData.set(data));
+  onEditRoom(roomId: number) {
+    const room = this.rooms().find(r => r.id === roomId);
+    if (!room) return;
+
+    const dialogRef = this.dialog.open(RoomEditDialog, {
+      width: '600px',
+      data: room,
+      panelClass: 'glass-dialog-panel'
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loadRooms();
+      }
+    });
   }
 
-  private toLocalIsoDate(date: Date): string {
-    const pad = (num: number) => (num < 10 ? '0' : '') + num;
-    return date.getFullYear() +
-      '-' + pad(date.getMonth() + 1) +
-      '-' + pad(date.getDate());
+  onDeleteRoom(roomId: number) {
+    const room = this.rooms().find(r => r.id === roomId);
+    if (!room) return;
+
+    const dialogRef = this.dialog.open(RoomDeleteDialog, {
+      width: '400px',
+      data: room
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.adminService.deleteRoom(roomId).subscribe(() => {
+          this.loadRooms();
+        });
+      }
+    });
   }
 }

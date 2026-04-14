@@ -7,23 +7,104 @@
 
 <mat-dialog-content>
   <form [formGroup]="form" class="dialog-form">
-    <div class="field-full">
-      <label class="field-label">Raumname</label>
-      <mat-form-field appearance="outline" subscriptSizing="dynamic">
-        <input matInput formControlName="name">
-      </mat-form-field>
-    </div>
-    <div class="field-row">
-      <div class="field-group">
-        <label class="field-label">Plätze</label>
+    <!-- Basisdaten -->
+    <div class="form-section">
+      <span class="section-title">Basisdaten</span>
+      <div class="field-full">
+        <label class="field-label">Raumname <span class="required">*</span></label>
         <mat-form-field appearance="outline" subscriptSizing="dynamic">
-          <input matInput type="number" formControlName="seats" min="0">
+          <input matInput formControlName="name">
         </mat-form-field>
       </div>
-      <div class="field-group">
-        <label class="field-label">Klausurplätze</label>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Gebäude <span class="required">*</span></label>
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <input matInput formControlName="building">
+          </mat-form-field>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Etage</label>
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <input matInput type="number" formControlName="floor">
+          </mat-form-field>
+        </div>
+      </div>
+    </div>
+
+    <!-- Kapazität & Typ -->
+    <div class="form-section">
+      <span class="section-title">Kapazität & Typ</span>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Plätze <span class="required">*</span></label>
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <input matInput type="number" formControlName="seats" min="1">
+          </mat-form-field>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Klausurplätze <span class="required">*</span></label>
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <input matInput type="number" formControlName="examSeats" min="0">
+          </mat-form-field>
+          @if (form.get('examSeats')?.hasError('examSeatsExceedsSeats')) {
+            <mat-error style="font-size: 10px;">Klausurplätze > Plätze</mat-error>
+          }
+        </div>
+      </div>
+      <div class="field-full">
+        <label class="field-label">Raumtyp <span class="required">*</span></label>
         <mat-form-field appearance="outline" subscriptSizing="dynamic">
-          <input matInput type="number" formControlName="examSeats" min="0">
+          <mat-select formControlName="roomType">
+            <mat-option value="HOERSAAL">Hörsaal</mat-option>
+            <mat-option value="SEMINARRAUM">Seminarraum</mat-option>
+            <mat-option value="LABOR">Labor</mat-option>
+            <mat-option value="PRUEFUNGSRAUM">Prüfungsraum</mat-option>
+            <mat-option value="BUERO">Büro</mat-option>
+            <mat-option value="SONSTIGES">Sonstiges</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- Details & Status -->
+    <div class="form-section">
+      <span class="section-title">Ausstattung & Status</span>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Status <span class="required">*</span></label>
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-select formControlName="operationalStatus">
+              <mat-option value="AKTIV">Aktiv</mat-option>
+              <mat-option value="EINGESCHRAENKT">Eingeschränkt</mat-option>
+              <mat-option value="GESPERRT">Gesperrt</mat-option>
+              <mat-option value="WARTUNG">Wartung</mat-option>
+              <mat-option value="AUSSER_BETRIEB">Außer Betrieb</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="field-group" style="display: flex; align-items: flex-end; padding-bottom: 20px;">
+          <mat-slide-toggle formControlName="barrierefreiheit" color="primary">
+            Barrierefrei
+          </mat-slide-toggle>
+        </div>
+      </div>
+      <div class="field-full">
+        <label class="field-label">Ausstattung</label>
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-select formControlName="features" multiple>
+            <mat-option value="BEAMER">Beamer</mat-option>
+            <mat-option value="WHITEBOARD">Whiteboard</mat-option>
+            <mat-option value="PC">PC-Arbeitsplätze</mat-option>
+            <mat-option value="KLIMAANLAGE">Klimaanlage</mat-option>
+            <mat-option value="WASSERANSCHLUSS">Wasseranschluss</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="field-full">
+        <label class="field-label">Beschreibung</label>
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <textarea matInput formControlName="description" rows="2" placeholder="Optionale Details..."></textarea>
         </mat-form-field>
       </div>
     </div>

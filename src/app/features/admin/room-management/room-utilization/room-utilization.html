@@ -90,7 +90,13 @@
             </svg>
 
             <div class="util-card-info">
-              <span class="util-room-name">{{ card.name }}</span>
+              <div class="util-room-name-wrapper" style="display: flex; align-items: center; justify-content: space-between;">
+                <span class="util-room-name">{{ card.name }}</span>
+                <div class="status-badge small-status-badge" [class]="'status-' + card.operationalStatus" style="transform: scale(0.8); transform-origin: right center;">
+                  <mat-icon>{{ (card.operationalStatus | operationalStatus).icon }}</mat-icon>
+                  {{ (card.operationalStatus | operationalStatus).label }}
+                </div>
+              </div>
               <span class="util-room-seats">
                 <mat-icon>event_seat</mat-icon>{{ card.seats }} Plätze
               </span>

@@ -11,6 +11,12 @@
           <div class="card-bg-icon"><mat-icon>meeting_room</mat-icon></div>
           <div class="card-content">
             <span class="room-name">{{ room.name }}</span>
+            <div class="room-badges">
+              <div class="status-badge" [class]="'status-' + room.operationalStatus">
+                <mat-icon>{{ (room.operationalStatus | operationalStatus).icon }}</mat-icon>
+                {{ (room.operationalStatus | operationalStatus).label }}
+              </div>
+            </div>
             <div class="room-meta">
               <span class="meta-item"><mat-icon>event_seat</mat-icon> {{ room.seats }} Sitze</span>
               <span class="meta-item"><mat-icon>assignment</mat-icon> {{ room.examSeats }} Klausur</span>
