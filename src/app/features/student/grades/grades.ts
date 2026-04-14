@@ -32,7 +32,7 @@ export class Grades implements OnInit {
   private readonly dialog = inject(MatDialog);
 
   constructor(
-    private readonly gradesService: GradesService,
+    public readonly gradesService: GradesService,
     private readonly translate: TranslateService,
     private readonly cdr: ChangeDetectorRef
   ) {}
@@ -94,6 +94,12 @@ export class Grades implements OnInit {
       return false;
     }
     return this.overview.summary.totalEcts > 0 || this.overview.summary.achievedEcts > 0;
+  }
+
+  get totalAverage(): number | null {
+    if (!this.overview) return null;
+    const allItems = this.overview.semesters.flatMap(s => s.items);
+    return this.gradesService.calculateWeightedAverage(allItems);
   }
 
   getStatusClass(status: StudentGradeStatus): string {
@@ -208,31 +214,6 @@ export class Grades implements OnInit {
     return this.translate.instant('navigation.grades.semester.courseCount', {
       count: group.items.length
     });
-  }
-
-  getSectionAverage(group: StudentGradeSemesterGroupResponse): number | null {
-    const gradedItems = group.items.filter(item => item.grade !== null && item.grade !== undefined);
-
-    if (!gradedItems.length) {
-      return null;
-    }
-
-    const weightedItems = gradedItems.filter(item => (item.ects ?? 0) > 0);
-
-    if (weightedItems.length) {
-      const weightedSum = weightedItems.reduce(
-        (sum, item) => sum + ((item.grade ?? 0) * (item.ects ?? 0)),
-        0
-      );
-      const totalWeight = weightedItems.reduce((sum, item) => sum + (item.ects ?? 0), 0);
-
-      if (totalWeight > 0) {
-        return weightedSum / totalWeight;
-      }
-    }
-
-    const sum = gradedItems.reduce((acc, item) => acc + (item.grade ?? 0), 0);
-    return sum / gradedItems.length;
   }
 
   getSectionAchievedEcts(group: StudentGradeSemesterGroupResponse): number {
