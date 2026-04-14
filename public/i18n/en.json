@@ -553,7 +553,8 @@
     "saveGradeScaleSuccess": "Grade scale entry saved successfully.",
     "deleteGradeScaleSuccess": "Grade scale entry deleted successfully.",
     "deleteGradeScaleTitle": "Delete Threshold",
-    "deleteGradeScaleMessage": "Are you sure you want to delete this grading threshold?"
+    "deleteGradeScaleMessage": "Are you sure you want to delete this grading threshold?",
+    "ects": "ECTS"
   },
   "user": {
     "firstname": "First Name",

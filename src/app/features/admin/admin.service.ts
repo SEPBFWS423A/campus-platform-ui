@@ -104,6 +104,7 @@ export interface Module {
   name: string;
   semester: number;
   requiredTotalHours: number;
+  ects?: number | null;
   possibleExamTypes: ModuleExam[];
   lecturers: ModuleLecturer[];
   courseOfStudyId: string;
@@ -395,7 +396,7 @@ export class AdminService {
   deleteFaq(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/faqs/${id}`);
   }
-  
+
   getAvailableRooms(startTime?: string, durationMinutes?: number, excludeEventId?: number, seriesId?: number, eventType?: string): Observable<Room[]> {
     let params: any = {};
     if (startTime) params.startTime = startTime;

@@ -25,9 +25,9 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { AdminService, CourseOfStudy, Specialization, Module, User, UserRole, DegreeType, InstitutionInfo, ModuleExam, ModuleLecturer } from '../admin.service';
-import {FaqAdminResponse, FaqTranslationModel, FaqUpsertRequest} from '../../../core/models/faqModel';
+import { FaqAdminResponse, FaqTranslationModel, FaqUpsertRequest } from '../../../core/models/faqModel';
 import { NotificationService } from '../../../core/services/notification.service';
-import { ConfirmationDialog } from '../../../shared/components/confirmation-dialog/confirmation-dialog';
+import { ConfirmationDialog  } from '../../../shared/components/confirmation-dialog/confirmation-dialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UserService } from '../../../core/user/user.service';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
@@ -36,8 +36,6 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Editor, Toolbar, NgxEditorModule } from 'ngx-editor';
 import { ModuleHandbookService } from './module-handbook.service';
 import { GenerateHandbookDialog } from './generate-handbook-dialog/generate-handbook-dialog';
-
-
 
 @Component({
   selector: 'app-academic-structure',
@@ -165,6 +163,9 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
   // Degree Types
   degreeTypes = Object.values(DegreeType);
 
+  // ECTS-Auswahl nur für Modul-Dialog
+  readonly ectsOptions = [3, 5, 6, 7, 9, 10, 12, 15, 18, 20, 30];
+
   selectedCourseIdForModule = signal<string>('');
 
   // Forms
@@ -182,6 +183,7 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
     name: ['', Validators.required],
     semester: [1, [Validators.required, Validators.min(1)]],
     requiredTotalHours: [40, [Validators.required, Validators.min(0)]],
+    ects: [null as number | null],
     possibleExamTypes: [[] as ModuleExam[], Validators.required],
     preferredExamTypeId: [undefined as string | undefined],
     lecturers: [[] as ModuleLecturer[], Validators.required],
@@ -534,7 +536,11 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
   // --- Module CRUD ---
   openAddModule() {
     this.selectedModule.set(null);
-    this.moduleForm.reset({ semester: 1, requiredTotalHours: 40 });
+    this.moduleForm.reset({
+      semester: 1,
+      requiredTotalHours: 40,
+      ects: null
+    });
     this.dialog.open(this.moduleDialogTemplate, { width: '800px', disableClose: true });
   }
 
@@ -544,6 +550,7 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
       name: module.name,
       semester: module.semester,
       requiredTotalHours: module.requiredTotalHours,
+      ects: module.ects ?? null,
       possibleExamTypes: module.possibleExamTypes,
       preferredExamTypeId: module.preferredExamTypeId,
       lecturers: module.lecturers as any,
@@ -589,7 +596,11 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
 
   cancelModuleEdit() {
     this.selectedModule.set(null);
-    this.moduleForm.reset({ semester: 1, requiredTotalHours: 40 });
+    this.moduleForm.reset({
+      semester: 1,
+      requiredTotalHours: 40,
+      ects: null
+    });
     this.selectedCourseIdForModule.set('');
     this.showAddModuleForm.set(false);
     this.dialog.closeAll();
@@ -1007,7 +1018,4 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
       }
     });
   }
-
 }
-
-
