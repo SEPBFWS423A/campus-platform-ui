@@ -122,3 +122,16 @@ export interface LecturerAbsenceRequest {
   endDate: string;
   note?: string;
 }
+
+export interface ConflictingEventDto {
+  eventId: number;
+  eventName: string;
+  startTime: string;
+  endTime: string;
+}
+
+export interface AbsenceConflictError {
+  message: string;
+  conflictingEvents: ConflictingEventDto[];
+}
+

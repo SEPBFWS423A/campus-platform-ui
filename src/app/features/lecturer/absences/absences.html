@@ -46,6 +46,41 @@
             <mat-icon matPrefix>edit_note</mat-icon>
           </mat-form-field>
 
+          <!-- Sub-Issue #283+#285: Vorab-Konflikt-Warnung unterhalb der Datumsfelder -->
+          @if (isCheckingConflicts()) {
+            <div class="conflict-checking-hint">
+              <mat-icon class="spin-icon">autorenew</mat-icon>
+              <span>Prüfe auf Terminkonflikte…</span>
+            </div>
+          }
+
+          @if (!isCheckingConflicts() && conflictPreview().length > 0) {
+            <div class="conflict-preview-card"
+                 [class.severity-warning]="conflictSeverity() === 'WARNING'"
+                 [class.severity-critical]="conflictSeverity() === 'CRITICAL'">
+              <div class="conflict-preview-header">
+                <mat-icon class="conflict-preview-icon">
+                  {{ conflictSeverity() === 'CRITICAL' ? 'error' : 'warning' }}
+                </mat-icon>
+                <div class="conflict-preview-texts">
+                  <span class="conflict-preview-title">
+                    {{ conflictSeverity() === 'CRITICAL' ? 'Kritischer Terminkonflikt' : 'Terminkonflikt' }}
+                  </span>
+                  <span class="conflict-preview-sub">
+                    {{ conflictPreview().length }}
+                    {{ conflictPreview().length === 1 ? 'Lehrveranstaltung' : 'Lehrveranstaltungen' }}
+                    betroffen
+                  </span>
+                </div>
+                <button mat-stroked-button type="button" class="conflict-detail-btn"
+                        (click)="openConflictPreviewDialog()">
+                  <mat-icon>info</mat-icon>
+                  Details
+                </button>
+              </div>
+            </div>
+          }
+
           <div class="form-actions">
             <button mat-flat-button color="primary" type="submit" [disabled]="absenceForm.invalid || isLoading()" class="submit-button">
               <mat-icon>add</mat-icon>

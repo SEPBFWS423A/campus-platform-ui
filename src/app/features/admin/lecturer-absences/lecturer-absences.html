@@ -91,6 +91,29 @@
             </td>
           </ng-container>
 
+          <ng-container matColumnDef="conflicts">
+            <th mat-header-cell *matHeaderCellDef>Konflikte</th>
+            <td mat-cell *matCellDef="let absence">
+              @if (absence.conflictSeverity === 'WARNING') {
+                <mat-chip class="conflict-chip chip-warning"
+                          (click)="openConflictDialog(absence)"
+                          [matTooltip]="absence.conflictingEvents?.length + ' Veranstaltung(en) betroffen'">
+                  <mat-icon>warning</mat-icon>
+                  {{ absence.conflictingEvents?.length }}
+                </mat-chip>
+              } @else if (absence.conflictSeverity === 'CRITICAL') {
+                <mat-chip class="conflict-chip chip-critical"
+                          (click)="openConflictDialog(absence)"
+                          [matTooltip]="absence.conflictingEvents?.length + ' Veranstaltung(en) betroffen'">
+                  <mat-icon>error</mat-icon>
+                  {{ absence.conflictingEvents?.length }}
+                </mat-chip>
+              } @else {
+                <span class="no-conflict">—</span>
+              }
+            </td>
+          </ng-container>
+
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef class="action-column"></th>
             <td mat-cell *matCellDef="let absence" class="action-column">
