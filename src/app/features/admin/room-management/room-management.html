@@ -36,173 +36,209 @@
       <mat-form-field appearance="outline" subscriptSizing="dynamic">
         <mat-label>Zeitraum</mat-label>
         <mat-date-range-input [rangePicker]="filterPicker">
-          <input matStartDate [value]="filterStart()" (dateChange)="filterStart.set($event.value)" placeholder="Start">
-          <input matEndDate [value]="filterEnd()" (dateChange)="filterEnd.set($event.value)" placeholder="Ende">
+          <input matStartDate [value]="filterStart()" (dateChange)="$event.value && filterStart.set($event.value)" placeholder="Start">
+          <input matEndDate [value]="filterEnd()" (dateChange)="$event.value && filterEnd.set($event.value)" placeholder="Ende">
         </mat-date-range-input>
         <mat-datepicker-toggle matIconSuffix [for]="filterPicker"></mat-datepicker-toggle>
         <mat-date-range-picker #filterPicker></mat-date-range-picker>
       </mat-form-field>
 
-      <button mat-stroked-button color="warn" (click)="onResetFilters()">
-        <mat-icon>filter_list_off</mat-icon> Zurücksetzen
-      </button>
+      <div class="filter-actions">
+        <button mat-stroked-button color="warn" (click)="onResetFilters()">
+          <mat-icon>restart_alt</mat-icon>
+          <span>Zurücksetzen</span>
+        </button>
+      </div>
     </div>
   </mat-expansion-panel>
 
-  <div class="grid-container stats-row room-stats-row">
-    <mat-card class="card stat-card">
-      <div class="stat-icon primary-bg">
-        <mat-icon>meeting_room</mat-icon>
-      </div>
-      <div class="stat-info">
-        <span class="stat-label">Räume gesamt</span>
-        <span class="stat-value">{{ totalRooms() }}</span>
-      </div>
+  <div class="stats-overview">
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-icon r-icon"><mat-icon>meeting_room</mat-icon></div>
+        <div class="stat-data">
+          <span class="stat-label">Gesamtanzahl Räume</span>
+          <span class="stat-value">{{ totalRooms() }}</span>
+        </div>
+      </mat-card-content>
     </mat-card>
 
-    <mat-card class="card stat-card">
-      <div class="stat-icon success-bg">
-        <mat-icon>event_seat</mat-icon>
-      </div>
-      <div class="stat-info">
-        <span class="stat-label">Sitzplätze gesamt</span>
-        <span class="stat-value">{{ totalSeats() }}</span>
-      </div>
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-icon s-icon"><mat-icon>groups</mat-icon></div>
+        <div class="stat-data">
+          <span class="stat-label">Gesamtkapazität</span>
+          <span class="stat-value">{{ totalSeats() }} Plätze</span>
+        </div>
+      </mat-card-content>
     </mat-card>
 
-    <mat-card class="card stat-card">
-      <div class="stat-icon warning-bg">
-        <mat-icon>speed</mat-icon>
-      </div>
-      <div class="stat-info">
-        <span class="stat-label">Gesamtauslastung</span>
-        <span class="stat-value">{{ totalUtilization() }}</span>
-      </div>
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-icon u-icon"><mat-icon>trending_up</mat-icon></div>
+        <div class="stat-data">
+          <span class="stat-label">Ø Auslastung</span>
+          <span class="stat-value">{{ totalUtilization() }}</span>
+        </div>
+      </mat-card-content>
     </mat-card>
   </div>
 
-  <mat-tab-group class="management-tabs" animationDuration="150ms" [selectedIndex]="selectedTabIndex()" (selectedIndexChange)="selectedTabIndex.set($event)">
-
+  <mat-tab-group [selectedIndex]="selectedTabIndex()" (selectedIndexChange)="selectedTabIndex.set($event)" class="main-tabs">
     <!-- Tab: Raumliste -->
     <mat-tab>
       <ng-template matTabLabel>
         <mat-icon>list</mat-icon> Raumliste
       </ng-template>
-
+      
       <div class="management-tab-content">
-        <mat-card class="card">
-          <div class="card-header room-card-header">
-            <h3>Neuen Raum anlegen</h3>
-          </div>
-          <form class="inline-create-form" [formGroup]="createForm" (ngSubmit)="onCreateRoom()" autocomplete="off">
-            <mat-form-field class="form-group" subscriptSizing="dynamic">
-              <mat-label>Raumname</mat-label>
-              <input matInput formControlName="name" placeholder="z.B. Hörsaal 3">
-            </mat-form-field>
-            <mat-form-field class="form-group" subscriptSizing="dynamic">
-              <mat-label>Gebäude</mat-label>
-              <input matInput formControlName="building" placeholder="z.B. B">
-            </mat-form-field>
-            <mat-form-field class="form-group" subscriptSizing="dynamic">
-              <mat-label>Typ</mat-label>
-              <mat-select formControlName="roomType">
-                <mat-option value="HOERSAAL">Hörsaal</mat-option>
-                <mat-option value="SEMINARRAUM">Seminarraum</mat-option>
-                <mat-option value="LABOR">Labor</mat-option>
-                <mat-option value="PRUEFUNGSRAUM">Prüfungsraum</mat-option>
-                <mat-option value="BUERO">Büro</mat-option>
-                <mat-option value="SONSTIGES">Sonstiges</mat-option>
-              </mat-select>
-            </mat-form-field>
-            <mat-form-field class="form-group" subscriptSizing="dynamic">
-              <mat-label>Plätze</mat-label>
-              <input matInput type="number" formControlName="seats" min="0" placeholder="0">
-            </mat-form-field>
-            <mat-form-field class="form-group" subscriptSizing="dynamic">
-              <mat-label>Klausurplätze</mat-label>
-              <input matInput type="number" formControlName="examSeats" min="0" placeholder="0">
-            </mat-form-field>
-            <button mat-raised-button class="btn btn-sm btn-primary" type="submit" [disabled]="createForm.invalid">
-              <mat-icon>add</mat-icon> Anlegen
+        <mat-card class="table-card">
+          <div class="table-actions">
+            <button mat-flat-button color="primary" (click)="createPanel.expanded = !createPanel.expanded">
+              <mat-icon>{{ createPanel.expanded ? 'remove' : 'add' }}</mat-icon>
+              Raum anlegen
             </button>
-          </form>
-          @if (createError()) {
-          <div id="room-create-error" class="management-alert error">{{ createError() }}</div>
-          }
-        </mat-card>
-
-        <mat-card class="card room-card-spacing">
-          <div class="card-header room-card-header">
-            <h3>Alle Räume</h3>
           </div>
-          <div class="room-table-wrapper">
-            <table mat-table [dataSource]="filteredRooms()" multiTemplateDataRows class="management-table" id="rooms-table">
+
+          <mat-expansion-panel #createPanel class="create-panel" [hideToggle]="true">
+            <form [formGroup]="createForm" (ngSubmit)="onCreateRoom()" class="create-form">
+              <div class="form-grid">
+                <mat-form-field appearance="outline">
+                  <mat-label>Raumname</mat-label>
+                  <input matInput formControlName="name" placeholder="z.B. A.1.04">
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Sitzplätze</mat-label>
+                  <input matInput type="number" formControlName="seats">
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Prüfungsplätze</mat-label>
+                  <input matInput type="number" formControlName="examSeats">
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Raumart</mat-label>
+                  <mat-select formControlName="roomType">
+                    <mat-option value="HOERSAAL">Hörsaal</mat-option>
+                    <mat-option value="SEMINARRAUM">Seminarraum</mat-option>
+                    <mat-option value="LABOR">Labor</mat-option>
+                    <mat-option value="PRUEFUNGSRAUM">Prüfungsraum</mat-option>
+                    <mat-option value="BUERO">Büro</mat-option>
+                    <mat-option value="SONSTIGES">Sonstiges</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Gebäude</mat-label>
+                  <input matInput formControlName="building">
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Etage</mat-label>
+                  <input matInput type="number" formControlName="floor">
+                </mat-form-field>
+              </div>
+              
+              <div class="form-checkboxes">
+                <mat-checkbox formControlName="barrierefreiheit" color="primary">Barrierefrei</mat-checkbox>
+              </div>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Beschreibung</mat-label>
+                <textarea matInput formControlName="description" rows="2"></textarea>
+              </mat-form-field>
+
+              @if (createError()) {
+                <div class="management-alert error">{{ createError() }}</div>
+              }
+
+              <div class="form-submit">
+                <button mat-flat-button color="primary" type="submit" [disabled]="createForm.invalid">Speichern</button>
+              </div>
+            </form>
+          </mat-expansion-panel>
+
+          <div class="room-table-container">
+            <table mat-table [dataSource]="filteredRooms()" multiTemplateDataRows class="room-table">
+              
               <ng-container matColumnDef="name">
-                <th mat-header-cell *matHeaderCellDef>Name</th>
-                <td mat-cell *matCellDef="let room" class="room-name-cell">
-                  <div style="display: flex; align-items: center; gap: 12px;">
-                    <div class="type-icon-wrapper">
-                      <mat-icon>{{ 
-                        room.roomType === 'HOERSAAL' ? 'school' : 
-                        room.roomType === 'SEMINARRAUM' ? 'meeting_room' :
-                        room.roomType === 'LABOR' ? 'science' :
-                        room.roomType === 'PRUEFUNGSRAUM' ? 'assignment' :
-                        room.roomType === 'BUERO' ? 'work' : 'layers'
-                      }}</mat-icon>
-                    </div>
-                    <div style="display: flex; flex-direction: column;">
-                      <div style="display: flex; align-items: center; gap: 6px;">
-                        <span>{{ room.name }}</span>
-                        @if (room.barrierefreiheit) {
-                          <mat-icon style="font-size: 14px; width: 14px; height: 14px; color: var(--mat-sys-primary);" title="Barrierefrei">accessible</mat-icon>
-                        }
-                      </div>
-                      <span style="font-size: 10px; color: var(--mat-sys-on-surface-variant); font-weight: normal;">
-                        {{ room.building }}{{ room.floor !== undefined ? ', Etage ' + room.floor : '' }} • {{ 
-                          room.roomType === 'HOERSAAL' ? 'Hörsaal' : 
-                          room.roomType === 'SEMINARRAUM' ? 'Seminarraum' :
-                          room.roomType === 'LABOR' ? 'Labor' :
-                          room.roomType === 'PRUEFUNGSRAUM' ? 'Prüfungsraum' :
-                          room.roomType === 'BUERO' ? 'Büro' : 'Sonstiges'
-                        }}
-                      </span>
-                    </div>
+                <th mat-header-cell *matHeaderCellDef>Raum</th>
+                <td mat-cell *matCellDef="let room">
+                  <div class="room-name-cell">
+                    <span class="r-name">{{ room.name }}</span>
+                    <span class="r-building">{{ room.building }}</span>
                   </div>
                 </td>
               </ng-container>
+
+              <ng-container matColumnDef="seats">
+                <th mat-header-cell *matHeaderCellDef>Kapazität</th>
+                <td mat-cell *matCellDef="let room">
+                  <div class="seats-cell">
+                    <span matTooltip="Gesamtplätze"><mat-icon>chair</mat-icon> {{ room.seats }}</span>
+                    <span matTooltip="Prüfungsplätze" class="exam-seats"><mat-icon>assignment</mat-icon> {{ room.examSeats }}</span>
+                  </div>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="type">
+                 <th mat-header-cell *matHeaderCellDef>Typ</th>
+                 <td mat-cell *matCellDef="let room">
+                   <mat-chip-set>
+                     <mat-chip class="type-chip">{{ 
+                        room.roomType === 'HOERSAAL' ? 'Hörsaal' : 
+                        room.roomType === 'SEMINARRAUM' ? 'Seminarraum' :
+                        room.roomType === 'LABOR' ? 'Labor' :
+                        room.roomType === 'PRUEFUNGSRAUM' ? 'Prüfungsraum' :
+                        room.roomType === 'BUERO' ? 'Büro' : 'Sonstiges'
+                     }}</mat-chip>
+                     @if (room.barrierefreiheit) {
+                       <mat-icon class="accessible-icon" matTooltip="Barrierefrei">accessible</mat-icon>
+                     }
+                   </mat-chip-set>
+                 </td>
+              </ng-container>
+
+              <ng-container matColumnDef="building">
+                 <th mat-header-cell *matHeaderCellDef>Gebäude / Etage</th>
+                 <td mat-cell *matCellDef="let room">
+                   <span>{{ room.building }}</span>
+                   @if (room.floor !== undefined) {
+                     <span class="floor-badge">Etage {{ room.floor }}</span>
+                   }
+                 </td>
+              </ng-container>
+
               <ng-container matColumnDef="status">
                 <th mat-header-cell *matHeaderCellDef>Status</th>
                 <td mat-cell *matCellDef="let room">
-                  <div class="status-badge" [class]="'status-' + room.operationalStatus">
-                    <mat-icon>{{ (room.operationalStatus | operationalStatus).icon }}</mat-icon>
-                    {{ (room.operationalStatus | operationalStatus).label }}
+                  @let status = (room.operationalStatus | operationalStatus);
+                  <div class="status-indicator">
+                    <mat-icon [style.color]="status.color">{{ status.icon }}</mat-icon>
+                    <span>{{ status.label }}</span>
                   </div>
                 </td>
               </ng-container>
-              <ng-container matColumnDef="seats">
-                <th mat-header-cell *matHeaderCellDef>Plätze</th>
-                <td mat-cell *matCellDef="let room">{{ room.seats }}</td>
-              </ng-container>
-              <ng-container matColumnDef="examSeats">
-                <th mat-header-cell *matHeaderCellDef>Klausurplätze</th>
-                <td mat-cell *matCellDef="let room">{{ room.examSeats }}</td>
-              </ng-container>
+
               <ng-container matColumnDef="actions">
-                <th mat-header-cell *matHeaderCellDef>Aktionen</th>
+                <th mat-header-cell *matHeaderCellDef></th>
                 <td mat-cell *matCellDef="let room">
-                  <div class="actions-cell">
-                    <button mat-icon-button class="btn-icon-only info-room-btn" title="Belegungsplan"
-                      (click)="onFocusRoom(room.id); $event.stopPropagation()">
-                      <mat-icon>calendar_month</mat-icon>
+                  <div class="row-actions">
+                    <button mat-icon-button [matMenuTriggerFor]="roomMenu" (click)="$event.stopPropagation()">
+                      <mat-icon>more_vert</mat-icon>
                     </button>
-                    <button mat-icon-button class="btn-icon-only edit-room-btn" title="Bearbeiten"
-                      (click)="onEditRoom(room.id); $event.stopPropagation()">
-                      <mat-icon>edit</mat-icon>
-                    </button>
-                    <button mat-icon-button class="btn-icon-only danger delete-room-btn" title="Löschen"
-                      (click)="onDeleteRoom(room.id); $event.stopPropagation()">
-                      <mat-icon>delete</mat-icon>
-                    </button>
+                    <mat-menu #roomMenu="matMenu" xPosition="before" class="glass-menu">
+                      <button mat-menu-item (click)="onFocusRoom(room.id); $event.stopPropagation()">
+                        <mat-icon>calendar_month</mat-icon>
+                        <span>Belegungsplan</span>
+                      </button>
+                      <button mat-menu-item (click)="onEditRoom(room.id); $event.stopPropagation()">
+                        <mat-icon>edit</mat-icon>
+                        <span>Bearbeiten</span>
+                      </button>
+                      <div class="menu-divider"></div>
+                      <button mat-menu-item (click)="onDeleteRoom(room.id); $event.stopPropagation()" class="danger-item">
+                        <mat-icon color="warn">delete</mat-icon>
+                        <span>Löschen</span>
+                      </button>
+                    </mat-menu>
                   </div>
                 </td>
               </ng-container>
@@ -241,6 +277,35 @@
                           }}</span>
                         </div>
                       </div>
+
+                      <div class="detail-section history-section">
+                        <span class="detail-label"><mat-icon style="font-size: 14px; height: 14px; width: 14px; vertical-align: middle;">history</mat-icon> Status-Verlauf</span>
+                        <div class="history-timeline">
+                          @if (roomHistory().length > 0) {
+                            @for (entry of roomHistory(); track entry.id) {
+                              <div class="history-item">
+                                <div class="history-marker"></div>
+                                <div class="history-content">
+                                  <div class="history-header">
+                                    <span class="history-date">{{ entry.changedAt | date:'dd.MM, HH:mm' }}</span>
+                                    <span class="history-actor">durch {{ entry.changedBy }}</span>
+                                  </div>
+                                  <div class="history-change">
+                                    <span class="status-badge" [attr.data-status]="entry.previousStatus">{{ entry.previousStatus }}</span>
+                                    <mat-icon>trending_flat</mat-icon>
+                                    <span class="status-badge" [attr.data-status]="entry.newStatus">{{ entry.newStatus }}</span>
+                                  </div>
+                                  @if (entry.reason) {
+                                    <div class="history-reason">"{{ entry.reason }}"</div>
+                                  }
+                                </div>
+                              </div>
+                            }
+                          } @else {
+                            <div class="no-history">Keine Statushistorie vorhanden.</div>
+                          }
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </td>
@@ -269,8 +334,7 @@
           [rooms]="rooms()" 
           [selectedRoomId]="focusedRoomId()" 
           [filterStart]="filterStart()"
-          [filterEnd]="filterEnd()"
-          (resetRoom)="focusedRoomId.set(null)" />
+          [filterEnd]="filterEnd()" />
       </div>
     </mat-tab>
 
@@ -282,10 +346,20 @@
       <div class="management-tab-content">
         <app-room-utilization 
           [rooms]="rooms()" 
+          [utilizationData]="utilizationData()"
           [filterStart]="filterStart()"
           [filterEnd]="filterEnd()" />
       </div>
     </mat-tab>
 
+    <!-- Tab: Sperrungen -->
+    <mat-tab>
+      <ng-template matTabLabel>
+        <mat-icon>block</mat-icon> Sperrungen
+      </ng-template>
+      <div class="management-tab-content">
+        <app-room-blockout [rooms]="rooms()"></app-room-blockout>
+      </div>
+    </mat-tab>
   </mat-tab-group>
 </div>

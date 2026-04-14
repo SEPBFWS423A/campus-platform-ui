@@ -149,6 +149,39 @@ export interface Room {
   description?: string;
 }
 
+export type BlockoutReason = 'WARTUNG' | 'REINIGUNG' | 'BAUARBEITEN' | 'VERANSTALTUNG' | 'STOERUNG' | 'SONSTIGES';
+export type BlockoutPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+
+export interface RoomBlockout {
+  id: number;
+  roomId: number;
+  roomName: string;
+  startTime: string;   // ISO-DateTime
+  endTime: string;
+  reason: BlockoutReason;
+  priority: BlockoutPriority;
+  notes?: string;
+  createdBy: string;
+  createdAt: string;
+  active: boolean;
+}
+
+export interface BlockoutConflictResult {
+  overlappingBlockouts: RoomBlockout[];
+  affectedEvents: RoomScheduleEvent[];
+}
+
+export interface RoomStatusHistory {
+  id: number;
+  roomId: number;
+  previousStatus: OperationalStatus;
+  newStatus: OperationalStatus;
+  changedBy: string;
+  changedAt: string;
+  reason?: string;
+}
+
+
 export enum CourseStatus {
   PLANNED = 'PLANNED',
   ACTIVE = 'ACTIVE',
@@ -393,6 +426,37 @@ export class AdminService {
       params: { startDate, endDate }
     });
   }
+
+  // --- Room Blockouts ---
+  getBlockouts(roomId?: number, active?: boolean): Observable<RoomBlockout[]> {
+    let params: any = {};
+    if (roomId) params.roomId = roomId;
+    if (active !== undefined) params.active = active;
+    return this.http.get<RoomBlockout[]>(`${this.apiUrl}/rooms/blockouts`, { params });
+  }
+
+  createBlockout(blockout: Partial<RoomBlockout>): Observable<RoomBlockout> {
+    return this.http.post<RoomBlockout>(`${this.apiUrl}/rooms/blockouts`, blockout);
+  }
+
+  resolveBlockout(id: number): Observable<RoomBlockout> {
+    return this.http.patch<RoomBlockout>(`${this.apiUrl}/rooms/blockouts/${id}/resolve`, {});
+  }
+
+  deleteBlockout(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/rooms/blockouts/${id}`);
+  }
+
+  checkBlockoutConflicts(roomId: number, start: string, end: string): Observable<BlockoutConflictResult> {
+    return this.http.get<BlockoutConflictResult>(`${this.apiUrl}/rooms/${roomId}/blockouts/conflicts`, {
+      params: { start, end }
+    });
+  }
+
+  getRoomStatusHistory(roomId: number): Observable<RoomStatusHistory[]> {
+    return this.http.get<RoomStatusHistory[]>(`${this.apiUrl}/rooms/${roomId}/status-history`);
+  }
+
 
   // --- FAQ Management ---
   getFaqs(): Observable<FaqAdminResponse[]> {
