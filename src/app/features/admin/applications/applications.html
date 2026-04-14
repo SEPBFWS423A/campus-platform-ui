@@ -1,0 +1,45 @@
+<div class="applications-page">
+  <div class="header">
+    <h1>Bewerbungsverwaltung</h1>
+    <p>Eingehende Bewerbungen einsehen und bearbeiten</p>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat pending">⏳ {{ pending }} Ausstehend</div>
+    <div class="stat accepted">✅ {{ accepted }} Angenommen</div>
+    <div class="stat rejected">❌ {{ rejected }} Abgelehnt</div>
+  </div>
+
+  <div class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th>Student</th>
+          <th>Matrikelnr.</th>
+          <th>Studiengang</th>
+          <th>Datum</th>
+          <th>Status</th>
+          <th>Aktionen</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let app of applications">
+          <td>{{ app.studentName }}</td>
+          <td>{{ app.studentNumber }}</td>
+          <td>{{ app.program }}</td>
+          <td>{{ app.date }}</td>
+          <td>
+            <span class="badge" [ngClass]="app.status">
+              {{ app.status === 'pending' ? 'Ausstehend' : app.status === 'accepted' ? 'Angenommen' : 'Abgelehnt' }}
+            </span>
+          </td>
+          <td class="actions">
+            <button *ngIf="app.status === 'pending'" class="btn-accept" (click)="accept(app.id)">✓</button>
+            <button *ngIf="app.status === 'pending'" class="btn-reject" (click)="reject(app.id)">✗</button>
+            <span *ngIf="app.status !== 'pending'" class="done">–</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
