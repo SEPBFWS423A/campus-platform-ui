@@ -99,3 +99,26 @@ export interface SubmissionDocumentDownloadData {
   fileSize: number;
   content: string;
 }
+
+export enum AbsenceType {
+  URLAUB = 'URLAUB',
+  KRANKMELDUNG = 'KRANKMELDUNG',
+  DIENSTREISE = 'DIENSTREISE',
+  SONSTIGES = 'SONSTIGES'
+}
+
+export interface LecturerAbsenceResponse {
+  id: number;
+  type: AbsenceType;
+  startDate: string;
+  endDate: string;
+  note?: string;
+  lecturerName?: string;
+}
+
+export interface LecturerAbsenceRequest {
+  type: AbsenceType;
+  startDate: string;
+  endDate: string;
+  note?: string;
+}

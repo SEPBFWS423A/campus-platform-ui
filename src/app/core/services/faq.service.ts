@@ -22,7 +22,7 @@ export class FaqService {
       'de'
     ).toLowerCase().trim();
 
-    return this.http.get<FaqModel[]>(`${this.apiUrl}/users/faqs`, {
+    return this.http.get<FaqModel[]>(`${this.apiUrl}/public/faqs`, {
       params: { lang: resolvedLang }
     });
   }

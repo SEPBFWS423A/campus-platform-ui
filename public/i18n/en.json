@@ -122,6 +122,69 @@
         }
       }
     },
+    "grades": {
+      "columns": {
+        "module": "Module",
+        "assessmentType": "Assessment type",
+        "examDate": "Exam date",
+        "status": "Status",
+        "grade": "Grade"
+      },
+      "eyebrow": "Studies",
+      "title": "Grade overview",
+      "subtitle": "Here you can see all courses assigned to you, your current academic status, and recorded grades.",
+      "actions": {
+        "gradeScale": "Grade scale",
+        "retry": "Retry"
+      },
+      "states": {
+        "loading": "Loading grade overview.",
+        "loadError": "The grade overview could not be loaded.",
+        "empty": "There are currently no assigned courses or grades available for you."
+      },
+      "summary": {
+        "currentAverage": "Current average",
+        "ects": "ECTS",
+        "passedModules": "Passed modules",
+        "failedModules": "Failed modules",
+        "gradedAssessments": "Graded assessments",
+        "pendingAssessments": "Open assessments",
+        "excusedAbsenceAssessments": "Excused absence",
+        "unexcusedAbsenceAssessments": "Unexcused absence",
+        "excludedAssessments": "Excluded"
+      },
+      "semester": {
+        "title": "Semester {{count}}",
+        "courseCount": "{{count}} courses"
+      },
+      "item": {
+        "studyGroups": "Study groups",
+        "assessmentType": "Assessment type",
+        "academicTerm": "Academic term",
+        "examDate": "Exam date",
+        "ects": "ECTS",
+        "attempt": "Attempt",
+        "attemptValue": "Attempt {{count}}",
+        "grade": "Grade",
+        "updatedAt": "Last updated",
+        "reviewerComment": "Reviewer comment"
+      },
+      "status": {
+        "PENDING": "Open",
+        "PASSED": "Passed",
+        "FAILED": "Failed",
+        "EXCUSED_ABSENCE": "Excused absence",
+        "UNEXCUSED_ABSENCE": "Unexcused absence",
+        "EXCLUDED": "Excluded"
+      },
+      "term": {
+        "SUMMER": "Summer semester",
+        "WINTER": "Winter semester"
+      },
+      "common": {
+        "notAvailable": "Not available"
+      }
+    },
     "profileAndSettings": {
       "profileAndSettingsName": "Profile & Settings",
       "logout": "Logout",
@@ -666,7 +729,8 @@
     "saved": "Saved"
   },
   "info": {
-    "subtitle": "Important contacts and information",
+    "pageTitle": "Info",
+    "subtitle": ",Important contacts and information",
     "subtitleCitySuffix": " for {{city}}",
     "loadingInstitutionTitle": "General information is loading",
     "loadingFaqTitle": "FAQs are loading",
@@ -813,5 +877,44 @@
       "noAttendees": "No students in this course yet.",
       "seriesInfo": "Course Series Information"
     }
+  },
+  "nav": {
+    "absences": "Absences",
+    "lecturerAbsences": "Lecturer Absences"
+  },
+  "absences": {
+    "title": "My Absences",
+    "adminTitle": "Lecturer Absences",
+    "form": {
+      "type": "Absence Type",
+      "startDate": "From",
+      "endDate": "To",
+      "note": "Note (optional)",
+      "submit": "Submit"
+    },
+    "types": {
+      "URLAUB": "Vacation",
+      "KRANKMELDUNG": "Sick Leave",
+      "DIENSTREISE": "Business Trip",
+      "SONSTIGES": "Other"
+    },
+    "status": {
+      "VERGANGEN": "Past",
+      "AKTUELL": "Current",
+      "GEPLANT": "Planned"
+    },
+    "table": {
+      "lecturer": "Lecturer",
+      "status": "Status",
+      "type": "Type",
+      "startDate": "From",
+      "endDate": "To",
+      "note": "Note",
+      "actions": "Actions"
+    },
+    "deleteConfirm": "Really delete absence?",
+    "deleteSuccess": "Absence was deleted.",
+    "createSuccess": "Absence was added.",
+    "conflictError": "Scheduling conflict: The lecturer has an absence booked during this time."
   }
 }

@@ -40,12 +40,12 @@ import { UserRole } from '../../../core/models/user-role';
 import { Salutation } from '../../../core/models/salutation';
 import { AcademicTitle } from '../../../core/models/academic-title';
 import { NotificationService } from '../../../core/services/notification.service';
-import { ConfirmationDialogComponent } from '../../../shared/components/confirmation-dialog/confirmation-dialog.component';
+import { ConfirmationDialog } from '../../../shared/components/confirmation-dialog/confirmation-dialog';
 import { UserService } from '../../../core/user/user.service';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import * as XLSX from 'xlsx';
 import * as mammoth from 'mammoth';
-import { UserProfileOverviewComponent } from '../../../shared/components/user-profile-overview/user-profile-overview';
+import { UserProfileOverview } from '../../../shared/components/user-profile-overview/user-profile-overview';
 
 @Component({
   selector: 'app-user-management',
@@ -72,7 +72,7 @@ import { UserProfileOverviewComponent } from '../../../shared/components/user-pr
     MatTabsModule,
     MatButtonToggleModule,
     MatTooltipModule,
-    UserProfileOverviewComponent
+    UserProfileOverview
   ],
   templateUrl: './user-management.html',
   styleUrls: ['./user-management.scss'],
@@ -889,7 +889,7 @@ export class UserManagement implements OnInit, AfterViewInit {
   deleteSelectedGroup() {
     const group = this.selectedGroup();
     if (!group) return;
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+    const dialogRef = this.dialog.open(ConfirmationDialog, {
       data: {
         title: 'userManagement.deleteGroupTitle',
         message: 'userManagement.deleteGroupMessage'
@@ -908,7 +908,7 @@ export class UserManagement implements OnInit, AfterViewInit {
   }
 
   removeUserFromGroup(userId: string, groupId: string) {
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+    const dialogRef = this.dialog.open(ConfirmationDialog, {
       data: {
         title: 'academicStructure.removeUserFromGroupTitle',
         message: 'academicStructure.removeUserFromGroupMessage'
@@ -951,7 +951,7 @@ export class UserManagement implements OnInit, AfterViewInit {
   }
 
   deleteUser(user: User) {
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+    const dialogRef = this.dialog.open(ConfirmationDialog, {
       data: {
         title: 'userManagement.deleteUserTitle',
         message: 'userManagement.deleteUserMessage'

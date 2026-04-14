@@ -5,7 +5,8 @@ import {EventManagement} from './event-management/event-management';
 import {UserManagement} from './user-management/user-management';
 import {ExamManagement} from './exam-management/exam-management';
 import {AcademicStructure} from './academic-structure/academic-structure';
-import {CourseSeriesDetailsComponent} from './event-management/course-series-details/course-series-details.component';
+import {CourseSeriesDetails} from './event-management/course-series-details/course-series-details';
+import {LecturerAbsencesAdmin} from './lecturer-absences/lecturer-absences';
 
 export const adminRoutes: Routes = [
   {
@@ -18,7 +19,7 @@ export const adminRoutes: Routes = [
   },
   {
     path: 'event-management/:id',
-    component: CourseSeriesDetailsComponent
+    component: CourseSeriesDetails
   },
   {
     path: 'room-management',
@@ -35,5 +36,9 @@ export const adminRoutes: Routes = [
   {
     path: 'exam-management',
     component: ExamManagement
+  },
+  {
+    path: 'lecturer-absences',
+    component: LecturerAbsencesAdmin
   },
 ];

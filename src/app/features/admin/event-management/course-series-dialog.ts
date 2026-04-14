@@ -93,7 +93,7 @@ import { AdminService, CourseSeries, CourseStatus, Module, User, StudyGroup } fr
     }
   `]
 })
-export class CourseSeriesDialogComponent implements OnInit {
+export class CourseSeriesDialog implements OnInit {
   form: FormGroup;
   modules = signal<Module[]>([]);
   lecturers: User[] = [];
@@ -121,7 +121,7 @@ export class CourseSeriesDialogComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private adminService: AdminService,
-    public dialogRef: MatDialogRef<CourseSeriesDialogComponent>,
+    public dialogRef: MatDialogRef<CourseSeriesDialog>,
     @Inject(MAT_DIALOG_DATA) public data: { courseSeries?: CourseSeries }
   ) {
     const initialModuleId = data.courseSeries?.moduleId || null;

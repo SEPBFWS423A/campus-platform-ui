@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
+import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatChipsModule } from '@angular/material/chips';
@@ -11,9 +12,12 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDialog } from '@angular/material/dialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { LecturerApi } from '../../../features/lecturer/services/lecturer-api';
 import { NotificationService } from '../../../core/services/notification.service';
+import { GradesService } from '../../../core/services/grades.services';
+import { GradeScaleDialog } from '../grade-scale-dialog/grade-scale-dialog';
 import {
   LecturerCourseResponse,
   ExamStatus,
@@ -37,7 +41,8 @@ import {
     MatTooltipModule,
     MatSelectModule,
     MatProgressSpinnerModule,
-    TranslateModule
+    TranslateModule,
+    MatDialogModule
   ],
   templateUrl: './exam-management-list.html',
   styleUrl: './exam-management-list.scss',
@@ -142,7 +147,9 @@ export class ExamManagementList implements OnInit {
   constructor(
     private lecturerApi: LecturerApi,
     private notificationService: NotificationService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private dialog: MatDialog,
+    private gradesService: GradesService
   ) {}
 
   ngOnInit(): void {}
@@ -367,5 +374,17 @@ export class ExamManagementList implements OnInit {
   isPast(dateString: string | undefined): boolean {
     if (!dateString) return false;
     return new Date(dateString) < new Date();
+  }
+  
+  openGradeScale(): void {
+    this.gradesService.getGradeScale().subscribe({
+      next: (entries) => {
+        this.dialog.open(GradeScaleDialog, {
+          width: '500px',
+          data: { entries: entries }
+        });
+      },
+      error: () => this.notificationService.showError('error.loadData')
+    });
   }
 }

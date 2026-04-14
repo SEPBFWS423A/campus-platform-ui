@@ -122,6 +122,69 @@
         }
       }
     },
+    "grades": {
+      "columns": {
+        "module": "Modul",
+        "assessmentType": "Prüfungsform",
+        "examDate": "Prüfungsdatum",
+        "status": "Status",
+        "grade": "Note"
+      },
+      "eyebrow": "Studium",
+      "title": "Notenübersicht",
+      "subtitle": "Hier sehen Sie alle Ihnen zugeteilten Kurse, Ihren aktuellen Leistungsstand und bereits eingetragene Bewertungen.",
+      "actions": {
+        "gradeScale": "Notenskala",
+        "retry": "Erneut laden"
+      },
+      "states": {
+        "loading": "Notenübersicht wird geladen.",
+        "loadError": "Die Notenübersicht konnte nicht geladen werden.",
+        "empty": "Für Sie sind aktuell noch keine Kurse oder Bewertungen vorhanden."
+      },
+      "summary": {
+        "currentAverage": "Aktueller Durchschnitt",
+        "ects": "ECTS",
+        "passedModules": "Bestandene Module",
+        "failedModules": "Nicht bestandene Module",
+        "gradedAssessments": "Bewertete Leistungen",
+        "pendingAssessments": "Offene Leistungen",
+        "excusedAbsenceAssessments": "Entschuldigt gefehlt",
+        "unexcusedAbsenceAssessments": "Unentschuldigt gefehlt",
+        "excludedAssessments": "Ausgeschlossen"
+      },
+      "semester": {
+        "title": "{{count}}. Semester",
+        "courseCount": "{{count}} Kurse"
+      },
+      "item": {
+        "studyGroups": "Studiengruppen",
+        "assessmentType": "Prüfungsform",
+        "academicTerm": "Zeitsemester",
+        "examDate": "Prüfungsdatum",
+        "ects": "ECTS",
+        "attempt": "Prüfungsversuch",
+        "attemptValue": "{{count}}. Versuch",
+        "grade": "Note",
+        "updatedAt": "Letzte Aktualisierung",
+        "reviewerComment": "Kommentar des Prüfers"
+      },
+      "status": {
+        "PENDING": "Offen",
+        "PASSED": "Bestanden",
+        "FAILED": "Nicht bestanden",
+        "EXCUSED_ABSENCE": "Entschuldigt gefehlt",
+        "UNEXCUSED_ABSENCE": "Unentschuldigt gefehlt",
+        "EXCLUDED": "Ausgeschlossen"
+      },
+      "term": {
+        "SUMMER": "Sommersemester",
+        "WINTER": "Wintersemester"
+      },
+      "common": {
+        "notAvailable": "Nicht verfügbar"
+      }
+    },
     "profileAndSettings": {
       "profileAndSettingsName": "Profil & Einstellungen",
       "logout": "Abmelden",
@@ -667,6 +730,7 @@
     "saved": "Gespeichert"
   },
   "info": {
+    "pageTitle": "Info",
     "subtitle": "Wichtige Kontakte und Informationen",
     "subtitleCitySuffix": " für {{city}}",
     "loadingInstitutionTitle": "Allgemeine Informationen werden geladen",
@@ -814,5 +878,44 @@
       "noAttendees": "Noch keine Studierenden in diesem Kurs.",
       "seriesInfo": "Informationen zur Vorlesungsreihe"
     }
+  },
+  "nav": {
+    "absences": "Abwesenheiten",
+    "lecturerAbsences": "Dozenten-Abwesenheiten"
+  },
+  "absences": {
+    "title": "Meine Abwesenheiten",
+    "adminTitle": "Abwesenheiten der Dozenten",
+    "form": {
+      "type": "Art der Abwesenheit",
+      "startDate": "Von",
+      "endDate": "Bis",
+      "note": "Anmerkung (optional)",
+      "submit": "Eintragen"
+    },
+    "types": {
+      "URLAUB": "Urlaub",
+      "KRANKMELDUNG": "Krankmeldung",
+      "DIENSTREISE": "Dienstreise",
+      "SONSTIGES": "Sonstiges"
+    },
+    "status": {
+      "VERGANGEN": "Vergangen",
+      "AKTUELL": "Aktuell",
+      "GEPLANT": "Geplant"
+    },
+    "table": {
+      "lecturer": "Dozent",
+      "status": "Status",
+      "type": "Art",
+      "startDate": "Von",
+      "endDate": "Bis",
+      "note": "Anmerkung",
+      "actions": "Aktionen"
+    },
+    "deleteConfirm": "Abwesenheit wirklich löschen?",
+    "deleteSuccess": "Abwesenheit wurde gelöscht.",
+    "createSuccess": "Abwesenheit wurde eingetragen.",
+    "conflictError": "Terminkonflikt: Der Dozent hat in diesem Zeitraum eine Abwesenheit eingetragen."
   }
 }

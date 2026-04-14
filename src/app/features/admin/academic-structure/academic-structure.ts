@@ -27,7 +27,7 @@ import { MatListModule } from '@angular/material/list';
 import { AdminService, CourseOfStudy, Specialization, Module, User, UserRole, DegreeType, InstitutionInfo, ModuleExam, ModuleLecturer } from '../admin.service';
 import {FaqAdminResponse, FaqTranslationModel, FaqUpsertRequest} from '../../../core/models/faqModel';
 import { NotificationService } from '../../../core/services/notification.service';
-import { ConfirmationDialogComponent } from '../../../shared/components/confirmation-dialog/confirmation-dialog.component';
+import { ConfirmationDialog } from '../../../shared/components/confirmation-dialog/confirmation-dialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UserService } from '../../../core/user/user.service';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
@@ -35,7 +35,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Editor, Toolbar, NgxEditorModule } from 'ngx-editor';
 import { ModuleHandbookService } from './module-handbook.service';
-import { GenerateHandbookDialog } from './generate-handbook-dialog/generate-handbook-dialog.component';
+import { GenerateHandbookDialog } from './generate-handbook-dialog/generate-handbook-dialog';
 
 
 
@@ -451,7 +451,7 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
   }
 
   deleteCourse(id: string) {
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+    const dialogRef = this.dialog.open(ConfirmationDialog, {
       data: {
         title: 'academicStructure.deleteCourseTitle',
         message: 'academicStructure.deleteCourseMessage'
@@ -514,7 +514,7 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
   }
 
   deleteSpecialization(id: string) {
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+    const dialogRef = this.dialog.open(ConfirmationDialog, {
       data: {
         title: 'academicStructure.deleteSpecializationTitle',
         message: 'academicStructure.deleteSpecializationMessage'
@@ -604,7 +604,7 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
   }
 
   deleteModule(id: string) {
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+    const dialogRef = this.dialog.open(ConfirmationDialog, {
       data: {
         title: 'academicStructure.deleteModuleTitle',
         message: 'academicStructure.deleteModuleMessage'
@@ -669,7 +669,7 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
   }
 
   deleteExamType(id: string) {
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+    const dialogRef = this.dialog.open(ConfirmationDialog, {
       data: {
         title: 'academicStructure.deleteExamTypeTitle',
         message: 'academicStructure.deleteExamTypeMessage'
@@ -749,7 +749,7 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
   }
 
   deleteFaq(id: number) {
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+    const dialogRef = this.dialog.open(ConfirmationDialog, {
       data: {
         title: 'academicStructure.deleteFaqTitle',
         message: 'academicStructure.deleteFaqMessage'
@@ -943,7 +943,7 @@ export class AcademicStructure implements OnInit, OnDestroy, AfterViewInit {
   }
 
   deleteGradeScaleEntry(id: number) {
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+    const dialogRef = this.dialog.open(ConfirmationDialog, {
       data: {
         title: 'academicStructure.deleteGradeScaleTitle',
         message: 'academicStructure.deleteGradeScaleMessage'

@@ -1,6 +1,11 @@
 @keyframes rotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .grading-container {
@@ -122,7 +127,7 @@
 
     .filter-select {
       width: 180px;
-      
+
       ::ng-deep .mat-mdc-text-field-wrapper {
         background: transparent !important;
       }
@@ -164,15 +169,23 @@
     left: 0;
     right: 0;
     height: 4px;
-    
-    &.status-blue { background: var(--mat-sys-primary); }
-    &.status-purple { background: var(--mat-sys-secondary); }
-    &.status-green { background: var(--mat-sys-tertiary); }
+
+    &.status-blue {
+      background: var(--mat-sys-primary);
+    }
+
+    &.status-purple {
+      background: var(--mat-sys-secondary);
+    }
+
+    &.status-green {
+      background: var(--mat-sys-tertiary);
+    }
   }
 
   mat-card-header {
     padding: 2.5rem 2.5rem 1.5rem 2.5rem;
-    
+
     .course-icon-bg {
       background: var(--mat-sys-primary-container);
       color: var(--mat-sys-on-primary-container);
@@ -182,7 +195,7 @@
       border-radius: 18px;
       width: 56px;
       height: 56px;
-      
+
       mat-icon {
         font-size: 28px;
         width: 28px;
@@ -343,10 +356,18 @@
       width: 10px;
       height: 10px;
       border-radius: 50%;
-      
-      &.status-blue { background: var(--mat-sys-primary); }
-      &.status-purple { background: var(--mat-sys-secondary); }
-      &.status-green { background: var(--mat-sys-tertiary); }
+
+      &.status-blue {
+        background: var(--mat-sys-primary);
+      }
+
+      &.status-purple {
+        background: var(--mat-sys-secondary);
+      }
+
+      &.status-green {
+        background: var(--mat-sys-tertiary);
+      }
     }
 
     .submission-count-tag {
@@ -375,7 +396,7 @@ mat-card-actions {
     border-radius: 14px;
     padding: 0 2rem;
     font-weight: 700;
-    
+
     &:hover:not([disabled]) {
       transform: scale(1.02);
     }
@@ -389,7 +410,7 @@ mat-card-actions {
     align-items: center;
     margin-bottom: 2rem;
     justify-content: flex-start;
-    
+
     button[mat-icon-button] {
       margin-right: 1.5rem;
     }
@@ -453,7 +474,7 @@ mat-card-actions {
     justify-content: center;
     border-radius: 16px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    
+
     &.has-file {
       background: transparent;
     }
@@ -461,7 +482,7 @@ mat-card-actions {
     &:not(.has-file) {
       background: var(--mat-sys-surface-container-low);
       border: 2px dashed var(--mat-sys-outline-variant);
-      
+
       &:hover {
         border-color: var(--mat-sys-primary);
         background: var(--mat-sys-primary-container);
@@ -524,7 +545,7 @@ mat-card-actions {
         background: var(--mat-sys-primary-container);
         color: var(--mat-sys-on-primary-container);
         border-radius: 12px;
-        
+
         mat-icon {
           font-size: 24px;
           width: 24px;
@@ -630,8 +651,11 @@ mat-card-actions {
           gap: 1rem;
           margin-top: 1rem;
 
-          .course-name { font-weight: 600; color: var(--mat-sys-on-surface); }
-          
+          .course-name {
+            font-weight: 600;
+            color: var(--mat-sys-on-surface);
+          }
+
           .bubble {
             padding: 4px 12px;
             border-radius: 20px;
@@ -641,7 +665,10 @@ mat-card-actions {
             letter-spacing: 0.5px;
           }
 
-          .type-bubble { background: var(--mat-sys-surface-container-high); color: var(--mat-sys-on-surface-variant); }
+          .type-bubble {
+            background: var(--mat-sys-surface-container-high);
+            color: var(--mat-sys-on-surface-variant);
+          }
 
           .save-status-indicator {
             display: flex;
@@ -665,6 +692,7 @@ mat-card-actions {
             &.saving {
               color: var(--mat-sys-primary);
               opacity: 1;
+
               mat-icon {
                 animation: rotate 1.5s linear infinite;
               }
@@ -672,31 +700,97 @@ mat-card-actions {
 
             &:not(.saving) {
               color: var(--mat-sys-tertiary);
-              mat-icon { color: var(--mat-sys-tertiary); }
+
+              mat-icon {
+                color: var(--mat-sys-tertiary);
+              }
             }
           }
         }
       }
     }
 
-    .grading-stats {
+    .header-actions {
       display: flex;
-      align-items: center;
-      padding: 1rem 2rem;
-      border-radius: 20px;
-      gap: 2rem;
+      align-items: stretch;
+      gap: 0.75rem;
 
-      .stat {
+      .grading-stats {
         display: flex;
-        flex-direction: column;
         align-items: center;
+        padding: 0 2rem; // Remove vertical padding, rely on container height
+        border-radius: 24px;
+        gap: 2rem;
+        height: 72px; // Fixed height for both
+        box-sizing: border-box;
 
-        .val { font-size: 1.5rem; font-weight: 800; color: var(--mat-sys-primary); }
-        .lab { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; color: var(--mat-sys-on-surface-variant); }
+        .stat {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+
+          .val {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--mat-sys-primary);
+            line-height: 1;
+          }
+
+          .lab {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--mat-sys-on-surface-variant);
+            margin-top: 4px;
+          }
+        }
+
+        .stat-divider {
+          width: 1px;
+          height: 30px;
+          background: var(--mat-sys-outline-variant);
+        }
       }
 
-      .stat-divider { width: 1px; height: 30px; background: var(--mat-sys-outline-variant); }
+      .grade-scale-btn {
+        border-radius: 24px !important; // Match banner
+        font-weight: 700;
+        padding: 0 1.5rem !important;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        height: 72px !important; // Exact match
+        border: 1px solid var(--mat-sys-outline-variant) !important;
+        font-size: 1rem;
+
+        ::ng-deep .mat-mdc-button-touch-target {
+          display: none;
+        }
+
+        mat-icon {
+          margin: 0;
+          font-size: 24px;
+          width: 24px;
+          height: 24px;
+          border-radius: 6px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        &:hover {
+          background: var(--mat-sys-primary-container) !important;
+          border-color: var(--mat-sys-primary) !important;
+        }
+      }
     }
+  }
+
+  .header-icon {
+    font-size: 2rem;
+    width: 2rem;
+    height: 2rem;
+    color: var(--mat-sys-primary);
   }
 
   .grading-actions-bar {
@@ -713,8 +807,12 @@ mat-card-actions {
       padding: 0.5rem 1rem;
       border-radius: 12px;
       width: 40%;
-      
-      mat-icon { margin-right: 8px; color: var(--mat-sys-on-surface-variant); }
+
+      mat-icon {
+        margin-right: 8px;
+        color: var(--mat-sys-on-surface-variant);
+      }
+
       input {
         border: none;
         background: transparent;
@@ -731,8 +829,12 @@ mat-card-actions {
       color: var(--mat-sys-on-surface-variant);
       font-size: 0.85rem;
       font-weight: 500;
-      
-      mat-icon { font-size: 18px; width: 18px; height: 18px; }
+
+      mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+      }
     }
   }
 }
@@ -763,8 +865,13 @@ mat-card-actions {
     border-bottom: 1px solid var(--mat-sys-outline-variant);
     transition: background 0.2s ease;
 
-    &:last-child { border-bottom: none; }
-    &:hover { background: var(--mat-sys-surface-container); }
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &:hover {
+      background: var(--mat-sys-surface-container);
+    }
 
     &.is-graded {
       background: rgba(var(--mat-sys-tertiary-rgb), 0.05);
@@ -793,8 +900,16 @@ mat-card-actions {
     .details {
       display: flex;
       flex-direction: column;
-      .name { font-weight: 700; color: var(--mat-sys-on-surface); }
-      .id { font-size: 0.75rem; color: var(--mat-sys-on-surface-variant); }
+
+      .name {
+        font-weight: 700;
+        color: var(--mat-sys-on-surface);
+      }
+
+      .id {
+        font-size: 0.75rem;
+        color: var(--mat-sys-on-surface-variant);
+      }
     }
   }
 }
@@ -817,10 +932,15 @@ mat-card-actions {
     font-weight: 800;
   }
 
-  .date { font-size: 0.75rem; color: var(--mat-sys-on-surface-variant); margin-left: 4px; }
+  .date {
+    font-size: 0.75rem;
+    color: var(--mat-sys-on-surface-variant);
+    margin-left: 4px;
+  }
 }
 
-.points-input-wrapper, .grade-input-wrapper {
+.points-input-wrapper,
+.grade-input-wrapper {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -835,11 +955,22 @@ mat-card-actions {
     font-weight: 700;
     color: var(--mat-sys-on-surface);
 
-    &:focus { border-color: var(--mat-sys-primary); outline: none; }
-    &:disabled { opacity: 0.5; background: var(--mat-sys-surface-container-low); }
+    &:focus {
+      border-color: var(--mat-sys-primary);
+      outline: none;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      background: var(--mat-sys-surface-container-low);
+    }
   }
 
-  .unit { font-size: 0.75rem; font-weight: 600; color: var(--mat-sys-on-surface-variant); }
+  .unit {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--mat-sys-on-surface-variant);
+  }
 }
 
 .grade-select {
@@ -849,8 +980,10 @@ mat-card-actions {
   border-radius: 8px;
   padding: 4px 10px;
   font-weight: 700;
-  
-  ::ng-deep .mat-mdc-select-value { color: var(--mat-sys-on-surface); }
+
+  ::ng-deep .mat-mdc-select-value {
+    color: var(--mat-sys-on-surface);
+  }
 }
 
 .feedback-input-wrapper {
@@ -865,8 +998,15 @@ mat-card-actions {
     resize: vertical;
     min-height: 40px;
 
-    &:focus { border-color: var(--mat-sys-primary); outline: none; }
-    &:disabled { opacity: 0.5; background: var(--mat-sys-surface-container-low); }
+    &:focus {
+      border-color: var(--mat-sys-primary);
+      outline: none;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      background: var(--mat-sys-surface-container-low);
+    }
   }
 }
 
@@ -891,8 +1031,14 @@ mat-card-actions {
   flex-direction: column;
   align-items: center;
   color: var(--mat-sys-on-surface-variant);
-  
-  mat-icon { font-size: 48px; width: 48px; height: 48px; margin-bottom: 1rem; opacity: 0.5; }
+
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+  }
 }
 
 .loading-state {

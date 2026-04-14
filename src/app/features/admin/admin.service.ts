@@ -454,7 +454,7 @@ export class AdminService {
 
   // --- Grade Scale ---
   getGradeScale(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/grade-scale`);
+    return this.http.get<any[]>(`${environment.apiUrl}/users/grade-scale`);
   }
 
   saveGradeScaleEntry(entry: any): Observable<any> {
