@@ -881,7 +881,8 @@
   },
   "nav": {
     "absences": "Absences",
-    "lecturerAbsences": "Lecturer Absences"
+    "lecturerAbsences": "Lecturer Absences",
+    "jobPostings": "Job Postings"
   },
   "absences": {
     "title": "My Absences",

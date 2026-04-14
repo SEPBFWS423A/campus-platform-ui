@@ -9,6 +9,7 @@ import {CourseSeriesDetails} from './event-management/course-series-details/cour
 import { AdminApplications } from './applications/applications';
 import { Holidays } from './holidays/holidays';
 import {LecturerAbsencesAdmin} from './lecturer-absences/lecturer-absences';
+import { JobPostings } from './job-postings/job-postings';
 
 export const adminRoutes: Routes = [
   {
@@ -50,5 +51,9 @@ export const adminRoutes: Routes = [
   {
     path: 'lecturer-absences',
     component: LecturerAbsencesAdmin
+  },
+  {
+    path: 'job-postings',
+    component: JobPostings
   }
 ];

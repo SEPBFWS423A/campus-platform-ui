@@ -918,5 +918,8 @@
     "deleteSuccess": "Abwesenheit wurde gelöscht.",
     "createSuccess": "Abwesenheit wurde eingetragen.",
     "conflictError": "Terminkonflikt: Der Dozent hat in diesem Zeitraum eine Abwesenheit eingetragen."
-  }
+  },
+  "nav.absences": "Abwesenheiten",
+  "nav.lecturerAbsences": "Dozenten-Abwesenheiten",
+  "nav.jobPostings": "Stellenausschreibungen"
 }
