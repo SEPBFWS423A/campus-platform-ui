@@ -6,6 +6,49 @@
 </header>
 
 <div class="admin-rooms-content">
+  <mat-expansion-panel class="filter-panel" [expanded]="false">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <mat-icon>filter_list</mat-icon>
+        <span>Filter</span>
+      </mat-panel-title>
+      <mat-panel-description>
+        Raum- und Zeitraumbeschränkung
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+
+    <div class="filter-panel-content">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Raum filtern</mat-label>
+        <input type="text" matInput [formControl]="roomAutocompleteControl" [matAutocomplete]="auto">
+        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onRoomSelected($event.option.value)">
+          @for (option of filteredAutocompleteOptions(); track option.id) {
+            <mat-option [value]="option.id">{{ option.name }}</mat-option>
+          }
+        </mat-autocomplete>
+        @if (filterRoomId()) {
+          <button matSuffix mat-icon-button aria-label="Clear" (click)="filterRoomId.set(null); roomAutocompleteControl.setValue('')">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Zeitraum</mat-label>
+        <mat-date-range-input [rangePicker]="filterPicker">
+          <input matStartDate [value]="filterStart()" (dateChange)="filterStart.set($event.value)" placeholder="Start">
+          <input matEndDate [value]="filterEnd()" (dateChange)="filterEnd.set($event.value)" placeholder="Ende">
+        </mat-date-range-input>
+        <mat-datepicker-toggle matIconSuffix [for]="filterPicker"></mat-datepicker-toggle>
+        <mat-date-range-picker #filterPicker></mat-date-range-picker>
+      </mat-form-field>
+
+      <button mat-stroked-button color="warn" (click)="onResetFilters()">
+        <mat-icon>filter_list_off</mat-icon> Zurücksetzen
+      </button>
+    </div>
+  </mat-expansion-panel>
+
   <div class="grid-container stats-row room-stats-row">
     <mat-card class="card stat-card">
       <div class="stat-icon primary-bg">
@@ -38,7 +81,7 @@
     </mat-card>
   </div>
 
-  <mat-tab-group class="management-tabs" animationDuration="150ms">
+  <mat-tab-group class="management-tabs" animationDuration="150ms" [selectedIndex]="selectedTabIndex()" (selectedIndexChange)="selectedTabIndex.set($event)">
 
     <!-- Tab: Raumliste -->
     <mat-tab>
@@ -78,7 +121,7 @@
             <h3>Alle Räume</h3>
           </div>
           <div class="room-table-wrapper">
-            <table mat-table [dataSource]="rooms()" class="management-table" id="rooms-table">
+            <table mat-table [dataSource]="filteredRooms()" class="management-table" id="rooms-table">
               <ng-container matColumnDef="name">
                 <th mat-header-cell *matHeaderCellDef>Name</th>
                 <td mat-cell *matCellDef="let room" class="room-name-cell">{{ room.name }}</td>
@@ -95,6 +138,10 @@
                 <th mat-header-cell *matHeaderCellDef>Aktionen</th>
                 <td mat-cell *matCellDef="let room">
                   <div class="actions-cell">
+                    <button mat-icon-button class="btn-icon-only info-room-btn" title="Belegungsplan"
+                      (click)="onFocusRoom(room.id)">
+                      <mat-icon>calendar_month</mat-icon>
+                    </button>
                     <button mat-icon-button class="btn-icon-only edit-room-btn" title="Bearbeiten"
                       (click)="onEditRoom(room.id)">
                       <mat-icon>edit</mat-icon>
@@ -120,7 +167,12 @@
         <mat-icon>calendar_month</mat-icon> Belegungsplan
       </ng-template>
       <div class="management-tab-content">
-        <app-room-schedule [rooms]="rooms()" />
+        <app-room-schedule 
+          [rooms]="rooms()" 
+          [selectedRoomId]="focusedRoomId()" 
+          [filterStart]="filterStart()"
+          [filterEnd]="filterEnd()"
+          (resetRoom)="focusedRoomId.set(null)" />
       </div>
     </mat-tab>
 
@@ -130,7 +182,10 @@
         <mat-icon>donut_large</mat-icon> Raumauslastung
       </ng-template>
       <div class="management-tab-content">
-        <app-room-utilization [rooms]="rooms()" />
+        <app-room-utilization 
+          [rooms]="rooms()" 
+          [filterStart]="filterStart()"
+          [filterEnd]="filterEnd()" />
       </div>
     </mat-tab>
 
