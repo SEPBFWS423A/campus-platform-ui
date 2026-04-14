@@ -1,0 +1,85 @@
+.applications-page {
+  padding: 2rem;
+  background: #f0f4f8;
+  min-height: 100vh;
+
+  .header {
+    margin-bottom: 1.5rem;
+    h1 { font-size: 2rem; margin: 0; }
+    p { color: #666; margin: 0.25rem 0 0; }
+  }
+
+  .status-bar {
+    background: #e8f5e9;
+    border: 1px solid #c8e6c9;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.5rem;
+    color: #2e7d32;
+    font-size: 0.9rem;
+  }
+
+  .programs-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+
+  .program-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    .program-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      h3 { margin: 0; font-size: 1.05rem; }
+    }
+
+    .degree-badge {
+      background: #e8edff;
+      color: #3b5bdb;
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .program-info {
+      p { margin: 0.25rem 0; font-size: 0.9rem; color: #555; }
+    }
+
+    .program-footer {
+      margin-top: auto;
+    }
+
+    .btn-apply {
+      width: 100%;
+      padding: 0.6rem;
+      background: #3b5bdb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      &:hover { background: #2f4ac0; }
+    }
+
+    .btn-withdraw {
+      width: 100%;
+      padding: 0.6rem;
+      background: #fff0f0;
+      color: #c0392b;
+      border: 1px solid #f5c6c6;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      &:hover { background: #ffe0e0; }
+    }
+  }
+}

@@ -8,6 +8,7 @@ import {AcademicStructure} from './academic-structure/academic-structure';
 import {CourseSeriesDetails} from './event-management/course-series-details/course-series-details';
 import { AdminApplications } from './applications/applications';
 import { Holidays } from './holidays/holidays';
+import {LecturerAbsencesAdmin} from './lecturer-absences/lecturer-absences';
 
 export const adminRoutes: Routes = [
   {
@@ -46,4 +47,8 @@ export const adminRoutes: Routes = [
   path: 'holidays',
   component: Holidays
 },
+  },
+    path: 'lecturer-absences',
+    component: LecturerAbsencesAdmin
+  },
 ];
