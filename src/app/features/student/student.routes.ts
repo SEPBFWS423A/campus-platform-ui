@@ -3,6 +3,7 @@ import { StudentHome } from './student-home/student-home';
 import { Grades } from './grades/grades';
 import { Submissions } from './submissions/submissions';
 import { Timetable } from './timetable/timetable';
+import { StudentApplications } from './applications/applications';
 
 export const studentRoutes: Routes = [
   {
@@ -21,4 +22,8 @@ export const studentRoutes: Routes = [
     path: 'timetable',
     component: Timetable
   },
+  {
+  path: 'applications',
+  component: StudentApplications
+},
 ];

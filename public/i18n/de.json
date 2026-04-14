@@ -878,5 +878,44 @@
       "noAttendees": "Noch keine Studierenden in diesem Kurs.",
       "seriesInfo": "Informationen zur Vorlesungsreihe"
     }
+  },
+  "nav": {
+    "absences": "Abwesenheiten",
+    "lecturerAbsences": "Dozenten-Abwesenheiten"
+  },
+  "absences": {
+    "title": "Meine Abwesenheiten",
+    "adminTitle": "Abwesenheiten der Dozenten",
+    "form": {
+      "type": "Art der Abwesenheit",
+      "startDate": "Von",
+      "endDate": "Bis",
+      "note": "Anmerkung (optional)",
+      "submit": "Eintragen"
+    },
+    "types": {
+      "URLAUB": "Urlaub",
+      "KRANKMELDUNG": "Krankmeldung",
+      "DIENSTREISE": "Dienstreise",
+      "SONSTIGES": "Sonstiges"
+    },
+    "status": {
+      "VERGANGEN": "Vergangen",
+      "AKTUELL": "Aktuell",
+      "GEPLANT": "Geplant"
+    },
+    "table": {
+      "lecturer": "Dozent",
+      "status": "Status",
+      "type": "Art",
+      "startDate": "Von",
+      "endDate": "Bis",
+      "note": "Anmerkung",
+      "actions": "Aktionen"
+    },
+    "deleteConfirm": "Abwesenheit wirklich löschen?",
+    "deleteSuccess": "Abwesenheit wurde gelöscht.",
+    "createSuccess": "Abwesenheit wurde eingetragen.",
+    "conflictError": "Terminkonflikt: Der Dozent hat in diesem Zeitraum eine Abwesenheit eingetragen."
   }
 }
