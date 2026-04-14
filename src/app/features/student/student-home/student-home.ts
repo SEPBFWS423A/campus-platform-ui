@@ -4,6 +4,8 @@ import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { StudentApi, StudentDashboard, StudentTodayEvent } from '../services/student-api';
+import { GradesService } from '../../../core/services/grades.services';
+import { StudentGradeOverviewItemResponse } from '../../../core/models/grades.models';
 
 type EventStatus = 'past' | 'current' | 'future';
 
@@ -20,8 +22,10 @@ interface TodayEventWithStatus extends StudentTodayEvent {
 })
 export class StudentHome implements OnInit {
   private studentApi = inject(StudentApi);
+  private gradesService = inject(GradesService);
 
   dashboard = signal<StudentDashboard | null>(null);
+  grades = signal<StudentGradeOverviewItemResponse[]>([]);
   loading = signal(true);
   error = signal(false);
   currentDate = new Date();
@@ -39,6 +43,11 @@ export class StudentHome implements OnInit {
       else if (start <= now) status = 'current';
       return { ...e, status, endTime: end };
     });
+  });
+
+  // Berechneter Notendurchschnitt (Frontend-seitig mit Logik aus Notenansicht)
+  averageGrade = computed(() => {
+    return this.gradesService.calculateWeightedAverage(this.grades());
   });
 
   // ECTS-Fortschrittsbalken (0–100)
@@ -65,6 +74,16 @@ export class StudentHome implements OnInit {
       error: () => {
         this.error.set(true);
         this.loading.set(false);
+      }
+    });
+
+    this.gradesService.getOverview().subscribe({
+      next: response => {
+        const allItems = response.semesters.flatMap(s => s.items);
+        this.grades.set(allItems);
+      },
+      error: err => {
+        console.error('Fehler beim Laden der Noten für den Durchschnitt', err);
       }
     });
   }

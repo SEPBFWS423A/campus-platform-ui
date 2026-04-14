@@ -36,8 +36,8 @@
         <mat-icon>bar_chart</mat-icon>
       </div>
       <span class="stat-label">Notenschnitt</span>
-      @if (data.averageGrade != null) {
-        <span class="stat-value">{{ data.averageGrade }}</span>
+      @if (averageGrade() != null) {
+        <span class="stat-value">{{ averageGrade() | number:'1.1-1' }}</span>
       } @else {
         <span class="stat-value">–</span>
         <span class="stat-subtext">Noch keine Noten</span>

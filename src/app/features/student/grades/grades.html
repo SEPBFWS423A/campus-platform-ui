@@ -35,7 +35,7 @@
           <div class="summary-card__text">
             <span class="summary-card__label">{{ 'navigation.grades.summary.currentAverage' | translate }}</span>
             <strong class="summary-card__value">
-              {{ overview.summary.currentAverage !== null ? (overview.summary.currentAverage | number:'1.1-1') : '—' }}
+              {{ totalAverage !== null ? (totalAverage | number:'1.1-1') : '—' }}
             </strong>
           </div>
         </article>
@@ -94,8 +94,8 @@
               <div class="semester-section__header-right">
                 <span>
                   Ø
-                  @if (getSectionAverage(semester) !== null) {
-                    {{ getSectionAverage(semester) | number:'1.1-1' }}
+                   @if (gradesService.calculateWeightedAverage(semester.items) !== null) {
+                    {{ gradesService.calculateWeightedAverage(semester.items) | number:'1.1-1' }}
                   } @else {
                     —
                   }
