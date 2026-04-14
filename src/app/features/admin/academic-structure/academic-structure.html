@@ -362,76 +362,84 @@
          </div>
          }
 
-         <!-- MODULES VIEW -->
-         @if (activeView() === 'modules') {
-         <div class="view-section animate-fade-in">
+        <!-- MODULES VIEW -->
+        @if (activeView() === 'modules') {
+          <div class="view-section animate-fade-in">
             <mat-card class="data-view-card">
-               <table class="modern-table">
-                  <thead>
-                     <tr>
-                        <th>{{ "academicStructure.module" | translate }}</th>
-                        <th>{{ "academicStructure.courseOfStudyAndSpecialization" | translate }}</th>
-                        <th>{{ "academicStructure.semester" | translate }}</th>
-                        <th>{{ "academicStructure.workload" | translate }}</th>
-                        <th>{{ "academicStructure.staff" | translate }}</th>
-                        <th>{{ "academicStructure.exams" | translate }}</th>
-                        <th class="actions-cell"></th>
-                     </tr>
-                  </thead>
-                  <tbody>
-                     @for (module of filteredModules(); track module.id) {
-                     <tr class="module-row">
-                        <td><span class="bold-text">{{ module.name }}</span></td>
-                        <td>
-                           <div class="course-specialization-ref">
-                              <span class="c-name">{{ getCourseName(module.courseOfStudyId) }}</span>
-                              @if (module.specializationId) { <span class="f-tag">{{
-                                 getSpecializationName(module.specializationId) }}</span> }
-                           </div>
-                        </td>
-                        <td class="semester-cell">{{ "academicStructure.semester" | translate }} {{ module.semester }}
-                        </td>
-                        <td class="workload-cell">{{ module.requiredTotalHours }}h</td>
-                        <td>
-                           <div class="staff-stack">
-                              @for (lecturer of module.lecturers; track lecturer.id) {
-                              <span class="staff-badge" [title]="getFullDisplayName(lecturer)">
-                                 {{ getInitials(lecturer) }}
-                              </span>
-                              }
-                           </div>
-                        </td>
-                        <td class="exam-cell">
-                           <div class="exam-badge-container">
-                              @for (et of module.possibleExamTypes; track et.id) {
-                              <span class="exam-badge" [class]="et.type.toLowerCase().replace('_', '-')"
-                                 [class.preferred]="module.preferredExamTypeId === et.id"
-                                 [title]="getExamTypeName(et) + (module.preferredExamTypeId === et.id ? ' (' + ('academicStructure.preferred' | translate) + ')' : '')">
-                                 @if (module.preferredExamTypeId === et.id) { <mat-icon
-                                    class="pref-star">star</mat-icon> }
-                                 {{ getExamTypeShort(et) }}
-                              </span>
-                              }
-                           </div>
-                        </td>
-                        <td class="actions-cell">
-                           <button mat-icon-button (click)="editModule(module)"
-                              color="primary"><mat-icon>edit_outline</mat-icon></button>
-                           <button mat-icon-button (click)="deleteModule(module.id)"
-                              color="warn"><mat-icon>delete_outline</mat-icon></button>
-                        </td>
-                     </tr>
-                     } @empty {
-                     <tr>
-                        <td colspan="7" class="empty-hint center">{{ "academicStructure.noModulesFound" | translate }}
-                        </td>
-                     </tr>
-                     }
-                  </tbody>
-               </table>
+              <table class="modern-table">
+                <thead>
+                <tr>
+                  <th>{{ "academicStructure.module" | translate }}</th>
+                  <th>{{ "academicStructure.courseOfStudyAndSpecialization" | translate }}</th>
+                  <th>{{ "academicStructure.semester" | translate }}</th>
+                  <th>{{ "academicStructure.workload" | translate }}</th>
+                  <th>{{ "academicStructure.ects" | translate }}</th>
+                  <th>{{ "academicStructure.staff" | translate }}</th>
+                  <th>{{ "academicStructure.exams" | translate }}</th>
+                  <th class="actions-cell"></th>
+                </tr>
+                </thead>
+                <tbody>
+                  @for (module of filteredModules(); track module.id) {
+                    <tr class="module-row">
+                      <td><span class="bold-text">{{ module.name }}</span></td>
+                      <td>
+                        <div class="course-specialization-ref">
+                          <span class="c-name">{{ getCourseName(module.courseOfStudyId) }}</span>
+                          @if (module.specializationId) {
+                            <span class="f-tag">{{ getSpecializationName(module.specializationId) }}</span>
+                          }
+                        </div>
+                      </td>
+                      <td class="semester-cell">
+                        {{ "academicStructure.semester" | translate }} {{ module.semester }}
+                      </td>
+                      <td class="workload-cell">{{ module.requiredTotalHours }}h</td>
+                      <td class="workload-cell">{{ module.ects ?? '-' }}</td>
+                      <td>
+                        <div class="staff-stack">
+                          @for (lecturer of module.lecturers; track lecturer.id) {
+                            <span class="staff-badge" [title]="getFullDisplayName(lecturer)">
+                        {{ getInitials(lecturer) }}
+                     </span>
+                          }
+                        </div>
+                      </td>
+                      <td class="exam-cell">
+                        <div class="exam-badge-container">
+                          @for (et of module.possibleExamTypes; track et.id) {
+                            <span class="exam-badge" [class]="et.type.toLowerCase().replace('_', '-')"
+                                  [class.preferred]="module.preferredExamTypeId === et.id"
+                                  [title]="getExamTypeName(et) + (module.preferredExamTypeId === et.id ? ' (' + ('academicStructure.preferred' | translate) + ')' : '')">
+                        @if (module.preferredExamTypeId === et.id) {
+                          <mat-icon class="pref-star">star</mat-icon>
+                        }
+                              {{ getExamTypeShort(et) }}
+                     </span>
+                          }
+                        </div>
+                      </td>
+                      <td class="actions-cell">
+                        <button mat-icon-button (click)="editModule(module)" color="primary">
+                          <mat-icon>edit_outline</mat-icon>
+                        </button>
+                        <button mat-icon-button (click)="deleteModule(module.id)" color="warn">
+                          <mat-icon>delete_outline</mat-icon>
+                        </button>
+                      </td>
+                    </tr>
+                  } @empty {
+                    <tr>
+                      <td colspan="8" class="empty-hint center">
+                        {{ "academicStructure.noModulesFound" | translate }}
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
             </mat-card>
-         </div>
-         }
+          </div>
+        }
 
           <!-- EXAM TYPES VIEW -->
          @if (activeView() === 'exam-types') {
