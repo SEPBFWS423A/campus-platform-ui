@@ -1,4 +1,5 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal, effect } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -13,17 +14,25 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-import { AdminService, Room, RoomUtilizationData } from '../admin.service';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { map, startWith } from 'rxjs';
+import { AdminService, Room, RoomUtilizationData, RoomStatusHistory } from '../admin.service';
 import { RoomEditDialog } from './room-edit.dialog/room-edit.dialog';
 import { RoomDeleteDialog } from './room-delete.dialog/room-delete.dialog';
 import { RoomSchedule } from './room-schedule/room-schedule';
 import { RoomUtilization } from './room-utilization/room-utilization';
-import { MatChipsModule } from '@angular/material/chips';
+import { RoomBlockoutComponent } from './room-blockout/room-blockout';
 import { OperationalStatusPipe } from '../../../shared/pipes/operational-status.pipe';
 
 @Component({
   selector: 'app-room-management',
+  standalone: true,
   imports: [
+    CommonModule,
     ReactiveFormsModule,
     MatButtonModule,
     MatCardModule,
@@ -39,72 +48,83 @@ import { OperationalStatusPipe } from '../../../shared/pipes/operational-status.
     MatNativeDateModule,
     MatChipsModule,
     MatDialogModule,
+    MatMenuModule,
+    MatTooltipModule,
+    MatCheckboxModule,
     OperationalStatusPipe,
     RoomSchedule,
     RoomUtilization,
+    RoomBlockoutComponent,
   ],
   templateUrl: './room-management.html',
   styleUrl: './room-management.scss',
 })
 export class RoomManagement implements OnInit {
   private adminService = inject(AdminService);
-  private dialog = inject(MatDialog);
   private fb = inject(FormBuilder);
+  private dialog = inject(MatDialog);
 
   rooms = signal<Room[]>([]);
-  utilizationData = signal<RoomUtilizationData[]>([]);
+  createError = signal<string | null>(null);
+
+  displayedColumns: string[] = ['name', 'seats', 'type', 'building', 'status', 'actions'];
+  
+  // Tab Management
   focusedRoomId = signal<number | null>(null);
   selectedTabIndex = signal(0);
   expandedElement = signal<Room | null>(null);
+  roomHistory = signal<RoomStatusHistory[]>([]);
+  utilizationData = signal<RoomUtilizationData[]>([]);
 
   // Filters
   filterRoomId = signal<number | null>(null);
-  filterStart = signal<Date | null>(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
-  filterEnd = signal<Date | null>(new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0));
+  filterStart = signal<Date>(new Date());
+  filterEnd = signal<Date>(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000));
+  
+  roomAutocompleteControl = new FormControl('');
+  
+  filteredAutocompleteOptions = toSignal(
+    this.roomAutocompleteControl.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filterRooms(value || ''))
+    ),
+    { initialValue: [] as Room[] }
+  );
 
   filteredRooms = computed(() => {
     let list = this.rooms();
-    const rid = this.filterRoomId();
-    if (rid) {
-      list = list.filter(r => r.id === rid);
+    const id = this.filterRoomId();
+    if (id) {
+      list = list.filter(r => r.id === id);
     }
     return list;
   });
 
-  roomAutocompleteControl = new FormControl('');
-  filteredAutocompleteOptions = computed(() => {
-    const val = this.roomAutocompleteControl.value?.toLowerCase() || '';
-    return this.rooms().filter(r => r.name.toLowerCase().includes(val));
-  });
-
+  // Stats
   totalRooms = computed(() => this.rooms().length);
-  totalSeats = computed(() => this.rooms().reduce((s, r) => s + r.seats, 0));
+  totalSeats = computed(() => this.rooms().reduce((acc, r) => acc + (r.seats || 0), 0));
   totalUtilization = computed(() => {
     const data = this.utilizationData();
-    if (!data || data.length === 0) return '0%';
-    const avg = data.reduce((sum, r) => sum + r.utilizationPercent, 0) / data.length;
-    return `${Math.round(avg)}%`;
+    if (data.length === 0) return '0%';
+    const avg = data.reduce((acc, u) => acc + u.utilizationPercent, 0) / data.length;
+    return Math.round(avg) + '%';
   });
 
-  displayedColumns = ['name', 'status', 'seats', 'examSeats', 'actions'];
+  constructor() {
+    effect(() => {
+      const room = this.expandedElement();
+      if (room) {
+        this.loadHistory(room.id);
+      }
+    });
 
-  createError = signal<string | null>(null);
-  createForm: FormGroup = this.fb.group({
-    name: ['', [Validators.required, Validators.maxLength(50)]],
-    seats: [null, [Validators.required, Validators.min(1)]],
-    examSeats: [null, [Validators.required, Validators.min(0)]],
-    building: ['', Validators.required],
-    floor: [0],
-    roomType: ['HOERSAAL', Validators.required],
-    operationalStatus: ['AKTIV', Validators.required],
-    features: [[]],
-    barrierefreiheit: [false],
-    description: ['', Validators.maxLength(500)]
-  });
+    effect(() => {
+      this.loadUtilization();
+    });
+  }
 
   ngOnInit() {
     this.loadRooms();
-    this.loadUtilization();
   }
 
   loadRooms() {
@@ -113,20 +133,12 @@ export class RoomManagement implements OnInit {
     });
   }
 
-  loadUtilization() {
-    const start = this.filterStart()?.toISOString().split('T')[0] || '';
-    const end = this.filterEnd()?.toISOString().split('T')[0] || '';
-    this.adminService.getRoomUtilizations(start, end).subscribe(data => {
-      this.utilizationData.set(data);
-    });
-  }
-
-  onResetFilters() {
-    this.filterRoomId.set(null);
-    this.roomAutocompleteControl.setValue('');
-    this.filterStart.set(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
-    this.filterEnd.set(new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0));
-    this.loadUtilization();
+  private _filterRooms(value: string): Room[] {
+    const filterValue = value.toLowerCase();
+    return this.rooms().filter(room => 
+      room.name.toLowerCase().includes(filterValue) || 
+      room.building.toLowerCase().includes(filterValue)
+    );
   }
 
   onRoomSelected(roomId: number) {
@@ -135,15 +147,20 @@ export class RoomManagement implements OnInit {
 
   onFocusRoom(roomId: number) {
     this.focusedRoomId.set(roomId);
-    this.selectedTabIndex.set(1);
-    // Scroll to top
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    this.selectedTabIndex.set(1); // Set to "Belegungsplan" tab
+  }
+
+  onResetFilters() {
+    this.filterRoomId.set(null);
+    this.roomAutocompleteControl.setValue('');
+    this.filterStart.set(new Date());
+    this.filterEnd.set(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000));
   }
 
   onCreateRoom() {
     if (this.createForm.invalid) return;
 
-    this.adminService.createRoom(this.createForm.value).subscribe({
+    this.adminService.createRoom(this.createForm.value as any).subscribe({
       next: () => {
         this.loadRooms();
         this.createForm.reset({
@@ -194,4 +211,41 @@ export class RoomManagement implements OnInit {
       }
     });
   }
+
+  loadHistory(roomId: number) {
+    this.adminService.getRoomStatusHistory(roomId).subscribe(history => {
+      this.roomHistory.set(history);
+    });
+  }
+
+  loadUtilization() {
+    const start = this.filterStart();
+    const end = this.filterEnd();
+    if (start && end) {
+      const s = this.toLocalIsoDate(start);
+      const e = this.toLocalIsoDate(end);
+      this.adminService.getRoomUtilizations(s, e).subscribe(data => {
+        this.utilizationData.set(data);
+      });
+    }
+  }
+
+  private toLocalIsoDate(date: Date): string {
+    const pad = (num: number) => (num < 10 ? '0' : '') + num;
+    return date.getFullYear() +
+      '-' + pad(date.getMonth() + 1) +
+      '-' + pad(date.getDate());
+  }
+
+  createForm = this.fb.group({
+    name: ['', Validators.required],
+    seats: [0, [Validators.required, Validators.min(0)]],
+    examSeats: [0, [Validators.required, Validators.min(0)]],
+    roomType: ['HOERSAAL', Validators.required],
+    building: ['', Validators.required],
+    floor: [0],
+    barrierefreiheit: [false],
+    description: [''],
+    operationalStatus: ['AKTIV', Validators.required]
+  });
 }

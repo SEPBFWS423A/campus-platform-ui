@@ -23,6 +23,7 @@ const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
 @Component({
   selector: 'app-room-utilization',
+  standalone: true,
   imports: [
     ReactiveFormsModule,
     MatCardModule,
@@ -42,9 +43,10 @@ const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 export class RoomUtilization implements OnInit {
   private adminService = inject(AdminService);
   rooms = input<Room[]>([]);
+  utilizationData = input<RoomUtilizationData[]>([]);
   filterStart = input<Date | null>(null);
   filterEnd = input<Date | null>(null);
-  private utilizationData = signal<RoomUtilizationData[]>([]);
+  
   private dayEvents = signal<RoomScheduleEvent[]>([]);
 
   viewMode = signal<'month' | 'day'>('month');
@@ -59,19 +61,16 @@ export class RoomUtilization implements OnInit {
 
   daySlots = computed(() => {
     const events = this.dayEvents();
-    const rooms = this.rooms();
-    const day = this.selectedDay();
-
-    return rooms.map(room => {
+    return this.rooms().map(room => {
       const roomEvents = events.filter(e => e.roomId === room.id);
       const slots = this.hours.map(h => {
-        const hour = parseInt(h, 10);
-        const isOccupied = roomEvents.some(e => {
-          const start = this.parseDate(e.startTime);
-          const end = new Date(start.getTime() + (e.durationMinutes || 0) * 60000);
-          return start.getHours() <= hour && end.getHours() > hour;
+        const hInt = parseInt(h);
+        return roomEvents.some(e => {
+          if (!e.startTime) return false;
+          const startH = new Date(e.startTime).getHours();
+          const endH = new Date(new Date(e.startTime).getTime() + e.durationMinutes * 60000).getHours();
+          return hInt >= startH && hInt < endH;
         });
-        return isOccupied;
       });
       return { room, slots };
     });
@@ -81,10 +80,10 @@ export class RoomUtilization implements OnInit {
     this.roomCards().filter(r => r.utilization >= this.peakThreshold())
   );
 
+  constructor() {
+  }
+
   ngOnInit(): void {
-    effect(() => {
-      this.onDateChange();
-    });
   }
 
   roomCards = computed<RoomCard[]>(() => {
@@ -100,17 +99,10 @@ export class RoomUtilization implements OnInit {
     });
   });
 
-  onDateChange(): void {
-    const start = this.filterStart();
-    const end = this.filterEnd();
-    if (start && end) {
-      this.selectedLabel.set(`${this.fmt(start)} – ${this.fmt(end)}`);
-      
-      const startStr = this.toLocalIsoDate(start);
-      const endStr   = this.toLocalIsoDate(end);
-      
-      this.adminService.getRoomUtilizations(startStr, endStr)
-        .subscribe(data => this.utilizationData.set(data));
+  onViewModeToggle(mode: 'month' | 'day'): void {
+    this.viewMode.set(mode);
+    if (mode === 'day') {
+      this.onDaySelect(this.selectedDay());
     }
   }
 
@@ -126,27 +118,6 @@ export class RoomUtilization implements OnInit {
     const endStr = this.toLocalIsoDate(date) + 'T23:59:59';
     this.adminService.getRoomSchedule(startStr, endStr)
       .subscribe(events => this.dayEvents.set(events));
-  }
-
-  onViewModeToggle(mode: 'month' | 'day'): void {
-    this.viewMode.set(mode);
-    if (mode === 'day') {
-      this.onDaySelect(this.selectedDay());
-    } else {
-      this.onDateChange();
-    }
-  }
-
-  private parseDate(d: any): Date {
-    if (d instanceof Date) return d;
-    if (!d) return new Date(NaN);
-    if (Array.isArray(d) && d.length >= 3) {
-      return new Date(d[0], d[1] - 1, d[2], d[3] || 0, d[4] || 0, d[5] || 0);
-    }
-    if (typeof d === 'string') {
-      return new Date(d.indexOf('T') === -1 ? d.replace(' ', 'T') : d);
-    }
-    return new Date(d);
   }
 
   private toLocalIsoDate(date: Date): string {
