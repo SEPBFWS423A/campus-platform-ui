@@ -38,7 +38,8 @@ const NAVIGATION_CONFIG: Record<string, NavLink[]> = {
     { path: '/admin/room-management', label: 'navigation.admin.roomManagement', icon: 'room_preferences', exact: false },
     { path: '/admin/event-management', label: 'navigation.admin.eventManagement', icon: 'event', exact: false },
     { path: '/admin/exam-management', label: 'navigation.admin.examManagement', icon: 'insert_chart', exact: false },
-    { path: '/admin/lecturer-absences', label: 'nav.lecturerAbsences', icon: 'event_busy', exact: false }
+    { path: '/admin/lecturer-absences', label: 'nav.lecturerAbsences', icon: 'event_busy', exact: false },
+    { path: '/admin/job-postings', label: 'nav.jobPostings', icon: 'work_outline', exact: false }
   ],
   [UserRole.Lecturer]: [
     { path: '/lecturer', label: 'navigation.lecturer.home', icon: 'home', exact: true },
