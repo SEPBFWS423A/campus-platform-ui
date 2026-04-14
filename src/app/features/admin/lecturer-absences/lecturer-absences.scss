@@ -288,3 +288,50 @@
     color: var(--mat-sys-on-surface-variant);
   }
 }
+
+// -------------------------------------------------------------------
+// Konflikt-Chips in der Admin-Tabelle (Sub-Issue #285)
+// -------------------------------------------------------------------
+.conflict-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 0 10px;
+  height: 28px;
+  border-radius: 14px;
+  border: none;
+  transition: opacity 0.2s ease;
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+
+  &:hover {
+    opacity: 0.85;
+  }
+
+  &.chip-warning {
+    background-color: var(--mat-sys-secondary-container, #fff8e1);
+    color: var(--mat-sys-on-secondary-container, #3e2000);
+
+    mat-icon { color: var(--mat-sys-secondary, #f57f17); }
+  }
+
+  &.chip-critical {
+    background-color: var(--mat-sys-error-container);
+    color: var(--mat-sys-on-error-container);
+
+    mat-icon { color: var(--mat-sys-error); }
+  }
+}
+
+.no-conflict {
+  color: var(--mat-sys-outline);
+  font-size: 14px;
+}
+
