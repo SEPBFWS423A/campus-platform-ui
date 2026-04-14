@@ -78,7 +78,7 @@ export class Navigation implements OnInit {
   hoveredItem = signal<string | null>(null);
 
   isCollapsed = toSignal(
-    this.breakpointObserver.observe('(max-width: 1150px)').pipe(map(result => result.matches)),
+    this.breakpointObserver.observe('(max-width: 1600px)').pipe(map(result => result.matches)),
     { initialValue: false }
   );
 
