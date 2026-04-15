@@ -4,10 +4,17 @@
       <h1 class="page-title">Stellenausschreibungen</h1>
       <p class="page-description">Ausschreibungen verwalten, veröffentlichen und Bewerbungen verfolgen.</p>
     </div>
-    <button mat-flat-button color="primary" class="create-btn" (click)="openCreateDialog()" id="create-posting-btn">
-      <mat-icon>add</mat-icon>
-      Neue Ausschreibung
-    </button>
+    <div class="header-actions">
+      <a mat-stroked-button routerLink="/jobs" target="_blank" class="public-page-btn"
+         matTooltip="Öffentliche Stellenseite in neuem Tab öffnen">
+        <mat-icon>open_in_new</mat-icon>
+        Öffentliche Seite
+      </a>
+      <button mat-flat-button color="primary" class="create-btn" (click)="openCreateDialog()" id="create-posting-btn">
+        <mat-icon>add</mat-icon>
+        Neue Ausschreibung
+      </button>
+    </div>
   </div>
 
   <!-- KPI-Karten -->
