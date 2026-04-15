@@ -732,7 +732,8 @@
     "saved": "Gespeichert",
     "create": "Erstellen",
     "edit": "Bearbeiten",
-    "delete": "Löschen"
+    "delete": "Löschen",
+    "contact": "Kontakt"
   },
   "info": {
     "pageTitle": "Info",
@@ -964,6 +965,27 @@
         "viewAttendees": "Klicke, um Teilnehmer zu sehen"
       }
     },
+    "profile": {
+      "interests": "Interessen",
+      "hobbies": "Hobbies",
+      "skills": "Kenntnisse",
+      "noTags": "Noch keine Tags hinzugefügt",
+      "edit": "Profil bearbeiten",
+      "optInTitle": "Tritt dem Hub bei",
+      "optInText": "Erstelle ein öffentliches Profil, um deine Interessen zu teilen und Mitstudierende mit ähnlichen Leidenschaften zu finden.",
+      "joinNow": "Dem Netzwerk beitreten",
+      "editTitle": "Öffentliches Profil bearbeiten",
+      "form": {
+        "bio": "Bio",
+        "bioPlaceholder": "Erzähl uns ein bisschen über dich...",
+        "interests": "Interessen",
+        "interestsPlaceholder": "z.B. KI, Natur, Fotografie (kommagetrennt)",
+        "hobbies": "Hobbies",
+        "hobbiesPlaceholder": "z.B. Gaming, Wandern (kommagetrennt)",
+        "skills": "Kenntnisse",
+        "skillsPlaceholder": "z.B. Java, Figma, Dart (kommagetrennt)"
+      }
+    },
     "categories": {
       "STUDY": "Lerngruppe",
       "SOCIAL": "Soziales Treffen",
@@ -972,8 +994,10 @@
       "OTHER": "Sonstiges"
     },
     "contacts": {
-      "title": "Studentenverzeichnis",
-      "description": "Vernetze dich mit anderen Studierenden, finde Lerngruppen und erweitere dein akademisches Netzwerk."
+      "title": "Mitstudierende",
+      "description": "Entdecke Gleichgesinnte und erweitere deinen sozialen Kreis.",
+      "searchPlaceholder": "Suche nach Name, Interessen oder Kenntnissen...",
+      "noResults": "Keine Mitstudierenden für diese Suche gefunden."
     }
   }
 }

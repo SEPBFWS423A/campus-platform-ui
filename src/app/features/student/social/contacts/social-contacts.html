@@ -1,9 +1,58 @@
-<div class="tab-content">
-  <div class="placeholder-card">
-    <div class="icon-wrapper">
-      <mat-icon fontIcon="contact_page"></mat-icon>
+<div class="tab-content student-discovery">
+  <!-- Search Header -->
+  <div class="search-section">
+    <mat-form-field appearance="outline" class="search-bar" subscriptSizing="dynamic">
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput 
+             [ngModel]="searchQuery()" 
+             (ngModelChange)="onSearchChange($event)"
+             [placeholder]="'social.contacts.searchPlaceholder' | translate">
+    </mat-form-field>
+  </div>
+
+  <div class="results-container">
+    <div class="student-grid">
+      @for (student of students(); track student.id) {
+        <div class="student-card">
+          <div class="card-header">
+            <div class="card-avatar">
+              {{ student.firstName.charAt(0) }}{{ student.lastName.charAt(0) }}
+            </div>
+            <div class="card-title-group">
+              <h3>{{ student.firstName }} {{ student.lastName }}</h3>
+              <span class="group-badge">{{ student.studyGroupName }}</span>
+            </div>
+          </div>
+
+          @if (student.bio) {
+            <p class="student-bio">{{ student.bio }}</p>
+          }
+
+          <div class="card-tags">
+            @for (tag of splitTags(student.skills); track tag) {
+              <span class="tag skill">{{ tag }}</span>
+            }
+            @for (tag of splitTags(student.hobbies); track tag) {
+              <span class="tag hobby">{{ tag }}</span>
+            }
+            @for (tag of splitTags(student.interests); track tag) {
+              <span class="tag">{{ tag }}</span>
+            }
+          </div>
+
+          <div class="card-actions">
+            <a mat-button color="primary" [href]="'mailto:' + student.email">
+              <mat-icon>mail</mat-icon>
+              {{ 'common.contact' | translate }}
+            </a>
+          </div>
+        </div>
+      } @empty {
+        <div class="no-results">
+          <mat-icon>search_off</mat-icon>
+          <p>{{ 'social.contacts.noResults' | translate }}</p>
+        </div>
+      }
     </div>
-    <h2>{{ 'social.contacts.title' | translate }}</h2>
-    <p>{{ 'social.contacts.description' | translate }}</p>
   </div>
 </div>

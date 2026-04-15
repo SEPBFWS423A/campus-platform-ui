@@ -1,0 +1,15 @@
+.profile-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-top: 0.5rem;
+  min-width: 400px;
+
+  @media (max-width: 600px) {
+    min-width: 100%;
+  }
+
+  .full-width {
+    width: 100%;
+  }
+}

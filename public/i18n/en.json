@@ -731,7 +731,8 @@
     "saved": "Saved",
     "create": "Create",
     "edit": "Edit",
-    "delete": "Delete"
+    "delete": "Delete",
+    "contact": "Contact"
   },
   "info": {
     "pageTitle": "Info",
@@ -961,6 +962,27 @@
         "viewAttendees": "Click to view attendees"
       }
     },
+    "profile": {
+      "interests": "Interests",
+      "hobbies": "Hobbies",
+      "skills": "Skills",
+      "noTags": "No tags added yet",
+      "edit": "Edit Profile",
+      "optInTitle": "Join the Hub",
+      "optInText": "Create a public profile to share your interests and find fellow students with similar passions.",
+      "joinNow": "Enter Social Network",
+      "editTitle": "Edit Public Profile",
+      "form": {
+        "bio": "Bio",
+        "bioPlaceholder": "Tell us a bit about yourself...",
+        "interests": "Interests",
+        "interestsPlaceholder": "e.g., AI, Nature, Photography (comma separated)",
+        "hobbies": "Hobbies",
+        "hobbiesPlaceholder": "e.g., Gaming, Hiking (comma separated)",
+        "skills": "Skills",
+        "skillsPlaceholder": "e.g., Java, Figma, Dart (comma separated)"
+      }
+    },
     "categories": {
       "STUDY": "Study Group",
       "SOCIAL": "Social Meetup",
@@ -969,8 +991,10 @@
       "OTHER": "Other"
     },
     "contacts": {
-      "title": "Student Directory",
-      "description": "Connect with fellow students, find study groups, and expand your academic network."
+      "title": "Fellow Students",
+      "description": "Discover peers with similar interests and expand your social circle.",
+      "searchPlaceholder": "Search by name, interests or skills...",
+      "noResults": "No fellow students found for this query."
     }
   }
 }

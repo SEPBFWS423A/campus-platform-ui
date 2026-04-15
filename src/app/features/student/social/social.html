@@ -4,21 +4,115 @@
     <p>{{ 'social.subtitleCompact' | translate }}</p>
   </div>
 
-  <nav mat-tab-nav-bar [tabPanel]="tabPanel" color="primary" class="social-tabs">
-    @for (link of navLinks; track link.path) {
-      <a mat-tab-link
-         [routerLink]="link.path"
-         routerLinkActive #rla="routerLinkActive"
-         [active]="rla.isActive">
-        <mat-icon class="tab-icon" [fontIcon]="link.icon"></mat-icon>
-        <span>{{ link.label | translate }}</span>
-      </a>
-    }
-  </nav>
+  <div class="hub-layout">
+    <!-- Sidebar: Personal Profile Card -->
+    <aside class="profile-sidebar">
+      <div class="sidebar-sticky">
+        <div class="profile-card">
+          @if (loadingProfile()) {
+            <div class="profile-loading">
+              <mat-spinner diameter="30"></mat-spinner>
+            </div>
+          } @else if (profile()) {
+            <div class="profile-header">
+              <div class="avatar-circle">
+                {{ profile()?.firstName?.charAt(0) }}{{ profile()?.lastName?.charAt(0) }}
+              </div>
+              <div class="name-info">
+                <h3>{{ profile()?.firstName }} {{ profile()?.lastName }}</h3>
+                <span class="study-group">{{ profile()?.studyGroupName }}</span>
+              </div>
+            </div>
 
-  <mat-tab-nav-panel #tabPanel>
-    <div class="tab-outlet-wrapper">
-      <router-outlet></router-outlet>
-    </div>
-  </mat-tab-nav-panel>
+            <div class="profile-sections">
+              @if (profile()?.bio) {
+                <div class="bio-section">
+                  <p>{{ profile()?.bio }}</p>
+                </div>
+              }
+
+              <div class="tags-group">
+                <div class="tag-label">
+                  <mat-icon>interests</mat-icon>
+                  <span>{{ 'social.profile.interests' | translate }}</span>
+                </div>
+                <div class="tags-list">
+                  @for (tag of splitTags(profile()?.interests); track tag) {
+                    <span class="tag">{{ tag }}</span>
+                  } @empty {
+                    <span class="no-tags">{{ 'social.profile.noTags' | translate }}</span>
+                  }
+                </div>
+              </div>
+
+              <div class="tags-group">
+                <div class="tag-label">
+                  <mat-icon>hiking</mat-icon>
+                  <span>{{ 'social.profile.hobbies' | translate }}</span>
+                </div>
+                <div class="tags-list">
+                  @for (tag of splitTags(profile()?.hobbies); track tag) {
+                    <span class="tag hobby">{{ tag }}</span>
+                  } @empty {
+                    <span class="no-tags">{{ 'social.profile.noTags' | translate }}</span>
+                  }
+                </div>
+              </div>
+
+              <div class="tags-group">
+                <div class="tag-label">
+                  <mat-icon>psychology</mat-icon>
+                  <span>{{ 'social.profile.skills' | translate }}</span>
+                </div>
+                <div class="tags-list">
+                  @for (tag of splitTags(profile()?.skills); track tag) {
+                    <span class="tag skill">{{ tag }}</span>
+                  } @empty {
+                    <span class="no-tags">{{ 'social.profile.noTags' | translate }}</span>
+                  }
+                </div>
+              </div>
+            </div>
+
+            <button mat-stroked-button color="primary" class="edit-btn" (click)="openEditDialog()">
+              <mat-icon>edit</mat-icon>
+              {{ 'social.profile.edit' | translate }}
+            </button>
+          } @else {
+            <div class="opt-in-cta">
+              <div class="cta-icon">
+                <mat-icon>public</mat-icon>
+              </div>
+              <h4>{{ 'social.profile.optInTitle' | translate }}</h4>
+              <p>{{ 'social.profile.optInText' | translate }}</p>
+              <button mat-flat-button color="primary" (click)="joinSocialHub()">
+                {{ 'social.profile.joinNow' | translate }}
+              </button>
+            </div>
+          }
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content: Tabs and Router Outlet -->
+    <main class="hub-main">
+      <nav mat-tab-nav-bar [tabPanel]="tabPanel" color="primary" class="social-tabs">
+        @for (link of navLinks; track link.path) {
+          <a mat-tab-link
+             [routerLink]="link.path"
+             routerLinkActive #rla="routerLinkActive"
+             [active]="rla.isActive">
+            <mat-icon class="tab-icon" [fontIcon]="link.icon"></mat-icon>
+            <span>{{ link.label | translate }}</span>
+          </a>
+        }
+      </nav>
+
+      <mat-tab-nav-panel #tabPanel>
+        <div class="tab-outlet-wrapper">
+          <router-outlet></router-outlet>
+        </div>
+      </mat-tab-nav-panel>
+    </main>
+  </div>
 </div>

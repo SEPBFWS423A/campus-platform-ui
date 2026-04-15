@@ -1,0 +1,30 @@
+<h2 mat-dialog-title>{{ 'social.profile.editTitle' | translate }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="profileForm" class="profile-edit-form">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'social.profile.form.bio' | translate }}</mat-label>
+      <textarea matInput formControlName="bio" rows="3" [placeholder]="'social.profile.form.bioPlaceholder' | translate"></textarea>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'social.profile.form.interests' | translate }}</mat-label>
+      <input matInput formControlName="interests" [placeholder]="'social.profile.form.interestsPlaceholder' | translate">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'social.profile.form.hobbies' | translate }}</mat-label>
+      <input matInput formControlName="hobbies" [placeholder]="'social.profile.form.hobbiesPlaceholder' | translate">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'social.profile.form.skills' | translate }}</mat-label>
+      <input matInput formControlName="skills" [placeholder]="'social.profile.form.skillsPlaceholder' | translate">
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">{{ 'common.cancel' | translate }}</button>
+  <button mat-flat-button color="primary" (click)="onSubmit()">{{ 'common.save' | translate }}</button>
+</mat-dialog-actions>

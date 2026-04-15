@@ -1,6 +1,5 @@
 .tab-content {
   padding: 2rem 0;
-  animation: fadeIn 0.5s ease-out;
 }
 
 .placeholder-card {
@@ -176,16 +175,7 @@
   margin-top: 1rem;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+
 
 :host-context(.dark-theme) {
   .placeholder-card {
@@ -193,3 +183,200 @@
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   }
 }
+
+.student-discovery {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+
+  .search-section {
+    .search-bar {
+      width: 100%;
+      max-width: 600px;
+
+      ::ng-deep .mat-mdc-text-field-wrapper {
+        border-radius: 28px !important;
+      }
+    }
+  }
+
+  .results-container {
+    position: relative;
+    min-height: 200px;
+  }
+
+  .search-progress {
+    position: absolute;
+    top: -1.5rem;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--mat-sys-primary-container, rgba(var(--mat-sys-primary-rgb), 0.1));
+    overflow: hidden;
+    z-index: 5;
+    border-radius: 4px;
+
+    .progress-bar {
+      width: 40%;
+      height: 100%;
+      background: var(--mat-sys-primary);
+      animation: progressMove 1.5s infinite linear;
+    }
+  }
+
+  @keyframes progressMove {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(250%); }
+  }
+
+  .student-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    transition: opacity 0.3s ease;
+
+    &.is-loading {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+  }
+
+  .student-card {
+    background: var(--mat-sys-surface-container-low);
+    border: 1px solid var(--mat-sys-outline-variant);
+    border-radius: 1.25rem;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    transition: all 0.3s var(--ease-spring);
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+      background: var(--mat-sys-surface-container);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+
+      .card-avatar {
+        width: 48px;
+        height: 48px;
+        background: var(--mat-sys-primary-container);
+        color: var(--mat-sys-primary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1rem;
+      }
+
+      .card-title-group {
+        h3 {
+          margin: 0;
+          font-size: 1.1rem;
+          font-weight: 700;
+        }
+
+        .group-badge {
+          font-size: 0.75rem;
+          color: var(--mat-sys-on-surface-variant);
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        }
+      }
+    }
+
+    .student-bio {
+      margin: 0;
+      font-size: 0.9rem;
+      color: var(--mat-sys-on-surface-variant);
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+
+      .tag {
+        background: var(--mat-sys-surface-container-high);
+        color: var(--mat-sys-on-surface);
+        padding: 0.2rem 0.6rem;
+        border-radius: 2rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        border: 1px solid var(--mat-sys-outline-variant);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+
+        &::before {
+          display: none;
+        }
+
+        &.hobby {
+          background: var(--mat-sys-tertiary-container, rgba(var(--mat-sys-tertiary-rgb), 0.1));
+          color: var(--mat-sys-on-tertiary-container);
+          border: 1px solid var(--mat-sys-tertiary);
+        }
+
+        &.skill {
+          background: var(--mat-sys-secondary-container);
+          color: var(--mat-sys-on-secondary-container);
+          border-radius: 6px;
+          border: none;
+          font-weight: 600;
+
+          &::before {
+            display: block;
+            content: '★';
+            opacity: 1;
+            font-size: 0.9rem;
+            color: var(--mat-sys-secondary);
+          }
+        }
+      }
+    }
+
+    .card-actions {
+      margin-top: auto;
+      padding-top: 1rem;
+      border-top: 1px dashed var(--mat-sys-outline-variant);
+      display: flex;
+      justify-content: flex-end;
+
+      button, a {
+        border-radius: 12px;
+      }
+    }
+  }
+
+  .no-results {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 5rem 2rem;
+    color: var(--mat-sys-on-surface-variant);
+
+    mat-icon {
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+
+    p {
+      font-size: 1.1rem;
+    }
+  }
+}
+
