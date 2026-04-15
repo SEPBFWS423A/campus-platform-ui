@@ -99,3 +99,49 @@ export interface SubmissionDocumentDownloadData {
   fileSize: number;
   content: string;
 }
+
+export enum AbsenceType {
+  URLAUB = 'URLAUB',
+  KRANKMELDUNG = 'KRANKMELDUNG',
+  DIENSTREISE = 'DIENSTREISE',
+  SONSTIGES = 'SONSTIGES'
+}
+
+export type AbsenceStatus = 'BEANTRAGT' | 'GENEHMIGT' | 'ABGELEHNT' | 'STORNIERT' | 'ABGESCHLOSSEN';
+export type AbsencePriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+
+export interface LecturerAbsenceResponse {
+  id: number;
+  type: AbsenceType;
+  startDate: string;
+  endDate: string;
+  note?: string;
+  lecturerName?: string;
+  // Governance-Felder (Issue #10)
+  status: AbsenceStatus;
+  priority: AbsencePriority;
+  documentRequired: boolean;
+  approvedBy?: string;
+  rejectionReason?: string;
+}
+
+export interface LecturerAbsenceRequest {
+  type: AbsenceType;
+  startDate: string;
+  endDate: string;
+  note?: string;
+  priority?: AbsencePriority;
+}
+
+export interface ConflictingEventDto {
+  eventId: number;
+  eventName: string;
+  startTime: string;
+  endTime: string;
+}
+
+export interface AbsenceConflictError {
+  message: string;
+  conflictingEvents: ConflictingEventDto[];
+}
+

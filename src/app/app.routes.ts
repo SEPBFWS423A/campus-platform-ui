@@ -10,6 +10,7 @@ import {Unauthorized} from './features/common/unauthorized/unauthorized';
 import { CompleteRegistration } from './features/complete-registration/complete-registration';
 import {ForgotPassword} from './features/forgot-password/forgot-password';
 import {ResetPassword} from './features/reset-password/reset-password';
+import { PublicJobs } from './features/public/jobs/public-jobs';
 
 export const routes: Routes = [
   {
@@ -31,6 +32,10 @@ export const routes: Routes = [
   {
     path: 'unauthorized',
     component: Unauthorized
+  },
+  {
+    path: 'jobs',
+    component: PublicJobs
   },
   {
     path: '',

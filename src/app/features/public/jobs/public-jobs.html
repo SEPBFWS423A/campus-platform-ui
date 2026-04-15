@@ -1,0 +1,163 @@
+<div class="jobs-page">
+
+  <!-- Hero Header -->
+  <header class="jobs-hero">
+    <div class="hero-inner">
+      <div class="hero-icon-wrap">
+        <mat-icon>work_outline</mat-icon>
+      </div>
+      <h1 class="hero-title">Stellenangebote</h1>
+      <p class="hero-subtitle">
+        Entdecken Sie aktuelle Stellenausschreibungen und werden Sie Teil unseres Teams.
+      </p>
+      @if (!loading() && !error()) {
+        <div class="hero-stat">
+          <mat-icon>campaign</mat-icon>
+          {{ filteredPostings().length }} offene
+          {{ filteredPostings().length === 1 ? 'Stelle' : 'Stellen' }}
+        </div>
+      }
+    </div>
+  </header>
+
+  <!-- Main content -->
+  <main class="jobs-content">
+
+    <!-- Filter Chips -->
+    @if (!loading() && !error() && postings().length > 0) {
+      <div class="filter-bar">
+        @for (opt of typeOptions; track opt.value) {
+          <button
+            class="filter-chip"
+            [class.active]="filterType() === opt.value"
+            (click)="setFilter(opt.value)">
+            {{ opt.label }}
+          </button>
+        }
+      </div>
+    }
+
+    <!-- Loading -->
+    @if (loading()) {
+      <div class="center-state">
+        <mat-spinner diameter="48"></mat-spinner>
+        <p>Stellenangebote werden geladen…</p>
+      </div>
+    }
+
+    <!-- Error -->
+    @else if (error()) {
+      <div class="error-state">
+        <mat-icon>error_outline</mat-icon>
+        <p>{{ error() }}</p>
+        <p class="error-sub">Bitte versuchen Sie es später erneut.</p>
+      </div>
+    }
+
+    <!-- No results after filter -->
+    @else if (filteredPostings().length === 0) {
+      <div class="center-state empty">
+        <mat-icon>work_off</mat-icon>
+        <p>Keine Stellen für diesen Filter gefunden.</p>
+        <button mat-stroked-button (click)="setFilter('ALL')">Alle anzeigen</button>
+      </div>
+    }
+
+    <!-- Job Cards -->
+    @else {
+      <div class="jobs-grid">
+        @for (job of filteredPostings(); track job.id) {
+          <mat-card class="job-card mat-elevation-z2" [class.expanded]="isExpanded(job.id)">
+
+            <!-- Card Header -->
+            <div class="card-header">
+              <div class="type-icon-wrap">
+                <mat-icon>{{ getTypeIcon(job.type) }}</mat-icon>
+              </div>
+              <div class="card-header-text">
+                <h2 class="job-title">{{ job.title }}</h2>
+                <div class="job-meta">
+                  <span class="meta-item">
+                    <mat-icon>business</mat-icon>
+                    {{ job.department }}
+                  </span>
+                  <span class="type-badge">{{ getTypeLabel(job.type) }}</span>
+                </div>
+              </div>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <!-- Description -->
+            <div class="card-body">
+              <div class="description-text" [class.truncated]="!isExpanded(job.id)">
+                {{ job.description }}
+              </div>
+
+              @if (job.requirements) {
+                <div class="requirements-block" [class.hidden]="!isExpanded(job.id)">
+                  <h4 class="section-label">
+                    <mat-icon>checklist</mat-icon>
+                    Anforderungen
+                  </h4>
+                  <div class="requirements-text">{{ job.requirements }}</div>
+                </div>
+              }
+
+              <button
+                mat-button
+                class="expand-btn"
+                (click)="toggleExpand(job.id)">
+                <mat-icon>{{ isExpanded(job.id) ? 'expand_less' : 'expand_more' }}</mat-icon>
+                {{ isExpanded(job.id) ? 'Weniger anzeigen' : 'Mehr anzeigen' }}
+              </button>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <!-- Footer -->
+            <div class="card-footer">
+              <div class="deadline-info">
+                <mat-icon
+                  [class.deadline-warn]="isDeadlineSoon(job.deadline)"
+                  [class.deadline-passed]="isDeadlinePassed(job.deadline)">
+                  event
+                </mat-icon>
+                <span
+                  [class.deadline-warn]="isDeadlineSoon(job.deadline)"
+                  [class.deadline-passed]="isDeadlinePassed(job.deadline)">
+                  @if (isDeadlinePassed(job.deadline)) {
+                    Frist abgelaufen ({{ job.deadline | date:'dd.MM.yyyy' }})
+                  } @else if (isDeadlineSoon(job.deadline)) {
+                    Noch bis {{ job.deadline | date:'dd.MM.yyyy' }} — bald!
+                  } @else {
+                    Bewerbungsfrist: {{ job.deadline | date:'dd.MM.yyyy' }}
+                  }
+                </span>
+              </div>
+
+              @if (!isDeadlinePassed(job.deadline)) {
+                <a
+                  mat-flat-button
+                  color="primary"
+                  class="apply-btn"
+                  [href]="'mailto:bewerbung@campus.de?subject=Bewerbung: ' + job.title">
+                  <mat-icon>send</mat-icon>
+                  Jetzt bewerben
+                </a>
+              }
+            </div>
+
+          </mat-card>
+        }
+      </div>
+    }
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="jobs-footer">
+    <p>© Campus Platform &nbsp;·&nbsp; Alle Rechte vorbehalten</p>
+  </footer>
+
+</div>

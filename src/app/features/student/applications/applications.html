@@ -1,0 +1,32 @@
+<div class="applications-page">
+  <div class="header">
+    <h1>Studiengangsbewerbungen</h1>
+    <p>Bewerbe dich auf verfügbare Studiengänge</p>
+  </div>
+
+  <div class="status-bar" *ngIf="applied.length > 0">
+    <span>✅ {{ applied.length }} Bewerbung(en) eingereicht</span>
+  </div>
+
+  <div class="programs-grid">
+    <div class="program-card" *ngFor="let p of programs">
+      <div class="program-header">
+        <h3>{{ p.name }}</h3>
+        <span class="degree-badge">{{ p.degree }}</span>
+      </div>
+      <div class="program-info">
+        <p>🏛️ {{ p.faculty }}</p>
+        <p>⏱️ {{ p.duration }}</p>
+        <p>👥 {{ p.spots }} Plätze</p>
+      </div>
+      <div class="program-footer">
+        <button *ngIf="!hasApplied(p.id)" class="btn-apply" (click)="apply(p.id)">
+          Bewerben
+        </button>
+        <button *ngIf="hasApplied(p.id)" class="btn-withdraw" (click)="withdraw(p.id)">
+          Zurückziehen
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

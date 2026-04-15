@@ -104,6 +104,7 @@ export interface Module {
   name: string;
   semester: number;
   requiredTotalHours: number;
+  ects?: number | null;
   possibleExamTypes: ModuleExam[];
   lecturers: ModuleLecturer[];
   courseOfStudyId: string;
@@ -131,12 +132,55 @@ export interface InstitutionInfo {
   passwordResetEmailBodyEn?: string;
 }
 
+export type RoomType = 'HOERSAAL' | 'SEMINARRAUM' | 'LABOR' | 'PRUEFUNGSRAUM' | 'BUERO' | 'SONSTIGES';
+export type OperationalStatus = 'AKTIV' | 'EINGESCHRAENKT' | 'GESPERRT' | 'WARTUNG' | 'AUSSER_BETRIEB';
+
 export interface Room {
   id: number;
   name: string;
   seats: number;
   examSeats: number;
+  building: string;
+  floor?: number;
+  roomType: RoomType;
+  operationalStatus: OperationalStatus;
+  features: string[];
+  barrierefreiheit: boolean;
+  description?: string;
 }
+
+export type BlockoutReason = 'WARTUNG' | 'REINIGUNG' | 'BAUARBEITEN' | 'VERANSTALTUNG' | 'STOERUNG' | 'SONSTIGES';
+export type BlockoutPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+
+export interface RoomBlockout {
+  id: number;
+  roomId: number;
+  roomName: string;
+  startTime: string;   // ISO-DateTime
+  endTime: string;
+  reason: BlockoutReason;
+  priority: BlockoutPriority;
+  notes?: string;
+  createdBy: string;
+  createdAt: string;
+  active: boolean;
+}
+
+export interface BlockoutConflictResult {
+  overlappingBlockouts: RoomBlockout[];
+  affectedEvents: RoomScheduleEvent[];
+}
+
+export interface RoomStatusHistory {
+  id: number;
+  roomId: number;
+  previousStatus: OperationalStatus;
+  newStatus: OperationalStatus;
+  changedBy: string;
+  changedAt: string;
+  reason?: string;
+}
+
 
 export enum CourseStatus {
   PLANNED = 'PLANNED',
@@ -367,6 +411,10 @@ export class AdminService {
     return this.http.delete<void>(`${this.apiUrl}/rooms/${id}`);
   }
 
+  updateRoomStatus(id: number, status: OperationalStatus): Observable<Room> {
+    return this.http.patch<Room>(`${this.apiUrl}/rooms/${id}/status`, { status });
+  }
+
   getRoomSchedule(start: string, end: string): Observable<RoomScheduleEvent[]> {
     return this.http.get<RoomScheduleEvent[]>(`${this.apiUrl}/rooms/schedule`, {
       params: { start, end }
@@ -378,6 +426,37 @@ export class AdminService {
       params: { startDate, endDate }
     });
   }
+
+  // --- Room Blockouts ---
+  getBlockouts(roomId?: number, active?: boolean): Observable<RoomBlockout[]> {
+    let params: any = {};
+    if (roomId) params.roomId = roomId;
+    if (active !== undefined) params.active = active;
+    return this.http.get<RoomBlockout[]>(`${this.apiUrl}/rooms/blockouts`, { params });
+  }
+
+  createBlockout(blockout: Partial<RoomBlockout>): Observable<RoomBlockout> {
+    return this.http.post<RoomBlockout>(`${this.apiUrl}/rooms/blockouts`, blockout);
+  }
+
+  resolveBlockout(id: number): Observable<RoomBlockout> {
+    return this.http.patch<RoomBlockout>(`${this.apiUrl}/rooms/blockouts/${id}/resolve`, {});
+  }
+
+  deleteBlockout(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/rooms/blockouts/${id}`);
+  }
+
+  checkBlockoutConflicts(roomId: number, start: string, end: string): Observable<BlockoutConflictResult> {
+    return this.http.get<BlockoutConflictResult>(`${this.apiUrl}/rooms/${roomId}/blockouts/conflicts`, {
+      params: { start, end }
+    });
+  }
+
+  getRoomStatusHistory(roomId: number): Observable<RoomStatusHistory[]> {
+    return this.http.get<RoomStatusHistory[]>(`${this.apiUrl}/rooms/${roomId}/status-history`);
+  }
+
 
   // --- FAQ Management ---
   getFaqs(): Observable<FaqAdminResponse[]> {
@@ -395,7 +474,7 @@ export class AdminService {
   deleteFaq(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/faqs/${id}`);
   }
-  
+
   getAvailableRooms(startTime?: string, durationMinutes?: number, excludeEventId?: number, seriesId?: number, eventType?: string): Observable<Room[]> {
     let params: any = {};
     if (startTime) params.startTime = startTime;

@@ -11,10 +11,12 @@ import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatBadgeModule } from '@angular/material/badge';
 import { UserSettingsDialog } from '../settings/user-settings.dialog/user-settings.dialog';
 import { InstitutionInfo } from '../../../features/admin/admin.service';
 import { UserService } from '../../../core/user/user.service';
 import { PublicService } from '../../../core/public/public.service';
+import { UserNotification, UserNotificationsService } from '../../../core/services/user-notifications.service';
 
 export type NavLink = {
   path: string;
@@ -39,11 +41,14 @@ const NAVIGATION_CONFIG: Record<string, NavLink[]> = {
     { path: '/admin/event-management', label: 'navigation.admin.eventManagement', icon: 'event', exact: false },
     { path: '/admin/exam-management', label: 'navigation.admin.examManagement', icon: 'insert_chart', exact: false },
 { path: '/admin/applications', label: 'navigation.admin.applications', icon: 'assignment', exact: false },
+    { path: '/admin/lecturer-absences', label: 'nav.lecturerAbsences', icon: 'event_busy', exact: false },
+    { path: '/admin/job-postings', label: 'nav.jobPostings', icon: 'work_outline', exact: false }
   ],
   [UserRole.Lecturer]: [
     { path: '/lecturer', label: 'navigation.lecturer.home', icon: 'home', exact: true },
     { path: '/lecturer/courses', label: 'navigation.lecturer.myCourses', icon: 'library_books', exact: false },
-    { path: '/lecturer/grading', label: 'navigation.lecturer.grading', icon: 'assessment', exact: false }
+    { path: '/lecturer/grading', label: 'navigation.lecturer.grading', icon: 'assessment', exact: false },
+    { path: '/lecturer/absences', label: 'nav.absences', icon: 'event_busy', exact: false }
   ],
   [UserRole.Student]: [
     { path: '/student', label: 'navigation.student.home', icon: 'home', exact: true },
@@ -64,7 +69,8 @@ const NAVIGATION_CONFIG: Record<string, NavLink[]> = {
     MatButton,
     MatIconButton,
     MatTooltipModule,
-    MatMenuModule
+    MatMenuModule,
+    MatBadgeModule
   ],
   templateUrl: './navigation.html',
   styleUrl: './navigation.scss',
@@ -74,15 +80,20 @@ export class Navigation implements OnInit {
   private dialog = inject(MatDialog);
   public publicService = inject(PublicService);
   private breakpointObserver = inject(BreakpointObserver);
+  private userNotificationsService = inject(UserNotificationsService);
 
   hoveredItem = signal<string | null>(null);
+  notifications = signal<UserNotification[]>([]);
+  unreadCount = signal(0);
+  loadingNotifications = signal(false);
 
   isCollapsed = toSignal(
-    this.breakpointObserver.observe('(max-width: 1150px)').pipe(map(result => result.matches)),
+    this.breakpointObserver.observe('(max-width: 1600px)').pipe(map(result => result.matches)),
     { initialValue: false }
   );
 
   ngOnInit() {
+    this.refreshUnreadCount();
   }
 
   homePath = computed(() => {
@@ -110,5 +121,54 @@ export class Navigation implements OnInit {
 
   openSettings() {
     this.dialog.open(UserSettingsDialog, { width: '400px' });
+  }
+
+  openNotificationsMenu(): void {
+    this.loadNotifications();
+  }
+
+  markAllNotificationsAsRead(): void {
+    this.userNotificationsService.markAllAsRead().subscribe({
+      next: () => {
+        this.notifications.update(items => items.map(item => ({ ...item, read: true })));
+        this.unreadCount.set(0);
+      }
+    });
+  }
+
+  formatNotificationTime(value: string): string {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+      return '';
+    }
+
+    return date.toLocaleString('de-DE', {
+      day: '2-digit',
+      month: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
+  private refreshUnreadCount(): void {
+    this.userNotificationsService.getUnreadCount().subscribe({
+      next: count => this.unreadCount.set(count),
+      error: () => this.unreadCount.set(0)
+    });
+  }
+
+  private loadNotifications(): void {
+    this.loadingNotifications.set(true);
+    this.userNotificationsService.getNotifications().subscribe({
+      next: items => {
+        this.notifications.set(items);
+        this.unreadCount.set(items.filter(item => !item.read).length);
+        this.loadingNotifications.set(false);
+      },
+      error: () => {
+        this.notifications.set([]);
+        this.loadingNotifications.set(false);
+      }
+    });
   }
 }

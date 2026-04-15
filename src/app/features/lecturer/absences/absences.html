@@ -1,0 +1,235 @@
+<div class="page-container">
+  <div class="page-header">
+    <div class="header-text">
+      <h1 class="page-title">{{ 'absences.title' | translate }}</h1>
+      <p class="page-description">Übersicht und Verwaltung Ihrer Abwesenheitszeiten.</p>
+    </div>
+  </div>
+
+  <div class="content-grid">
+    <mat-card class="form-card mat-elevation-z2">
+      <mat-card-header>
+        <div mat-card-avatar class="card-icon-avatar primary-bg">
+          <mat-icon>event_available</mat-icon>
+        </div>
+        <mat-card-title>{{ 'absences.form.submit' | translate }}</mat-card-title>
+        <mat-card-subtitle>Tragen Sie eine neue Abwesenheit ein</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <form [formGroup]="absenceForm" (ngSubmit)="onSubmit()" class="modern-form">
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="flex-field" subscriptSizing="dynamic">
+              <mat-label>{{ 'absences.form.type' | translate }}</mat-label>
+              <mat-select formControlName="type">
+                <mat-option *ngFor="let type of absenceTypes" [value]="type">
+                  {{ 'absences.types.' + type | translate }}
+                </mat-option>
+              </mat-select>
+              <mat-icon matPrefix>category</mat-icon>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="flex-field" subscriptSizing="dynamic">
+              <mat-label>Zeitraum</mat-label>
+              <mat-date-range-input [rangePicker]="picker">
+                <input matStartDate formControlName="startDate" placeholder="{{ 'absences.form.startDate' | translate }}">
+                <input matEndDate formControlName="endDate" placeholder="{{ 'absences.form.endDate' | translate }}">
+              </mat-date-range-input>
+              <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-date-range-picker #picker></mat-date-range-picker>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="flex-field" subscriptSizing="dynamic">
+              <mat-label>Priorität</mat-label>
+              <mat-select formControlName="priority">
+                <mat-option *ngFor="let p of priorityOptions" [value]="p.value">{{ p.label }}</mat-option>
+              </mat-select>
+              <mat-icon matPrefix>flag</mat-icon>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="flex-field" subscriptSizing="dynamic">
+              <mat-label>{{ 'absences.form.note' | translate }}</mat-label>
+              <input matInput formControlName="note" placeholder="Optionale Bemerkung…">
+              <mat-icon matPrefix>edit_note</mat-icon>
+            </mat-form-field>
+          </div>
+
+          <!-- Vorab-Konflikt-Warnung (Issue #9) -->
+          @if (isCheckingConflicts()) {
+            <div class="conflict-checking-hint">
+              <mat-icon class="spin-icon">autorenew</mat-icon>
+              <span>Prüfe auf Terminkonflikte…</span>
+            </div>
+          }
+          @if (!isCheckingConflicts() && conflictPreview().length > 0) {
+            <div class="conflict-preview-card"
+                 [class.severity-warning]="conflictSeverity() === 'WARNING'"
+                 [class.severity-critical]="conflictSeverity() === 'CRITICAL'">
+              <div class="conflict-preview-header">
+                <mat-icon class="conflict-preview-icon">
+                  {{ conflictSeverity() === 'CRITICAL' ? 'error' : 'warning' }}
+                </mat-icon>
+                <div class="conflict-preview-texts">
+                  <span class="conflict-preview-title">
+                    {{ conflictSeverity() === 'CRITICAL' ? 'Kritischer Terminkonflikt' : 'Terminkonflikt' }}
+                  </span>
+                  <span class="conflict-preview-sub">
+                    {{ conflictPreview().length }}
+                    {{ conflictPreview().length === 1 ? 'Lehrveranstaltung' : 'Lehrveranstaltungen' }} betroffen
+                  </span>
+                </div>
+                <button mat-stroked-button type="button" class="conflict-detail-btn"
+                        (click)="openConflictPreviewDialog()">
+                  <mat-icon>info</mat-icon>
+                  Details
+                </button>
+              </div>
+            </div>
+          }
+
+          <!-- Validierungshinweise je Typ -->
+          @if (absenceForm.get('type')?.value === 'URLAUB') {
+            <div class="rule-hint">
+              <mat-icon>info</mat-icon>
+              <span>Urlaub: Mindestens <strong>14 Tage</strong> Vorlauf, max. <strong>30 Tage</strong> Dauer.</span>
+            </div>
+          }
+          @if (absenceForm.get('type')?.value === 'DIENSTREISE') {
+            <div class="rule-hint">
+              <mat-icon>info</mat-icon>
+              <span>Dienstreise: Mindestens <strong>7 Tage</strong> Vorlauf. Dokumentation erforderlich.</span>
+            </div>
+          }
+          @if (absenceForm.get('type')?.value === 'KRANKMELDUNG') {
+            <div class="rule-hint">
+              <mat-icon>info</mat-icon>
+              <span>Krankmeldung: Bei mehr als <strong>3 Tagen</strong> ist ein Nachweis erforderlich.</span>
+            </div>
+          }
+
+          <div class="form-actions">
+            <button mat-flat-button color="primary" type="submit"
+                    [disabled]="absenceForm.invalid || isLoading()" class="submit-button">
+              <mat-icon>send</mat-icon>
+              Abwesenheit beantragen
+            </button>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="table-card mat-elevation-z2">
+      <div class="table-header-toolbar">
+        <mat-card-title>Meine Abwesenheiten</mat-card-title>
+      </div>
+
+      <div class="table-container">
+        <table mat-table [dataSource]="absences()" class="modern-table" *ngIf="absences().length > 0; else noData">
+
+          <!-- Genehmigungs-Status -->
+          <ng-container matColumnDef="approvalStatus">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let absence">
+              <div class="approval-status" [ngClass]="{
+                'status-beantragt':    absence.status === 'BEANTRAGT',
+                'status-genehmigt':    absence.status === 'GENEHMIGT',
+                'status-abgelehnt':    absence.status === 'ABGELEHNT',
+                'status-storniert':    absence.status === 'STORNIERT',
+                'status-abgeschlossen':absence.status === 'ABGESCHLOSSEN'
+              }">
+                <mat-icon class="status-icon">
+                  @switch (absence.status) {
+                    @case ('BEANTRAGT')     { hourglass_empty }
+                    @case ('GENEHMIGT')     { check_circle }
+                    @case ('ABGELEHNT')     { cancel }
+                    @case ('STORNIERT')     { remove_circle }
+                    @default               { history }
+                  }
+                </mat-icon>
+                {{ absence.status }}
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="type">
+            <th mat-header-cell *matHeaderCellDef>{{ 'absences.table.type' | translate }}</th>
+            <td mat-cell *matCellDef="let absence">
+              <div class="type-cell">
+                <mat-icon class="type-icon">event</mat-icon>
+                <span>{{ 'absences.types.' + absence.type | translate }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="startDate">
+            <th mat-header-cell *matHeaderCellDef>{{ 'absences.table.startDate' | translate }}</th>
+            <td mat-cell *matCellDef="let absence">{{ absence.startDate | date }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="endDate">
+            <th mat-header-cell *matHeaderCellDef>{{ 'absences.table.endDate' | translate }}</th>
+            <td mat-cell *matCellDef="let absence">{{ absence.endDate | date }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="note">
+            <th mat-header-cell *matHeaderCellDef>{{ 'absences.table.note' | translate }}</th>
+            <td mat-cell *matCellDef="let absence">
+              <span class="note-text" *ngIf="absence.note">{{ absence.note }}</span>
+              <span class="note-placeholder" *ngIf="!absence.note">-</span>
+              <!-- Ablehnungsgrund anzeigen -->
+              @if (absence.rejectionReason) {
+                <div class="rejection-reason">
+                  <mat-icon class="rejection-icon">feedback</mat-icon>
+                  <span>{{ absence.rejectionReason }}</span>
+                </div>
+              }
+            </td>
+          </ng-container>
+
+          <!-- Dokumentationspflicht (Issue #10 #296) -->
+          <ng-container matColumnDef="docs">
+            <th mat-header-cell *matHeaderCellDef>Nachweis</th>
+            <td mat-cell *matCellDef="let absence">
+              @if (absence.documentRequired && absence.status === 'GENEHMIGT') {
+                <div class="doc-badge" matTooltip="Nachweis erforderlich">
+                  <mat-icon>attach_file</mat-icon>
+                  <span>Erforderlich</span>
+                </div>
+              } @else if (absence.documentRequired) {
+                <div class="doc-hint" matTooltip="Nach Genehmigung Nachweis einreichen">
+                  <mat-icon>attach_file</mat-icon>
+                </div>
+              } @else {
+                <span class="note-placeholder">—</span>
+              }
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef class="action-column"></th>
+            <td mat-cell *matCellDef="let absence" class="action-column">
+              <button mat-icon-button class="delete-btn" (click)="onDelete(absence.id)"
+                      matTooltip="Löschen"
+                      [disabled]="absence.status === 'GENEHMIGT' || getTimeStatus(absence) === 'VERGANGEN'">
+                <mat-icon>delete_outline</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="element-row"></tr>
+        </table>
+
+        <ng-template #noData>
+          <div class="empty-state">
+            <mat-icon>event_busy</mat-icon>
+            <p>Keine Abwesenheiten gefunden.</p>
+            <span class="empty-subtext">Sie haben aktuell keine Abwesenheiten geplant.</span>
+          </div>
+        </ng-template>
+      </div>
+    </mat-card>
+  </div>
+</div>

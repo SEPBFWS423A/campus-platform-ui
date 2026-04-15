@@ -46,6 +46,50 @@
   </ul>
 
   <div class="nav-actions">
+    <button
+      mat-icon-button
+      [matMenuTriggerFor]="notificationsMenu"
+      class="notification-btn"
+      [matBadge]="unreadCount() > 0 ? unreadCount() : null"
+      matBadgeColor="warn"
+      matBadgeSize="small"
+      (menuOpened)="openNotificationsMenu()"
+      matTooltip="Benachrichtigungen">
+      <mat-icon fontIcon="notifications"></mat-icon>
+    </button>
+
+    <mat-menu #notificationsMenu="matMenu" class="notifications-menu">
+      <div class="notifications-header">
+        <strong>Benachrichtigungen</strong>
+        @if (unreadCount() > 0) {
+          <button class="mark-read-btn" type="button" (click)="markAllNotificationsAsRead(); $event.stopPropagation();">
+            Alle als gelesen
+          </button>
+        }
+      </div>
+
+      <div class="notifications-list">
+        @if (loadingNotifications()) {
+          <div class="notification-empty">Wird geladen...</div>
+        } @else if (notifications().length === 0) {
+          <div class="notification-empty">Keine neuen Benachrichtigungen</div>
+        } @else {
+          @for (n of notifications(); track n.id) {
+            <div class="notification-item" [class.unread]="!n.read">
+              <mat-icon class="notification-item-icon">{{ n.icon }}</mat-icon>
+              <div class="notification-item-content">
+                <div class="notification-item-text" [innerHTML]="n.text"></div>
+                @if (n.detail) {
+                  <div class="notification-item-detail">{{ n.detail }}</div>
+                }
+                <div class="notification-item-time">{{ formatNotificationTime(n.createdAt) }}</div>
+              </div>
+            </div>
+          }
+        }
+      </div>
+    </mat-menu>
+
     <button mat-flat-button (click)="openSettings()" class="settings-btn"
             [matTooltip]="'navigation.profileAndSettings.profileAndSettingsName' | translate"
             [matTooltipDisabled]="!isCollapsed()">

@@ -1,0 +1,287 @@
+// Loading / Error states
+.loading-state {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 40px 24px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.error-state {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 24px;
+  color: var(--mat-sys-error);
+  background: var(--mat-sys-error-container);
+  border-radius: 12px;
+
+  mat-icon { font-size: 24px; }
+  p { margin: 0; font-weight: 500; }
+}
+
+// Page layout
+.page-container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+
+  .page-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--mat-sys-on-surface);
+    margin: 0 0 4px 0;
+    line-height: 1.2;
+  }
+
+  .page-description {
+    font-size: 14px;
+    color: var(--mat-sys-on-surface-variant);
+    margin: 0;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  .public-page-btn {
+    gap: 4px;
+    font-weight: 500;
+    text-decoration: none;
+  }
+
+  .create-btn {
+    gap: 4px;
+    font-weight: 600;
+  }
+}
+
+// KPI row
+.kpi-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.kpi-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+  flex: 1;
+  min-width: 180px;
+  border-radius: 12px;
+}
+
+.kpi-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  flex-shrink: 0;
+
+  mat-icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+    color: white;
+  }
+
+  &.primary-bg { background-color: var(--mat-sys-primary); }
+  &.success-bg { background-color: #2e7d32; }
+  &.accent-bg  { background-color: var(--mat-sys-tertiary, #6750a4); }
+}
+
+.kpi-texts {
+  display: flex;
+  flex-direction: column;
+
+  .kpi-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--mat-sys-on-surface);
+    line-height: 1;
+  }
+
+  .kpi-label {
+    font-size: 12px;
+    color: var(--mat-sys-on-surface-variant);
+    margin-top: 4px;
+  }
+}
+
+// Content grid
+.content-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.filter-card, .table-card {
+  border-radius: 12px;
+
+  mat-card-title { font-size: 18px; font-weight: 600; }
+}
+
+.card-icon-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+
+  mat-icon { font-size: 20px; width: 20px; height: 20px; color: white; }
+  &.primary-bg { background-color: var(--mat-sys-primary); }
+}
+
+.modern-form { padding: 8px 0; }
+.form-row { display: flex; gap: 16px; }
+.flex-field { flex: 1; }
+
+// Table
+.table-header-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 16px 8px;
+}
+
+.table-container { overflow-x: auto; }
+
+.modern-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th { font-size: 12px; font-weight: 600; color: var(--mat-sys-on-surface-variant); text-transform: uppercase; letter-spacing: 0.5px; }
+  td, th { padding: 12px 16px; }
+
+  .element-row:hover { background-color: var(--mat-sys-surface-container-low, rgba(0,0,0,0.02)); cursor: default; }
+}
+
+// Title cell
+.title-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  .title-text { font-weight: 500; }
+
+  .auto-badge {
+    display: inline-flex;
+    align-items: center;
+    color: var(--mat-sys-primary);
+    mat-icon { font-size: 14px; width: 14px; height: 14px; }
+  }
+}
+
+// Department cell
+.dept-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 14px;
+
+  .dept-icon { font-size: 16px; width: 16px; height: 16px; }
+}
+
+// Type badge
+.type-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  background-color: var(--mat-sys-surface-variant);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+// Deadline cell
+.deadline-cell {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+
+  .deadline-icon { font-size: 16px; width: 16px; height: 16px; color: var(--mat-sys-on-surface-variant); }
+}
+
+// Status chip
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+
+  .status-icon { font-size: 14px; width: 14px; height: 14px; }
+
+  &.status-aktiv {
+    background-color: color-mix(in srgb, #2e7d32 15%, transparent);
+    color: #1b5e20;
+  }
+  &.status-entwurf {
+    background-color: var(--mat-sys-surface-variant);
+    color: var(--mat-sys-on-surface-variant);
+  }
+  &.status-geschlossen {
+    background-color: var(--mat-sys-error-container);
+    color: var(--mat-sys-on-error-container);
+  }
+  &.status-archiviert {
+    background-color: var(--mat-sys-surface-variant);
+    color: var(--mat-sys-outline);
+  }
+}
+
+// Applications
+.applications-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  .app-icon { font-size: 16px; width: 16px; height: 16px; color: var(--mat-sys-on-surface-variant); }
+  .app-count { font-size: 14px; }
+  .app-count.has-apps { font-weight: 600; color: var(--mat-sys-primary); }
+}
+
+// Action buttons
+.action-column { width: 140px; text-align: right; }
+.action-buttons { display: flex; align-items: center; justify-content: flex-end; gap: 2px; }
+
+.activate-btn { color: #2e7d32; }
+.close-btn    { color: var(--mat-sys-error); }
+.delete-btn   { color: var(--mat-sys-on-surface-variant); }
+
+// Empty state
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 24px;
+  text-align: center;
+
+  mat-icon { font-size: 56px; width: 56px; height: 56px; color: var(--mat-sys-on-surface-variant); opacity: 0.4; margin-bottom: 16px; }
+  p { font-size: 16px; font-weight: 500; margin: 0 0 8px 0; }
+  .empty-subtext { font-size: 14px; color: var(--mat-sys-on-surface-variant); }
+}

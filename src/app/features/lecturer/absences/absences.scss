@@ -1,0 +1,493 @@
+:host {
+  display: block;
+}
+
+.page-container {
+  padding: 16px 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  @media (max-width: 768px) {
+    padding: 24px 16px;
+    gap: 24px;
+  }
+}
+
+.page-header {
+  .page-title {
+    margin: 0 0 8px 0;
+    font-size: 32px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    color: var(--mat-sys-on-surface);
+  }
+  
+  .page-description {
+    margin: 0;
+    font-size: 16px;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+.content-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-card {
+  border-radius: 16px;
+  background-color: var(--mat-sys-surface);
+  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.05), 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
+  
+  mat-card-header {
+    padding: 16px 24px 0 24px;
+    display: flex;
+    align-items: center;
+
+    @media (max-width: 768px) {
+      padding: 16px 16px 0 16px;
+    }
+
+    .card-icon-avatar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--mat-sys-primary-container);
+      color: var(--mat-sys-on-primary-container);
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      margin-right: 16px;
+      
+      mat-icon {
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
+      }
+    }
+
+    mat-card-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    
+    mat-card-subtitle {
+      font-size: 14px;
+      color: var(--mat-sys-on-surface-variant);
+    }
+  }
+
+  mat-card-content {
+    padding: 16px 24px 24px 24px;
+
+    @media (max-width: 768px) {
+      padding: 16px;
+    }
+  }
+}
+
+.modern-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+
+  .form-row {
+    display: flex;
+    gap: 24px;
+    
+    @media (max-width: 768px) {
+      flex-direction: column;
+      gap: 16px;
+    }
+    
+    .flex-field {
+      flex: 1;
+    }
+  }
+
+  .full-width {
+    width: 100%;
+  }
+
+  mat-icon[matPrefix] {
+    margin-right: 8px;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+  
+  .submit-button {
+    border-radius: 24px;
+    padding: 0 24px;
+    height: 44px;
+    font-weight: 500;
+    
+    mat-icon {
+      margin-right: 8px;
+    }
+  }
+}
+
+.table-card {
+  border-radius: 16px;
+  background-color: var(--mat-sys-surface);
+  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.05), 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
+  
+  .table-header-toolbar {
+    padding: 16px 24px 8px 24px;
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+    
+    @media (max-width: 768px) {
+      padding: 16px;
+    }
+
+    mat-card-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin: 0;
+    }
+  }
+
+  .table-container {
+    overflow-x: auto;
+    width: 100%;
+  }
+
+  .modern-table {
+    width: 100%;
+    
+    th.mat-header-cell {
+      padding: 12px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--mat-sys-on-surface-variant);
+      border-bottom: 1px solid var(--mat-sys-outline-variant);
+    }
+
+    td.mat-cell {
+      padding: 12px 16px;
+      font-size: 14px;
+      border-bottom: 1px solid var(--mat-sys-outline-variant);
+      color: var(--mat-sys-on-surface);
+    }
+    
+    .element-row {
+      transition: background-color 0.2s ease;
+      
+      &:hover {
+        background-color: var(--mat-sys-surface-container-low, rgba(0,0,0,0.02));
+      }
+    }
+    
+    .type-cell {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      
+      .type-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        color: var(--mat-sys-on-surface-variant);
+      }
+    }
+    
+    .note-text {
+      color: var(--mat-sys-on-surface);
+    }
+    
+    .note-placeholder {
+      color: var(--mat-sys-outline);
+    }
+    
+    .action-column {
+      width: 60px;
+      text-align: right;
+      padding-right: 16px !important;
+    }
+    
+    .delete-btn {
+      color: var(--mat-sys-error);
+      
+      &:disabled {
+        color: var(--mat-sys-on-surface-variant);
+        opacity: 0.5;
+      }
+    }
+  }
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  
+  &.status-aktuell {
+    background-color: var(--mat-sys-error-container);
+    color: var(--mat-sys-on-error-container);
+  }
+  
+  &.status-geplant {
+    background-color: var(--mat-sys-primary-container);
+    color: var(--mat-sys-on-primary-container);
+  }
+  
+  &.status-vergangen {
+    background-color: var(--mat-sys-surface-variant);
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 24px;
+  text-align: center;
+  
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    color: var(--mat-sys-on-surface-variant);
+    margin-bottom: 16px;
+    opacity: 0.5;
+  }
+  
+  p {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface);
+    margin: 0 0 8px 0;
+  }
+  
+  .empty-subtext {
+    font-size: 14px;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+// -------------------------------------------------------------------
+// Vorab-Konflikt-Karte (Sub-Issue #283, #285)
+// -------------------------------------------------------------------
+.conflict-checking-hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--mat-sys-on-surface-variant);
+  padding: 6px 4px;
+
+  .spin-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    animation: spin 1s linear infinite;
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.conflict-preview-card {
+  border-radius: 12px;
+  padding: 12px 16px;
+  border: 1px solid transparent;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+
+  &.severity-warning {
+    background-color: var(--mat-sys-secondary-container, #fff8e1);
+    border-color: var(--mat-sys-secondary, #f9a825);
+
+    .conflict-preview-icon { color: var(--mat-sys-secondary, #f57f17); }
+    .conflict-preview-title { color: var(--mat-sys-on-secondary-container, #3e2000); }
+    .conflict-preview-sub   { color: var(--mat-sys-on-secondary-container, #3e2000); opacity: 0.75; }
+
+    .conflict-detail-btn {
+      border-color: var(--mat-sys-secondary, #f9a825);
+      color: var(--mat-sys-on-secondary-container, #3e2000);
+    }
+  }
+
+  &.severity-critical {
+    background-color: var(--mat-sys-error-container);
+    border-color: var(--mat-sys-error);
+
+    .conflict-preview-icon { color: var(--mat-sys-error); }
+    .conflict-preview-title { color: var(--mat-sys-on-error-container); }
+    .conflict-preview-sub   { color: var(--mat-sys-on-error-container); opacity: 0.75; }
+
+    .conflict-detail-btn {
+      border-color: var(--mat-sys-error);
+      color: var(--mat-sys-on-error-container);
+    }
+  }
+}
+
+.conflict-preview-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  .conflict-preview-icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+
+  .conflict-preview-texts {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    .conflict-preview-title {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .conflict-preview-sub {
+      font-size: 13px;
+    }
+  }
+
+  .conflict-detail-btn {
+    flex-shrink: 0;
+    border-radius: 20px;
+    font-size: 13px;
+
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+      margin-right: 4px;
+    }
+  }
+}
+
+// -------------------------------------------------------------------
+// Governance Styles (Issue #10)
+// -------------------------------------------------------------------
+
+// Genehmigungsstatus-Badge
+.approval-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+
+  .status-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+
+  &.status-beantragt {
+    background-color: var(--mat-sys-primary-container);
+    color: var(--mat-sys-on-primary-container);
+  }
+  &.status-genehmigt {
+    background-color: color-mix(in srgb, #2e7d32 20%, transparent);
+    color: #1b5e20;
+  }
+  &.status-abgelehnt {
+    background-color: var(--mat-sys-error-container);
+    color: var(--mat-sys-on-error-container);
+  }
+  &.status-storniert,
+  &.status-abgeschlossen {
+    background-color: var(--mat-sys-surface-variant);
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+// Ablehnungsgrund unterhalb der Notiz
+.rejection-reason {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--mat-sys-error);
+
+  .rejection-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+}
+
+// Dokumentationspflicht-Badge
+.doc-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--mat-sys-on-tertiary-container, #4a3800);
+  background-color: var(--mat-sys-tertiary-container, #f5e6c8);
+  padding: 3px 8px;
+  border-radius: 8px;
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+}
+
+.doc-hint {
+  color: var(--mat-sys-on-surface-variant);
+  display: inline-flex;
+  align-items: center;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+}
+
+// Regelhinweis unterhalb des Formulars
+.rule-hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--mat-sys-on-surface-variant);
+  padding: 6px 12px;
+  background-color: var(--mat-sys-surface-container-low, rgba(0,0,0,0.03));
+  border-radius: 8px;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: var(--mat-sys-primary);
+    flex-shrink: 0;
+  }
+}

@@ -4,74 +4,139 @@
   <div class="util-header">
     <div class="util-header-left">
       <h3>Raumauslastung</h3>
-      @if (dateRange.value.start && dateRange.value.end) {
-        <span class="util-date-label">{{ selectedLabel() }}</span>
-      }
-    </div>
+      <mat-button-toggle-group class="view-toggle" [value]="viewMode()" (change)="onViewModeToggle($event.value)">
+        <mat-button-toggle value="month">Monat</mat-button-toggle>
+        <mat-button-toggle value="day">Tag</mat-button-toggle>
+      </mat-button-toggle-group>
+      @if (viewMode() === 'month' && filterStart() && filterEnd()) {
+      <span class="util-date-label">{{ fmt(filterStart()!) }} – {{ fmt(filterEnd()!) }}</span>
+    }
+    @if (viewMode() === 'day') {
+      <span class="util-date-label">{{ fmt(selectedDay()) }}</span>
+    }
+  </div>
 
-    <mat-form-field class="date-range-field" appearance="outline" subscriptSizing="dynamic">
-      <mat-label>Zeitraum wählen</mat-label>
-      <mat-date-range-input [formGroup]="dateRange" [rangePicker]="picker">
-        <input matStartDate formControlName="start" placeholder="Startdatum"
-               (dateChange)="onDateChange()">
-        <input matEndDate formControlName="end" placeholder="Enddatum"
-               (dateChange)="onDateChange()">
-      </mat-date-range-input>
-      <mat-datepicker-toggle matIconSuffix [for]="picker">
-        <mat-icon matDatepickerToggleIcon>calendar_month</mat-icon>
-      </mat-datepicker-toggle>
-      <mat-date-range-picker #picker></mat-date-range-picker>
+  @if (viewMode() === 'day') {
+    <mat-form-field class="date-single-field" appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Tag wählen</mat-label>
+      <input matInput [matDatepicker]="dayPicker" [value]="selectedDay()" (dateChange)="onDaySelect($event.value)">
+      <mat-datepicker-toggle matIconSuffix [for]="dayPicker"></mat-datepicker-toggle>
+      <mat-datepicker #dayPicker></mat-datepicker>
     </mat-form-field>
-  </div>
+  }
+</div>
 
-  <!-- Legende -->
+  <!-- Legende und Schwellwert -->
   <div class="legend">
-    <span class="legend-item">
-      <span class="legend-swatch low"></span> Niedrig (0–40%)
-    </span>
-    <span class="legend-item">
-      <span class="legend-swatch medium"></span> Mittel (41–70%)
-    </span>
-    <span class="legend-item">
-      <span class="legend-swatch high"></span> Hoch (71–100%)
-    </span>
+    <div class="legend-main">
+      <span class="legend-item">
+        <span class="legend-swatch low"></span> Niedrig (0–40%)
+      </span>
+      <span class="legend-item">
+        <span class="legend-swatch medium"></span> Mittel (41–70%)
+      </span>
+      <span class="legend-item">
+        <span class="legend-swatch high"></span> Hoch (71–100%)
+      </span>
+    </div>
+
+    <div class="threshold-control">
+      <span class="threshold-label">Auslastungs-Schwellwert: <strong>{{ peakThreshold() }}%</strong></span>
+      <mat-slider min="0" max="100" step="1" discrete>
+        <input matSliderThumb [value]="peakThreshold()" (valueChange)="onThresholdChange($event)">
+      </mat-slider>
+    </div>
   </div>
 
-  <!-- Raumkarten -->
-  @if (rooms().length === 0) {
-    <div class="empty-state">
-      <mat-icon>meeting_room</mat-icon>
-      <p>Keine Räume vorhanden.</p>
-    </div>
-  } @else {
-    <div class="util-cards-grid">
-      @for (card of roomCards(); track card.id) {
-        <div class="util-room-card">
-
-          <!-- Donut-Diagramm -->
-          <svg viewBox="0 0 100 100" class="donut-svg" aria-hidden="true">
-            <circle class="donut-bg" cx="50" cy="50" [attr.r]="38" />
-            <circle
-              class="donut-fill {{ card.fillClass }}"
-              cx="50" cy="50"
-              [attr.r]="38"
-              [attr.stroke-dasharray]="card.dashArray"
-              transform="rotate(-90 50 50)"
-            />
-            <text x="50" y="55" class="donut-text">{{ card.utilization }}%</text>
-          </svg>
-
-          <div class="util-card-info">
-            <span class="util-room-name">{{ card.name }}</span>
-            <span class="util-room-seats">
-              <mat-icon>event_seat</mat-icon>{{ card.seats }} Plätze
-            </span>
-            <span class="util-exam-seats">
-              <mat-icon>assignment</mat-icon>{{ card.examSeats }} Klausurplätze
-            </span>
-          </div>
+  <!-- Peak Banner -->
+  @if (viewMode() === 'month' && peakRooms().length > 0) {
+    <div class="peak-banner">
+      <mat-icon>warning</mat-icon>
+      <div class="peak-info">
+        <strong>Hohe Auslastung erkannt:</strong>
+        <span>{{ peakRooms().length }} Räume liegen über dem Schwellwert von {{ peakThreshold() }}%.</span>
+        <div class="peak-list">
+          @for (r of peakRooms(); track r.id) {
+            <span class="peak-room-tag">{{ r.name }} ({{ r.utilization }}%)</span>
+          }
         </div>
-      }
+      </div>
+    </div>
+  }
+
+  <!-- Raumkarten (Monat) -->
+  @if (viewMode() === 'month') {
+    @if (rooms().length === 0) {
+      <div class="empty-state">
+        <mat-icon>meeting_room</mat-icon>
+        <p>Keine Räume vorhanden.</p>
+      </div>
+    } @else {
+      <div class="util-cards-grid">
+        @for (card of roomCards(); track card.id) {
+          <div class="util-room-card">
+
+            <!-- Donut-Diagramm -->
+            <svg viewBox="0 0 100 100" class="donut-svg" aria-hidden="true">
+              <circle class="donut-bg" cx="50" cy="50" [attr.r]="38" />
+              <circle
+                class="donut-fill {{ card.fillClass }}"
+                cx="50" cy="50"
+                [attr.r]="38"
+                [attr.stroke-dasharray]="card.dashArray"
+                transform="rotate(-90 50 50)"
+              />
+              <text x="50" y="55" class="donut-text">{{ card.utilization }}%</text>
+            </svg>
+
+            <div class="util-card-info">
+              <div class="util-room-name-wrapper" style="display: flex; align-items: center; justify-content: space-between;">
+                <span class="util-room-name">{{ card.name }}</span>
+                <div class="status-badge small-status-badge" [class]="'status-' + card.operationalStatus" style="transform: scale(0.8); transform-origin: right center;">
+                  <mat-icon>{{ (card.operationalStatus | operationalStatus).icon }}</mat-icon>
+                  {{ (card.operationalStatus | operationalStatus).label }}
+                </div>
+              </div>
+              <span class="util-room-seats">
+                <mat-icon>event_seat</mat-icon>{{ card.seats }} Plätze
+              </span>
+              <span class="util-exam-seats">
+                <mat-icon>assignment</mat-icon>{{ card.examSeats }} Klausurplätze
+              </span>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  }
+
+  <!-- Tages-Heatmap (Tag) -->
+  @if (viewMode() === 'day') {
+    <div class="day-heatmap-container">
+      <div class="heatmap-scroll-wrapper">
+        <table class="heatmap-table">
+          <thead>
+            <tr>
+              <th class="room-col">Raum</th>
+              @for (h of hours; track h) {
+                <th>{{ h }}:00</th>
+              }
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of daySlots(); track row.room.id) {
+              <tr>
+                <td class="room-name">{{ row.room.name }}</td>
+                @for (occupied of row.slots; track $index) {
+                  <td class="slot-cell" [class.occupied]="occupied">
+                    <div class="slot-box" [title]="occupied ? 'Belegt' : 'Frei'"></div>
+                  </td>
+                }
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
     </div>
   }
 

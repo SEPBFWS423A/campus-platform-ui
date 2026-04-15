@@ -69,7 +69,7 @@ export interface GenerateHandbookDialogData {
 
 
           <mat-form-field appearance="outline" class="w-full">
-            <mat-label>{{ 'profileAndSettings.language' | translate }}</mat-label>
+            <mat-label>{{ 'navigation.profileAndSettings.language' | translate }}</mat-label>
             <mat-select [(ngModel)]="selectedLanguage">
               <mat-option value="de">Deutsch</mat-option>
               <mat-option value="en">English</mat-option>
