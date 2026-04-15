@@ -53,7 +53,8 @@ const NAVIGATION_CONFIG: Record<string, NavLink[]> = {
     { path: '/student', label: 'navigation.student.home', icon: 'home', exact: true },
     { path: '/student/timetable', label: 'navigation.student.timetable', icon: 'calendar_month', exact: false },
     { path: '/student/grades', label: 'navigation.student.grades', icon: 'star_outline', activeIcon: 'star', exact: false },
-    { path: '/student/submissions', label: 'navigation.student.submissions', icon: 'task', exact: false }
+    { path: '/student/submissions', label: 'navigation.student.submissions', icon: 'task', exact: false },
+    { path: '/student/social', label: 'navigation.student.social', icon: 'people', exact: false }
   ]
 }
 

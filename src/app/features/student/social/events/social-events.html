@@ -1,0 +1,94 @@
+<div class="subpage-container">
+  <div class="header-actions">
+    <button mat-flat-button color="primary" (click)="openCreateDialog()">
+      <mat-icon>add</mat-icon>
+      {{ 'social.events.create' | translate }}
+    </button>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-state">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+  } @else if (events().length > 0) {
+    <div class="events-grid">
+      @for (event of events(); track event.id) {
+        <div class="event-card">
+          <div class="event-header">
+            <mat-chip-set>
+              <mat-chip [color]="getCategoryColor(event.category)" selected>
+                {{ 'social.categories.' + event.category | translate }}
+              </mat-chip>
+            </mat-chip-set>
+            
+            @if (currentUserId() === event.creatorId) {
+              <button mat-icon-button [matMenuTriggerFor]="menu">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+                <button mat-menu-item (click)="editEvent(event)">
+                  <mat-icon>edit</mat-icon>
+                  <span>{{ 'common.edit' | translate }}</span>
+                </button>
+                <button mat-menu-item (click)="deleteEvent(event.id)">
+                  <mat-icon color="warn">delete</mat-icon>
+                  <span>{{ 'common.delete' | translate }}</span>
+                </button>
+              </mat-menu>
+            }
+          </div>
+
+          <div class="event-content">
+            <h3>{{ event.title }}</h3>
+            <p class="description">{{ event.description }}</p>
+            
+            <div class="event-details">
+              <div class="detail-item">
+                <mat-icon>event</mat-icon>
+                <span>{{ event.startTime | date:'mediumDate' }}, {{ event.startTime | date:'shortTime' }} - {{ event.endTime | date:'shortTime' }}</span>
+              </div>
+              <div class="detail-item">
+                <mat-icon>location_on</mat-icon>
+                <span>{{ event.roomName || event.customLocation }}</span>
+              </div>
+              <div class="detail-item">
+                <mat-icon>person</mat-icon>
+                <span>{{ event.creatorName }}</span>
+              </div>
+            </div>
+
+            <div class="event-actions">
+              <div class="attendees" [matTooltip]="'social.events.rsvp.viewAttendees' | translate" (click)="viewAttendees(event)">
+                <mat-icon>group</mat-icon>
+                <span>{{ event.attendees.length || 0 }} {{ 'social.events.rsvp.attendees' | translate }}</span>
+              </div>
+
+              @if (currentUserId() !== event.creatorId) {
+                @if (isAttending(event)) {
+                  <button mat-stroked-button color="warn" (click)="toggleRsvp(event)">
+                    {{ 'social.events.rsvp.leave' | translate }}
+                  </button>
+                } @else {
+                  <button mat-flat-button color="primary" (click)="toggleRsvp(event)">
+                    {{ 'social.events.rsvp.join' | translate }}
+                  </button>
+                }
+              }
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="placeholder-card">
+      <div class="icon-wrapper">
+        <mat-icon>event_available</mat-icon>
+      </div>
+      <h2>{{ 'social.events.title' | translate }}</h2>
+      <p>{{ 'social.events.description' | translate }}</p>
+      <button mat-stroked-button color="primary" (click)="openCreateDialog()" class="mt-4">
+        {{ 'social.events.createFirst' | translate }}
+      </button>
+    </div>
+  }
+</div>

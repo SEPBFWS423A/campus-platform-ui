@@ -41,6 +41,7 @@
       "timetable": "Stundenplan",
       "grades": "Noten",
       "submissions": "Abgaben",
+      "social": "Social",
       "submissionsPage": {
         "title": "Abgaben",
         "subtitle": "Lade Dokumente hoch, verwalte deine Einreichungen und verfolge den Status.",
@@ -728,7 +729,10 @@
     "cancel": "Abbrechen",
     "yes": "Ja",
     "no": "Nein",
-    "saved": "Gespeichert"
+    "saved": "Gespeichert",
+    "create": "Erstellen",
+    "edit": "Bearbeiten",
+    "delete": "Löschen"
   },
   "info": {
     "pageTitle": "Info",
@@ -921,5 +925,55 @@
   },
   "nav.absences": "Abwesenheiten",
   "nav.lecturerAbsences": "Dozenten-Abwesenheiten",
-  "nav.jobPostings": "Stellenausschreibungen"
+  "nav.jobPostings": "Stellenausschreibungen",
+  "social": {
+    "title": "Social Hub",
+    "subtitleCompact": "Vernetze dich mit Kommilitonen, erstelle eigene Events oder nimm an Community-Events teil.",
+    "tabs": {
+      "events": "Events",
+      "contacts": "Kommilitonen"
+    },
+    "events": {
+      "title": "Anstehende Events",
+      "description": "Entdecke und nimm an studentisch organisierten Events, Workshops und Meetups auf dem Campus teil.",
+      "placeholder": "Noch keine studentischen Events geplant. Warum erstellst du nicht das erste?",
+      "create": "Event erstellen",
+      "createFirst": "Erstes Event erstellen",
+      "createTitle": "Neues Event erstellen",
+      "editTitle": "Event bearbeiten",
+      "form": {
+        "title": "Titel",
+        "titlePlaceholder": "z.B. Prüfungsvorbereitung",
+        "description": "Beschreibung",
+        "category": "Kategorie",
+        "date": "Datum",
+        "startTime": "Startzeit",
+        "endTime": "Endzeit",
+        "useCampusRoom": "Campus-Raum nutzen",
+        "room": "Raum",
+        "customLocation": "Anderer Ort",
+        "locationPlaceholder": "z.B. Mensa, Online, Sportplatz",
+        "timeRangeInvalid": "Endzeit muss nach Startzeit liegen",
+        "seats": "Plätze"
+      },
+      "rsvp": {
+        "join": "Teilnehmen",
+        "leave": "Teilnahme absagen",
+        "attendees": "Teilnehmer",
+        "noAttendees": "Sei der Erste, der teilnimmt!",
+        "viewAttendees": "Klicke, um Teilnehmer zu sehen"
+      }
+    },
+    "categories": {
+      "STUDY": "Lerngruppe",
+      "SOCIAL": "Soziales Treffen",
+      "SPORTS": "Sport",
+      "WORKSHOP": "Workshop",
+      "OTHER": "Sonstiges"
+    },
+    "contacts": {
+      "title": "Studentenverzeichnis",
+      "description": "Vernetze dich mit anderen Studierenden, finde Lerngruppen und erweitere dein akademisches Netzwerk."
+    }
+  }
 }

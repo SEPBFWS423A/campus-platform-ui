@@ -1,0 +1,84 @@
+<h2 mat-dialog-title>
+  <mat-icon>{{ isEdit ? 'edit' : 'add_circle' }}</mat-icon>
+  {{ (isEdit ? 'social.events.editTitle' : 'social.events.createTitle') | translate }}
+</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="eventForm" class="event-form">
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'social.events.form.title' | translate }}</mat-label>
+      <input matInput formControlName="title" [placeholder]="'social.events.form.titlePlaceholder' | translate">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'social.events.form.description' | translate }}</mat-label>
+      <textarea matInput formControlName="description" rows="4"></textarea>
+    </mat-form-field>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'social.events.form.category' | translate }}</mat-label>
+        <mat-select formControlName="category">
+          @for (cat of categories; track cat) {
+            <mat-option [value]="cat">{{ 'social.categories.' + cat | translate }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'social.events.form.date' | translate }}</mat-label>
+        <input matInput [matDatepicker]="pickerStart" formControlName="startDate">
+        <mat-datepicker-toggle matIconSuffix [for]="pickerStart"></mat-datepicker-toggle>
+        <mat-datepicker #pickerStart></mat-datepicker>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'social.events.form.startTime' | translate }}</mat-label>
+        <input matInput type="time" formControlName="startTime">
+        <mat-icon matIconSuffix>schedule</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'social.events.form.endTime' | translate }}</mat-label>
+        <input matInput type="time" formControlName="endTime">
+        <mat-icon matIconSuffix>schedule</mat-icon>
+        @if (eventForm.get('endTime')?.hasError('timeRangeInvalid')) {
+          <mat-error>{{ 'social.events.form.timeRangeInvalid' | translate }}</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <div class="location-toggle">
+      <mat-slide-toggle [checked]="useCampusRoom()" (change)="onToggleLocation($event)">
+        {{ 'social.events.form.useCampusRoom' | translate }}
+      </mat-slide-toggle>
+    </div>
+
+    @if (useCampusRoom()) {
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'social.events.form.room' | translate }}</mat-label>
+        <mat-select formControlName="roomId">
+          @for (room of rooms(); track room.id) {
+            <mat-option [value]="room.id">{{ room.name }} ({{ room.seats }} {{ 'social.events.form.seats' | translate }})</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    } @else {
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'social.events.form.customLocation' | translate }}</mat-label>
+        <input matInput formControlName="customLocation" [placeholder]="'social.events.form.locationPlaceholder' | translate">
+      </mat-form-field>
+    }
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">{{ 'common.cancel' | translate }}</button>
+  <button mat-flat-button color="primary" [disabled]="eventForm.invalid" (click)="onSubmit()">
+    {{ (isEdit ? 'common.save' : 'common.create') | translate }}
+  </button>
+</mat-dialog-actions>

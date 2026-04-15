@@ -41,6 +41,7 @@
       "timetable": "Timetable",
       "grades": "Grades",
       "submissions": "Submissions",
+      "social": "Social",
       "submissionsPage": {
         "title": "Submissions",
         "subtitle": "Upload documents, manage your submissions and track their status.",
@@ -727,7 +728,10 @@
     "cancel": "Cancel",
     "yes": "Yes",
     "no": "No",
-    "saved": "Saved"
+    "saved": "Saved",
+    "create": "Create",
+    "edit": "Edit",
+    "delete": "Delete"
   },
   "info": {
     "pageTitle": "Info",
@@ -918,5 +922,55 @@
     "deleteSuccess": "Absence was deleted.",
     "createSuccess": "Absence was added.",
     "conflictError": "Scheduling conflict: The lecturer has an absence booked during this time."
+  },
+  "social": {
+    "title": "Social Hub",
+    "subtitleCompact": "Connect with fellow students, host your own or join custom student events.",
+    "tabs": {
+      "events": "Events",
+      "contacts": "Fellow Students"
+    },
+    "events": {
+      "title": "Upcoming Events",
+      "description": "Discover and join student-organized events, workshops, and meetups happening around the campus.",
+      "placeholder": "No student events planned yet. Why don't you create the first one?",
+      "create": "Create Event",
+      "createFirst": "Create first event",
+      "createTitle": "Create New Event",
+      "editTitle": "Edit Event",
+      "form": {
+        "title": "Title",
+        "titlePlaceholder": "e.g., Exam Study Session",
+        "description": "Description",
+        "category": "Category",
+        "date": "Date",
+        "startTime": "Start Time",
+        "endTime": "End Time",
+        "useCampusRoom": "Use Campus Room",
+        "room": "Room",
+        "customLocation": "Other Location",
+        "locationPlaceholder": "e.g., Online, Sports Field",
+        "timeRangeInvalid": "End time must be after start time",
+        "seats": "seats"
+      },
+      "rsvp": {
+        "join": "Join Event",
+        "leave": "Cancel RSVP",
+        "attendees": "Attendees",
+        "noAttendees": "Be the first to join!",
+        "viewAttendees": "Click to view attendees"
+      }
+    },
+    "categories": {
+      "STUDY": "Study Group",
+      "SOCIAL": "Social Meetup",
+      "SPORTS": "Sports",
+      "WORKSHOP": "Workshop",
+      "OTHER": "Other"
+    },
+    "contacts": {
+      "title": "Student Directory",
+      "description": "Connect with fellow students, find study groups, and expand your academic network."
+    }
   }
 }

@@ -4,6 +4,7 @@ import { Grades } from './grades/grades';
 import { Submissions } from './submissions/submissions';
 import { Timetable } from './timetable/timetable';
 import { StudentApplications } from './applications/applications';
+import { Social } from './social/social';
 
 export const studentRoutes: Routes = [
   {
@@ -26,4 +27,13 @@ export const studentRoutes: Routes = [
   path: 'applications',
   component: StudentApplications
 },
+  {
+    path: 'social',
+    component: Social,
+    children: [
+      { path: '', redirectTo: 'events', pathMatch: 'full' },
+      { path: 'events', loadComponent: () => import('./social/events/social-events').then(m => m.SocialEvents) },
+      { path: 'contacts', loadComponent: () => import('./social/contacts/social-contacts').then(m => m.SocialContacts) }
+    ]
+  }
 ];

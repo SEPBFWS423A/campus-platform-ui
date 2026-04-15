@@ -1,0 +1,85 @@
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { environment } from '../../../../environments/environment';
+
+export enum StudentEventCategory {
+  STUDY = 'STUDY',
+  SOCIAL = 'SOCIAL',
+  SPORTS = 'SPORTS',
+  WORKSHOP = 'WORKSHOP',
+  OTHER = 'OTHER'
+}
+
+export interface CommunityEventRequest {
+  title: string;
+  description: string;
+  startTime: string; // ISO string
+  endTime: string;   // ISO string
+  category: StudentEventCategory;
+  roomId?: number;
+  customLocation?: string;
+}
+
+export interface AttendeeInfo {
+  id: number;
+  name: string;
+}
+
+export interface CommunityEventResponse {
+  id: number;
+  title: string;
+  description: string;
+  startTime: string;
+  endTime: string;
+  category: StudentEventCategory;
+  creatorId: number;
+  creatorName: string;
+  roomId?: number;
+  roomName?: string;
+  customLocation?: string;
+  attendees: AttendeeInfo[];
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class SocialService {
+  private apiUrl = `${environment.apiUrl}/social/events`;
+
+  constructor(private http: HttpClient) { }
+
+  getEvents(): Observable<CommunityEventResponse[]> {
+    return this.http.get<CommunityEventResponse[]>(this.apiUrl);
+  }
+
+  getRooms(start?: string, end?: string, excludeId?: number): Observable<any[]> {
+    let url = `${this.apiUrl}/rooms`;
+    const params: any = {};
+    if (start) params.start = start;
+    if (end) params.end = end;
+    if (excludeId) params.excludeId = excludeId;
+    
+    return this.http.get<any[]>(url, { params });
+  }
+
+  createEvent(request: CommunityEventRequest): Observable<CommunityEventResponse> {
+    return this.http.post<CommunityEventResponse>(this.apiUrl, request);
+  }
+
+  updateEvent(id: number, request: CommunityEventRequest): Observable<CommunityEventResponse> {
+    return this.http.put<CommunityEventResponse>(`${this.apiUrl}/${id}`, request);
+  }
+
+  deleteEvent(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  rsvpToEvent(id: number): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/${id}/rsvp`, {});
+  }
+
+  cancelRsvp(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}/rsvp`);
+  }
+}
