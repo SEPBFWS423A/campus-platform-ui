@@ -232,7 +232,7 @@ export class ModuleHandbookService {
         [this.instant('academicStructure.specialization', lang), spec ? spec.name : this.instant('academicStructure.noSpecificSpecialization', lang)],
         [this.instant('academicStructure.semester', lang), `${this.instant('academicStructure.semester', lang)} ${module.semester}`],
         [this.instant('academicStructure.workload', lang), `${module.requiredTotalHours} ${hoursLabel}`],
-        [lang === 'de' ? 'ECTS-Punkte' : 'ECTS Points', '5'],
+        [this.instant('academicStructure.ects', lang), module.ects?.toString() || '-'],
 
         [this.instant('academicStructure.staff', lang), lecturers || 'N.N.'],
         [this.instant('academicStructure.exams', lang), examText],
