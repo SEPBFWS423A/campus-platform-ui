@@ -2,6 +2,14 @@
   "platformName": "CampusPlatform",
   "error.password.invalidOld": "Das eingegebene aktuelle Passwort ist nicht korrekt.",
   "error.password.unknownError": "Beim Ändern des Passworts ist ein unerwarteter Fehler aufgetreten. Bitte versuchen Sie es erneut.",
+  "common": {
+    "confirm": "Bestätigen",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "remove": "Entfernen",
+    "save": "Speichern",
+    "close": "Schließen"
+  },
   "login": {
     "welcome": "Willkommen",
     "loginText": "Bitte melden Sie sich mit Ihren Zugangsdaten an",
@@ -942,6 +950,8 @@
       "createFirst": "Erstes Event erstellen",
       "createTitle": "Neues Event erstellen",
       "editTitle": "Event bearbeiten",
+      "deleteTitle": "Event löschen",
+      "deleteConfirm": "Sind Sie sicher, dass Sie dieses Event dauerhaft löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
       "form": {
         "title": "Titel",
         "titlePlaceholder": "z.B. Prüfungsvorbereitung",

@@ -2,6 +2,14 @@
   "platformName": "CampusPlatform",
   "error.password.invalidOld": "The current password you entered is incorrect.",
   "error.password.unknownError": "An unexpected error occurred while changing your password. Please try again.",
+  "common": {
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "remove": "Remove",
+    "save": "Save",
+    "close": "Close"
+  },
   "login": {
     "welcome": "Welcome",
     "loginText": "Please log in with your credentials",
@@ -939,6 +947,8 @@
       "createFirst": "Create first event",
       "createTitle": "Create New Event",
       "editTitle": "Edit Event",
+      "deleteTitle": "Delete Event",
+      "deleteConfirm": "Are you sure you want to permanently delete this event? This action cannot be undone.",
       "form": {
         "title": "Title",
         "titlePlaceholder": "e.g., Exam Study Session",

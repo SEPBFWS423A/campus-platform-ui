@@ -8,9 +8,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { SocialService, CommunityEventResponse } from '../social.service';
+import { SocialService, CommunityEventResponse, AttendeeInfo } from '../social.service';
 import { SocialEventDialog } from './dialog/social-event-dialog';
 import { AttendeesDialog } from './dialog/attendees-dialog';
+import { ConfirmDialog } from './dialog/confirm-dialog';
 import { UserService } from '../../../../core/user/user.service';
 
 @Component({
@@ -81,9 +82,21 @@ export class SocialEvents implements OnInit {
   }
 
   deleteEvent(id: number): void {
-    if (confirm('Are you sure you want to delete this event?')) {
-      this.socialService.deleteEvent(id).subscribe(() => this.loadEvents());
-    }
+    const dialogRef = this.dialog.open(ConfirmDialog, {
+      width: '400px',
+      data: {
+        title: 'social.events.deleteTitle',
+        message: 'social.events.deleteConfirm',
+        confirmText: 'common.delete',
+        isDestructive: true
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.socialService.deleteEvent(id).subscribe(() => this.loadEvents());
+      }
+    });
   }
 
   isAttending(event: CommunityEventResponse): boolean {
@@ -92,11 +105,41 @@ export class SocialEvents implements OnInit {
   }
 
   toggleRsvp(event: CommunityEventResponse): void {
-    if (this.isAttending(event)) {
-      this.socialService.cancelRsvp(event.id).subscribe(() => this.loadEvents());
-    } else {
-      this.socialService.rsvpToEvent(event.id).subscribe(() => this.loadEvents());
-    }
+    const currentEvents = this.events();
+    const userId = this.currentUserId();
+    if (!userId) return;
+
+    const userProfile = this.userService.profile();
+    const attendee: AttendeeInfo = {
+      id: userId,
+      name: userProfile ? `${userProfile.firstName} ${userProfile.lastName}` : 'You'
+    };
+
+    const isAttending = this.isAttending(event);
+    
+    // Optimistic Update
+    const updatedEvents = currentEvents.map(e => {
+      if (e.id === event.id) {
+        const newAttendees = isAttending
+          ? e.attendees.filter(a => a.id !== userId)
+          : [...(e.attendees || []), attendee];
+        return { ...e, attendees: newAttendees };
+      }
+      return e;
+    });
+    this.events.set(updatedEvents);
+
+    // Background Request
+    const request = isAttending
+      ? this.socialService.cancelRsvp(event.id)
+      : this.socialService.rsvpToEvent(event.id);
+
+    request.subscribe({
+      error: () => {
+        // Rollback on error
+        this.events.set(currentEvents);
+      }
+    });
   }
 
   viewAttendees(event: CommunityEventResponse): void {
