@@ -41,6 +41,7 @@
       "timetable": "Stundenplan",
       "grades": "Noten",
       "submissions": "Abgaben",
+      "applications": "Bewerbungen",
       "submissionsPage": {
         "title": "Abgaben",
         "subtitle": "Lade Dokumente hoch, verwalte deine Einreichungen und verfolge den Status.",

@@ -1,0 +1,61 @@
+<div class="applications-page">
+
+  <!-- Ladezustand -->
+  <div class="loading" *ngIf="loading()">Daten werden geladen…</div>
+
+  <!-- Fehlerzustand -->
+  <div class="error" *ngIf="error() && !loading()">Bewerbungsdaten konnten nicht geladen werden.</div>
+
+  <!-- Inhalt -->
+  <div *ngIf="!loading() && !error()">
+
+    <div class="header">
+      <div>
+        <h1>Bewerbung für Studiengänge</h1>
+        <p>Wähle einen Studiengang und lade optional ein PDF hoch</p>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div class="form-group">
+        <label>Studiengang</label>
+        <select [(ngModel)]="form.programId">
+          <option value="">Bitte wählen…</option>
+          <option *ngFor="let p of programs()" [value]="p.id">{{ p.name }}</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Motivation (optional)</label>
+        <textarea [(ngModel)]="form.motivation" rows="3"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Priorität</label>
+        <select [(ngModel)]="form.priority">
+          <option [value]="1">1</option>
+          <option [value]="2">2</option>
+          <option [value]="3">3</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>PDF hochladen</label>
+        <input type="file" (change)="onFileSelected($event)" accept="application/pdf">
+      </div>
+
+      <button class="btn-primary" (click)="submit()">Bewerbung absenden</button>
+    </div>
+
+    <h2>Meine Bewerbungen</h2>
+
+    <div class="applications-list">
+      <div class="application-card" *ngFor="let app of myApplications()">
+        <h3>{{ app.programName }}</h3>
+        <p>Status: {{ app.status }}</p>
+        <p>Priorität: {{ app.priority }}</p>
+      </div>
+    </div>
+
+  </div>
+</div>
