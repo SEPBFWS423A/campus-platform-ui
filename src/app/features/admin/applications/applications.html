@@ -1,45 +1,70 @@
 <div class="applications-page">
-  <div class="header">
-    <h1>Bewerbungsverwaltung</h1>
-    <p>Eingehende Bewerbungen einsehen und bearbeiten</p>
-  </div>
 
-  <div class="stats-row">
-    <div class="stat pending">⏳ {{ pending }} Ausstehend</div>
-    <div class="stat accepted">✅ {{ accepted }} Angenommen</div>
-    <div class="stat rejected">❌ {{ rejected }} Abgelehnt</div>
-  </div>
+  <div class="loading" *ngIf="loading()">Daten werden geladen…</div>
+  <div class="error" *ngIf="error()">{{ error() }}</div>
 
-  <div class="table-card">
-    <table>
-      <thead>
-        <tr>
-          <th>Student</th>
-          <th>Matrikelnr.</th>
-          <th>Studiengang</th>
-          <th>Datum</th>
-          <th>Status</th>
-          <th>Aktionen</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let app of applications">
-          <td>{{ app.studentName }}</td>
-          <td>{{ app.studentNumber }}</td>
-          <td>{{ app.program }}</td>
-          <td>{{ app.date }}</td>
-          <td>
-            <span class="badge" [ngClass]="app.status">
-              {{ app.status === 'pending' ? 'Ausstehend' : app.status === 'accepted' ? 'Angenommen' : 'Abgelehnt' }}
-            </span>
-          </td>
-          <td class="actions">
-            <button *ngIf="app.status === 'pending'" class="btn-accept" (click)="accept(app.id)">✓</button>
-            <button *ngIf="app.status === 'pending'" class="btn-reject" (click)="reject(app.id)">✗</button>
-            <span *ngIf="app.status !== 'pending'" class="done">–</span>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <div *ngIf="!loading()">
+
+    <div class="header">
+      <h1>Bewerbungsverwaltung</h1>
+      <p>Verwalte eingehende Studiengangsbewerbungen</p>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card pending-card">
+        <span class="stat-value">{{ pending() }}</span>
+        <span class="stat-label">Ausstehend</span>
+      </div>
+      <div class="stat-card accepted-card">
+        <span class="stat-value">{{ accepted() }}</span>
+        <span class="stat-label">Angenommen</span>
+      </div>
+      <div class="stat-card rejected-card">
+        <span class="stat-value">{{ rejected() }}</span>
+        <span class="stat-label">Abgelehnt</span>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>Student</th>
+            <th>E-Mail</th>
+            <th>Studiengang</th>
+            <th>Priorität</th>
+            <th>Datum</th>
+            <th>Status</th>
+            <th>Aktionen</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let app of applications()">
+            <td>{{ app.studentName }}</td>
+            <td>{{ app.studentEmail }}</td>
+            <td>{{ app.programName }}</td>
+            <td>{{ app.priority }}</td>
+            <td>{{ app.createdAt | date:'dd.MM.yyyy' }}</td>
+            <td>
+              <span class="badge" [ngClass]="{
+                'badge-pending': app.status === 'PENDING',
+                'badge-accepted': app.status === 'ACCEPTED',
+                'badge-rejected': app.status === 'REJECTED'
+              }">
+                {{ app.status === 'PENDING' ? 'Ausstehend' : app.status === 'ACCEPTED' ? 'Angenommen' : 'Abgelehnt' }}
+              </span>
+            </td>
+            <td class="actions">
+              <button class="btn-accept" (click)="accept(app.id)" [disabled]="app.status !== 'PENDING'">✓</button>
+              <button class="btn-reject" (click)="reject(app.id)" [disabled]="app.status !== 'PENDING'">✕</button>
+            </td>
+          </tr>
+          <tr *ngIf="applications().length === 0">
+            <td colspan="7" class="empty">Keine Bewerbungen vorhanden.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
   </div>
 </div>

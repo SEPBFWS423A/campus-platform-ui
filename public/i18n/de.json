@@ -28,7 +28,8 @@
       "academicStructure": "Akademische Struktur",
       "roomManagement": "Raumverwaltung",
       "eventManagement": "Veranstaltungsmanagement",
-      "examManagement": "Prüfungsmanagement"
+      "examManagement": "Prüfungsmanagement",
+      "applications": "Bewerbungen"
     },
     "lecturer": {
       "home": "Home",
