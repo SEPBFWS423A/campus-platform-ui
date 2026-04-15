@@ -1,5 +1,6 @@
 import { Component, signal, computed, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -118,11 +119,11 @@ export interface JobPostingRequest {
 
         <div class="auto-publish-row">
           <mat-slide-toggle formControlName="autoPublish" color="primary" id="auto-publish-toggle">
-            Automatisch veröffentlichen
+            Auf öffentlicher Stellenseite anzeigen
           </mat-slide-toggle>
           <span class="auto-hint">
-            <mat-icon>info</mat-icon>
-            Ausschreibung wird sofort auf der Plattform angezeigt
+            <mat-icon>open_in_new</mat-icon>
+            Sichtbar unter <strong>/jobs</strong> für alle Besucher
           </span>
         </div>
       </form>
@@ -189,7 +190,7 @@ export class JobPostingFormDialog {
     deadline:     new FormControl<Date | string>(this.parseDeadline(this.data?.deadline), Validators.required),
     description:  new FormControl(this.data?.description ?? '', Validators.required),
     requirements: new FormControl(this.data?.requirements ?? ''),
-    autoPublish:  new FormControl(this.data?.autoPublish ?? true)
+    autoPublish:  new FormControl(this.data ? this.data.status === 'AKTIV' : true)
   });
 
   submit(): void {
@@ -215,7 +216,7 @@ export class JobPostingFormDialog {
   selector: 'app-job-postings',
   standalone: true,
   imports: [
-    CommonModule, ReactiveFormsModule,
+    CommonModule, ReactiveFormsModule, RouterModule,
     MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule,
     MatButtonModule, MatIconModule, MatTableModule, MatChipsModule,
     MatTooltipModule, MatDialogModule, MatSnackBarModule, MatDividerModule,

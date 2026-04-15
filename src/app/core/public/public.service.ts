@@ -2,6 +2,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { Observable, tap } from 'rxjs';
+import { JobPosting } from '../../features/admin/job-postings/job-postings';
 
 @Injectable({
   providedIn: 'root',
@@ -17,5 +18,9 @@ export class PublicService {
     return this.http.get<{ name: string }>(`${this.apiUrl}/university-name`).pipe(
       tap(res => this._universityName.set(res.name))
     );
+  }
+
+  getActiveJobPostings(): Observable<JobPosting[]> {
+    return this.http.get<JobPosting[]>(`${this.apiUrl}/job-postings`);
   }
 }

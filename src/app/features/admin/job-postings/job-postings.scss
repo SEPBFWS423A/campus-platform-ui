@@ -50,8 +50,20 @@
     margin: 0;
   }
 
-  .create-btn {
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     flex-shrink: 0;
+  }
+
+  .public-page-btn {
+    gap: 4px;
+    font-weight: 500;
+    text-decoration: none;
+  }
+
+  .create-btn {
     gap: 4px;
     font-weight: 600;
   }
