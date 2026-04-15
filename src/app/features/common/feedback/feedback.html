@@ -1,0 +1,99 @@
+<div class="feedback-page-container">
+  <!-- STUDENT VIEW -->
+  <ng-container *ngIf="auth.userRole() === UserRole.Student">
+    <div class="feedback-card student-card">
+      <div class="card-header">
+        <div class="icon-title">
+          <mat-icon>chat_bubble_outline</mat-icon>
+          <h2>Anonymes Feedback abgeben</h2>
+        </div>
+        <p class="subtitle">Ihr Beitrag hilft, die Qualität der Lehre zu verbessern. Alle Einreichungen sind zu 100% anonym.</p>
+      </div>
+
+      <div class="card-content">
+        <div class="form-group">
+          <label for="lecturerSelect">Dozent auswählen</label>
+          <select id="lecturerSelect" [(ngModel)]="selectedLecturerId" class="modern-select">
+            <option [ngValue]="null" disabled>Wählen Sie einen Dozenten...</option>
+            <option *ngFor="let lecturer of lecturers()" [ngValue]="lecturer.id">
+              {{ lecturer.title ? lecturer.title + ' ' : '' }}{{ lecturer.firstName }} {{ lecturer.lastName }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="feedbackText">Ihr Feedback</label>
+          <textarea 
+            id="feedbackText" 
+            [(ngModel)]="feedbackContent" 
+            placeholder="Beschreiben Sie hier Ihre Erfahrungen, Lob oder Kritik..."
+            class="modern-textarea"
+            rows="6"
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="card-footer">
+        <button 
+          (click)="submitFeedback()" 
+          [disabled]="isSubmitting() || !selectedLecturerId || !feedbackContent" 
+          class="submit-button"
+        >
+          <span *ngIf="!isSubmitting()">Feedback senden</span>
+          <span *ngIf="isSubmitting()" class="spinner-container">
+            <span class="spinner"></span>
+            Sende...
+          </span>
+        </button>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- LECTURER VIEW -->
+  <ng-container *ngIf="auth.userRole() === UserRole.Lecturer">
+    <div class="lecturer-feedback-section">
+      <div class="feedback-header">
+        <div class="title-section">
+          <mat-icon>feedback</mat-icon>
+          <h1>Ihr erhaltenes Feedback</h1>
+        </div>
+        <div class="header-actions">
+          <div class="stats-badge" *ngIf="feedbacks().length > 0">
+            {{ feedbacks().length }} Mitteilungen insgesamt
+          </div>
+          <button 
+            *ngIf="feedbacks().length > 0" 
+            (click)="downloadFeedbackAsPDF()" 
+            class="export-button"
+            title="Als PDF exportieren"
+          >
+            <mat-icon>file_download</mat-icon>
+            Export (PDF)
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="isLoading()" class="loading-state">
+        <div class="spinner"></div>
+        <p>Feedback wird geladen...</p>
+      </div>
+
+      <div *ngIf="!isLoading() && feedbacks().length === 0" class="empty-state">
+        <mat-icon>sentiment_satisfied</mat-icon>
+        <p>Aktuell liegt kein neues Feedback für Sie vor.</p>
+      </div>
+
+      <div *ngIf="!isLoading() && feedbacks().length > 0" class="feedback-grid">
+        <div *ngFor="let feedback of feedbacks()" class="feedback-item">
+          <div class="item-header">
+            <span class="date">{{ feedback.createdAt | date:'dd.MM.yyyy HH:mm' }}</span>
+            <span class="tag">Anonym</span>
+          </div>
+          <div class="item-content">
+            {{ feedback.content }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>

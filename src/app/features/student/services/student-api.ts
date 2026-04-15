@@ -11,6 +11,10 @@ export class StudentApi {
   private readonly baseUrl = `${environment.apiUrl}/users`;
   private http = inject(HttpClient);
 
+  getLecturers(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/lecturers`);
+  }
+
   getCourses(): Observable<LecturerCourseResponse[]> {
     return this.http.get<LecturerCourseResponse[]>(`${this.baseUrl}/courses`);
   }

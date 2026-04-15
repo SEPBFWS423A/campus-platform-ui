@@ -1,0 +1,349 @@
+.feedback-page-container {
+  padding: 3rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 80vh;
+
+  // COMMON STYLES
+  .spinner {
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-top-color: #6366f1;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  // STUDENT VIEW STYLES
+  .student-card {
+    max-width: 800px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(15px);
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+
+    .card-header {
+      padding: 2.5rem;
+      background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+      color: white;
+
+      .icon-title {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 0.75rem;
+
+        mat-icon {
+          font-size: 2.5rem;
+          width: 2.5rem;
+          height: 2.5rem;
+        }
+
+        h2 {
+          margin: 0;
+          font-size: 1.75rem;
+          font-weight: 700;
+          color: #1a1a1a; // Black heading
+        }
+      }
+
+      .subtitle {
+        margin: 0;
+        color: #1a1a1a; // Black subtitle
+        font-size: 1rem;
+        line-height: 1.5;
+        opacity: 0.8;
+      }
+    }
+
+    .card-content {
+      padding: 2.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+
+        label {
+          font-weight: 600;
+          color: rgba(255, 255, 255, 0.8);
+          font-size: 0.95rem;
+        }
+
+        .modern-select, .modern-textarea {
+          background: #ffffff; // White background
+          border: 2px solid #6366f1; // Distinct blue border
+          border-radius: 14px;
+          padding: 1rem;
+          color: #1a1a1a; // Black text
+          font-size: 1rem;
+          transition: all 0.3s ease;
+
+          &:focus {
+            outline: none;
+            border-color: #4f46e5;
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.3);
+          }
+
+          &::placeholder {
+            color: #64748b; // Gray placeholder
+          }
+        }
+
+        .modern-select {
+          cursor: pointer;
+          option {
+            background-color: #ffffff;
+            color: #1a1a1a;
+          }
+        }
+
+        .modern-textarea {
+          resize: vertical;
+          min-height: 180px;
+        }
+      }
+    }
+
+    .card-footer {
+      padding: 2rem 2.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(0, 0, 0, 0.15);
+      display: flex;
+      justify-content: flex-end;
+
+      .submit-button {
+        background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+        color: white;
+        border: none;
+        padding: 1rem 3rem;
+        border-radius: 14px;
+        font-weight: 700;
+        font-size: 1.05rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+
+        &:hover:not(:disabled) {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+        }
+
+        &:active:not(:disabled) {
+          transform: translateY(0);
+        }
+
+        &:disabled {
+          opacity: 0.4;
+          cursor: not-allowed;
+          filter: grayscale(0.8);
+        }
+
+        .spinner-container {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+
+          .spinner {
+            width: 1.25rem;
+            height: 1.25rem;
+            border-width: 2px;
+          }
+        }
+      }
+    }
+  }
+
+  // LECTURER VIEW STYLES
+  .lecturer-feedback-section {
+    .feedback-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 3rem;
+
+      .title-section {
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+
+        mat-icon {
+          font-size: 3rem;
+          width: 3rem;
+          height: 3rem;
+          background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+
+        h1 {
+          margin: 0;
+          font-size: 2.25rem;
+          font-weight: 800;
+          color: #1a1a1a; // Black heading
+        }
+      }
+
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+
+        .stats-badge {
+          background: rgba(99, 102, 241, 0.12);
+          color: #a5b4fc;
+          padding: 0.6rem 1.5rem;
+          border-radius: 99px;
+          font-weight: 600;
+          border: 1px solid rgba(99, 102, 241, 0.25);
+          font-size: 0.95rem;
+        }
+
+        .export-button {
+          background: rgba(255, 255, 255, 0.05);
+          backdrop-filter: blur(8px);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          color: #f8fafc;
+          padding: 0.6rem 1.5rem;
+          border-radius: 14px;
+          font-weight: 600;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          transition: all 0.3s ease;
+
+          mat-icon {
+            font-size: 1.25rem;
+            width: 1.25rem;
+            height: 1.25rem;
+          }
+
+          &:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(99, 102, 241, 0.5);
+            transform: translateY(-2px);
+          }
+        }
+      }
+    }
+
+    .loading-state, .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 6rem 2rem;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 30px;
+      border: 2px dashed rgba(255, 255, 255, 0.08);
+      color: rgba(255, 255, 255, 0.4);
+
+      mat-icon {
+        font-size: 5rem;
+        width: 5rem;
+        height: 5rem;
+        margin-bottom: 1.5rem;
+        opacity: 0.4;
+      }
+
+      p {
+        font-size: 1.2rem;
+        font-weight: 500;
+      }
+    }
+
+    .feedback-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+      gap: 2rem;
+
+      .feedback-item {
+        background: #ffffff; // White background
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 22px;
+        padding: 2rem;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+
+        &:hover {
+          transform: translateY(-8px);
+          background: #ffffff;
+          border-color: #6366f1;
+          box-shadow: 0 15px 30px rgba(99, 102, 241, 0.15);
+        }
+
+        .item-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+
+          .date {
+            font-size: 0.9rem;
+            color: #64748b; // Dark gray date
+            font-weight: 500;
+          }
+
+          .tag {
+            font-size: 0.8rem;
+            background: rgba(99, 102, 241, 0.1);
+            color: #4f46e5;
+            padding: 0.35rem 1rem;
+            border-radius: 8px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+          }
+        }
+
+        .item-content {
+          font-size: 1.15rem;
+          line-height: 1.7;
+          color: #1a1a1a; // Black text
+          white-space: pre-wrap; // Preserve newlines and wrap text
+        }
+      }
+    }
+  }
+}
+
+// Mobile Responsive
+@media (max-width: 768px) {
+  .feedback-page-container {
+    padding: 1.5rem 1rem;
+
+    .student-card {
+      .card-header, .card-content, .card-footer {
+        padding: 1.5rem;
+      }
+    }
+
+    .lecturer-feedback-section {
+      .feedback-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+
+      .feedback-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+}
