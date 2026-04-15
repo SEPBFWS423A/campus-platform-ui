@@ -1,6 +1,6 @@
 import {CommonModule} from '@angular/common';
 import {HttpErrorResponse} from '@angular/common/http';
-import {AfterViewInit, ChangeDetectorRef, Component, inject,} from '@angular/core';
+import {AfterViewInit, ChangeDetectorRef, Component, HostListener, inject,} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {finalize, firstValueFrom} from 'rxjs';
 import {TranslateModule, TranslateService} from '@ngx-translate/core';
@@ -52,9 +52,12 @@ export class Submissions implements AfterViewInit {
   isUploading = false;
   isSubmitting = false;
   isModalOpen = false;
+  isDragOver = false;
 
   errorMessage = '';
   successMessage = '';
+  modalErrorMessage = '';
+  modalSuccessMessage = '';
 
   selectedFiles: File[] = [];
 
@@ -80,6 +83,22 @@ export class Submissions implements AfterViewInit {
       this.loadSubmissions();
       this.syncView();
     }, 0);
+  }
+
+  @HostListener('window:dragover', ['$event'])
+  handleWindowDragOver(event: DragEvent): void {
+    if (!this.isModalOpen) {
+      return;
+    }
+    event.preventDefault();
+  }
+
+  @HostListener('window:drop', ['$event'])
+  handleWindowDrop(event: DragEvent): void {
+    if (!this.isModalOpen) {
+      return;
+    }
+    event.preventDefault();
   }
 
   loadSubmissions(): void {
@@ -112,9 +131,12 @@ export class Submissions implements AfterViewInit {
     this.isLoadingDetail = true;
     this.errorMessage = '';
     this.successMessage = '';
+    this.modalErrorMessage = '';
+    this.modalSuccessMessage = '';
     this.selectedFiles = [];
     this.selectedSubmission = null;
     this.isModalOpen = true;
+    this.isDragOver = false;
     this.syncView();
 
     this.submissionsService
@@ -143,8 +165,10 @@ export class Submissions implements AfterViewInit {
     this.isModalOpen = false;
     this.selectedSubmission = null;
     this.selectedFiles = [];
-    this.successMessage = '';
+    this.modalErrorMessage = '';
+    this.modalSuccessMessage = '';
     this.isLoadingDetail = false;
+    this.isDragOver = false;
     this.syncView();
   }
 
@@ -227,26 +251,68 @@ export class Submissions implements AfterViewInit {
     }
   }
 
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragOver = true;
+  }
+
+  onDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragOver = false;
+  }
+
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragOver = false;
+
+    const files = Array.from(event.dataTransfer?.files ?? []);
+    this.handleSelectedFiles(files);
+  }
+
+  openFilePicker(fileInput: HTMLInputElement): void {
+    fileInput.click();
+  }
+
   onFilesSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     const files = Array.from(input.files ?? []);
+    this.handleSelectedFiles(files);
+    input.value = '';
+  }
 
-    this.errorMessage = '';
-    this.successMessage = '';
+  private handleSelectedFiles(files: File[]): void {
+    this.modalErrorMessage = '';
+    this.modalSuccessMessage = '';
+
+    if (!files.length) {
+      return;
+    }
 
     const validFiles: File[] = [];
 
     for (const file of files) {
       const validationError = this.validateSelectedFile(file);
       if (validationError) {
-        this.errorMessage = validationError;
+        this.modalErrorMessage = validationError;
         continue;
       }
-      validFiles.push(file);
+
+      const alreadySelected = this.selectedFiles.some(
+        (existing) =>
+          existing.name === file.name &&
+          existing.size === file.size &&
+          existing.lastModified === file.lastModified
+      );
+
+      if (!alreadySelected) {
+        validFiles.push(file);
+      }
     }
 
-    this.selectedFiles = validFiles;
-    input.value = '';
+    this.selectedFiles = [...this.selectedFiles, ...validFiles];
     this.syncView();
   }
 
@@ -262,8 +328,8 @@ export class Submissions implements AfterViewInit {
     }
 
     this.isUploading = true;
-    this.errorMessage = '';
-    this.successMessage = '';
+    this.modalErrorMessage = '';
+    this.modalSuccessMessage = '';
     this.syncView();
 
     try {
@@ -281,12 +347,12 @@ export class Submissions implements AfterViewInit {
       }
 
       this.selectedFiles = [];
-      this.successMessage = 'navigation.student.submissionsPage.messages.uploadSuccess';
+      this.modalSuccessMessage = 'navigation.student.submissionsPage.messages.uploadSuccess';
       await this.refreshCurrentSubmissionAndList();
       this.syncView();
     } catch (err) {
       console.error('Fehler POST /users/submissions/{id}/documents:', err);
-      this.errorMessage = 'navigation.student.submissionsPage.messages.uploadError';
+      this.modalErrorMessage = 'navigation.student.submissionsPage.messages.uploadError';
       this.syncView();
     } finally {
       this.isUploading = false;
@@ -299,21 +365,21 @@ export class Submissions implements AfterViewInit {
       return;
     }
 
-    this.errorMessage = '';
-    this.successMessage = '';
+    this.modalErrorMessage = '';
+    this.modalSuccessMessage = '';
     this.syncView();
 
     this.submissionsService
       .deleteDocument(this.selectedSubmission.submissionId, documentItem.id)
       .subscribe({
         next: async () => {
-          this.successMessage = 'navigation.student.submissionsPage.messages.deleteSuccess';
+          this.modalSuccessMessage = 'navigation.student.submissionsPage.messages.deleteSuccess';
           await this.refreshCurrentSubmissionAndList();
           this.syncView();
         },
         error: (err: HttpErrorResponse) => {
           console.error('Fehler DELETE /users/submissions/{id}/documents/{documentId}:', err);
-          this.errorMessage = 'navigation.student.submissionsPage.messages.deleteError';
+          this.modalErrorMessage = 'navigation.student.submissionsPage.messages.deleteError';
           this.syncView();
         },
       });
@@ -324,8 +390,8 @@ export class Submissions implements AfterViewInit {
       return;
     }
 
-    this.errorMessage = '';
-    this.successMessage = '';
+    this.modalErrorMessage = '';
+    this.modalSuccessMessage = '';
     this.syncView();
 
     this.submissionsService
@@ -342,7 +408,7 @@ export class Submissions implements AfterViewInit {
         },
         error: (err: HttpErrorResponse) => {
           console.error('Fehler GET /users/submissions/{id}/documents/{documentId}/download:', err);
-          this.errorMessage = 'navigation.student.submissionsPage.messages.downloadError';
+          this.modalErrorMessage = 'navigation.student.submissionsPage.messages.downloadError';
           this.syncView();
         },
       });
@@ -354,8 +420,8 @@ export class Submissions implements AfterViewInit {
     }
 
     this.isSubmitting = true;
-    this.errorMessage = '';
-    this.successMessage = '';
+    this.modalErrorMessage = '';
+    this.modalSuccessMessage = '';
     this.syncView();
 
     this.submissionsService
@@ -368,13 +434,13 @@ export class Submissions implements AfterViewInit {
       )
       .subscribe({
         next: async () => {
-          this.successMessage = 'navigation.student.submissionsPage.messages.submitSuccess';
+          this.modalSuccessMessage = 'navigation.student.submissionsPage.messages.submitSuccess';
           await this.refreshCurrentSubmissionAndList();
           this.syncView();
         },
         error: (err: HttpErrorResponse) => {
           console.error('Fehler POST /users/submissions/{id}/submit:', err);
-          this.errorMessage = 'navigation.student.submissionsPage.messages.submitError';
+          this.modalErrorMessage = 'navigation.student.submissionsPage.messages.submitError';
           this.syncView();
         },
       });
@@ -473,18 +539,20 @@ export class Submissions implements AfterViewInit {
     }
 
     if (item.status === 'SUBMITTED') {
-      return this.isDeadlinePassed(item.submissionDeadline) ? 'submitted-closed' : 'submitted';
+      return this.isDeadlinePassed(item.effectiveSubmissionDeadline ?? item.submissionDeadline)
+        ? 'submitted-closed'
+        : 'submitted';
     }
 
-    if (this.isDeadlinePassed(item.submissionDeadline)) {
+    if (this.isDeadlinePassed(item.effectiveSubmissionDeadline ?? item.submissionDeadline)) {
       return 'overdue';
     }
 
     return item.hasDocuments ? 'progress' : 'pending-empty';
   }
 
-  private isDeadlinePassed(deadline: string | null): boolean {
-    const deadlineDate = this.parseDate(deadline);
+  private isDeadlinePassed(deadline: string | null | undefined): boolean {
+    const deadlineDate = this.parseDate(deadline ?? null);
     if (!deadlineDate) {
       return false;
     }

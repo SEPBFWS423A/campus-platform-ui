@@ -90,7 +90,10 @@
           "empty": "Noch keine Dokumente hochgeladen."
         },
         "upload": {
-          "title": "Dokumente hochladen"
+          "title": "Dokumente hochladen",
+          "dropZoneTitle": "Dateien hierher ziehen",
+          "dropZoneSubtitle": "oder klicken, um Dateien auszuwählen",
+          "supportedFormats": "Erlaubt: PDF, Excel und PowerPoint bis 1,5 MB"
         },
         "actions": {
           "details": "Details",

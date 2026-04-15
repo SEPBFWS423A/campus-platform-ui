@@ -90,7 +90,10 @@
           "empty": "No documents uploaded yet."
         },
         "upload": {
-          "title": "Upload documents"
+          "title": "Upload documents",
+          "dropZoneTitle": "Drag files here",
+          "dropZoneSubtitle": "or click to select files",
+          "supportedFormats": "Allowed: PDF, Excel and PowerPoint up to 1.5 MB"
         },
         "actions": {
           "details": "Details",
