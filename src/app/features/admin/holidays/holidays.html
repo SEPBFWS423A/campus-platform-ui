@@ -48,7 +48,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let h of holidays">
+          <tr *ngFor="let h of holidays()">
           <td>{{ h.name }}</td>
           <td>
             <span class="badge" [ngClass]="h.type">

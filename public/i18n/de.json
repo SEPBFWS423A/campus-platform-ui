@@ -29,7 +29,8 @@
       "roomManagement": "Raumverwaltung",
       "eventManagement": "Veranstaltungsmanagement",
       "examManagement": "Prüfungsmanagement",
-      "applications": "Bewerbungen"
+      "applications": "Bewerbungen",
+      "holidays": "Ferien & Schließzeiten"
     },
     "lecturer": {
       "home": "Home",
