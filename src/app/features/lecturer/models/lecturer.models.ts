@@ -93,3 +93,20 @@ export interface GradeScaleEntry {
   minimumPoints: number;
   label?: string;
 }
+
+export interface CourseDocumentResponse {
+  id: number;
+  displayName: string;
+  fileName: string;
+  mimeType: string;
+  fileSize: number;
+  uploadedAt: string;
+}
+
+export interface CourseDocumentRequest {
+  displayName: string;
+  fileName: string;
+  mimeType: string;
+  fileSize: number;
+  contentBase64: string;
+}

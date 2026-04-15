@@ -1,41 +1,124 @@
-<header class="section-header">
-  <div class="header-content">
-    <h1>{{ 'documentManagement.userTitle' | translate }}</h1>
-    <p>{{ 'documentManagement.userSubtitle' | translate }}</p>
-  </div>
-</header>
+<div class="downloads-layout">
+  <!-- Left Sidebar -->
+  <aside class="sidebar-wrapper">
+    <mat-card class="sidebar-card">
+      <nav class="sidebar-nav">
+        @for (item of sidebarItems(); track item.id) {
+          <a class="nav-item"
+             [class.active]="activeSidebarItemId() === item.id"
+             (click)="selectSidebarItem(item)">
+            <div class="item-left">
+              <mat-icon>{{ item.icon }}</mat-icon>
+              <span class="label">{{ item.label }}</span>
+            </div>
+            @if (item.count !== undefined && item.count > 0) {
+              <div class="count-badge">{{ item.count }}</div>
+            }
+          </a>
+        }
+      </nav>
+    </mat-card>
+  </aside>
 
-<div class="downloads-content">
-  @if (isLoading()) {
-    <div class="loading-state">
-      <mat-icon class="spinning">sync</mat-icon>
-      <p>{{ 'studentSubmissionPage.loadingList' | translate }}</p>
-    </div>
-  } @else if (documents().length === 0) {
-    <div class="empty-state">
-      <mat-icon>folder_open</mat-icon>
-      <p>{{ 'documentManagement.noDocuments' | translate }}</p>
-    </div>
-  } @else {
-    <div class="documents-grid">
-      @for (doc of documents(); track doc.id) {
-        <mat-card class="document-card">
-          <div class="doc-icon">
-            <mat-icon>description</mat-icon>
-          </div>
-          <div class="doc-info">
-            <h3>{{ doc.displayName }}</h3>
-            <p class="filename">{{ doc.fileName }}</p>
-            <p class="metadata">{{ formatBytes(doc.fileSize) }} • {{ doc.uploadedAt | date:'mediumDate' }}</p>
-          </div>
-          <div class="doc-actions">
-            <button mat-raised-button color="primary" (click)="onDownload(doc.id, doc.fileName)">
-              <mat-icon>download</mat-icon>
-              {{ 'studentSubmissionPage.actions.download' | translate }}
+  <!-- Right Main Area -->
+  <main class="main-content">
+    <!-- Upload Area -->
+    @if (canUpload()) {
+      <mat-card class="card upload-card" [class.highlight]="activeSidebarItemId() === 'general'">
+      <div class="card-header">
+        <mat-icon>{{ activeSidebarItemId() === 'general' ? 'topic' : 'upload_file' }}</mat-icon>
+        <h3>{{ getActiveLabel() }}: Datei hinzufügen</h3>
+      </div>
+      
+      <form [formGroup]="uploadForm" (ngSubmit)="onUpload()" class="upload-form">
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="flex-grow">
+            <mat-label>Anzeigename</mat-label>
+            <input matInput formControlName="displayName" placeholder="z.B. Campus-Plan 2024">
+          </mat-form-field>
+
+          <div class="file-input-wrapper">
+            <button type="button" mat-stroked-button (click)="fileInput.click()" [disabled]="isUploading()">
+              <mat-icon>attach_file</mat-icon>
+              {{ selectedFile ? selectedFile.name : 'Datei wählen' }}
             </button>
+            <input #fileInput type="file" (change)="onFileSelected($event)" style="display: none">
           </div>
-        </mat-card>
-      }
-    </div>
-  }
+
+          <button mat-raised-button color="primary" type="submit" [disabled]="uploadForm.invalid || isUploading()">
+            <mat-icon>cloud_upload</mat-icon>
+            {{ isUploading() ? 'Wird hochgeladen...' : 'Hochladen' }}
+          </button>
+        </div>
+      </form>
+    </mat-card>
+    }
+
+    <!-- Document List Card -->
+    <mat-card class="document-list-card">
+      <div class="card-header">
+        <div class="header-left">
+          <mat-icon class="title-icon">description</mat-icon>
+          <h2>{{ getActiveLabel() }}</h2>
+        </div>
+      </div>
+
+      <div class="card-content">
+        @if (isLoadingDocs()) {
+          <div class="loading-state">
+            <mat-icon class="spinning">sync</mat-icon>
+            <p>Lade Dokumente...</p>
+          </div>
+        } @else {
+          @if (activeDocuments().length === 0) {
+            <div class="empty-state">
+               <p>Keine Dokumente gefunden.</p>
+            </div>
+          } @else {
+            <div class="doc-list">
+              @for (doc of activeDocuments(); track doc.id) {
+                <div class="doc-row">
+                   <div class="doc-left">
+                      <div class="file-icon" [class.general]="true">
+                         <mat-icon>{{ 
+                           activeSidebarItemId() === 'general' ? 'insert_drive_file' : 
+                           activeSidebarItemId() === 'student_upload' ? 'inbox' : 
+                           activeSidebarItemId() === 'lecture_material' ? 'library_books' : 
+                           activeSidebarItemId() === 'script' ? 'history_edu' : 
+                           activeSidebarItemId() === 'exercise' ? 'assignment' : 
+                           'picture_as_pdf' 
+                         }}</mat-icon>
+                      </div>
+                      <div class="doc-details">
+                         <h4>{{ doc.displayName || doc.fileName }}</h4>
+                         <div class="doc-tags">
+                            <span class="tag">{{ 
+                              activeSidebarItemId() === 'general' ? 'Allgemein' : 
+                              activeSidebarItemId() === 'student_upload' ? 'Eingang' : 
+                              activeSidebarItemId() === 'lecture_material' ? 'Vorlesung' : 
+                              activeSidebarItemId() === 'script' ? 'Skript' : 
+                              activeSidebarItemId() === 'exercise' ? 'Übung' : 
+                              'Kursmaterial' 
+                            }}</span>
+                            <span class="tag">{{ formatBytes(doc.fileSize) }}</span>
+                            <span class="tag">{{ doc.uploadedAt | date:'dd.MM.yyyy' }}</span>
+                         </div>
+                      </div>
+                   </div>
+                   <div class="doc-right">
+                      <button mat-icon-button class="action-btn" (click)="onDownload(doc.id, doc.fileName)" title="Herunterladen">
+                         <mat-icon>download</mat-icon>
+                      </button>
+                      <button mat-icon-button class="action-btn warn" (click)="onDelete(doc.id, doc.displayName)" title="Löschen">
+                         <mat-icon>delete</mat-icon>
+                      </button>
+                   </div>
+                </div>
+              }
+            </div>
+          }
+        }
+      </div>
+    </mat-card>
+  </main>
 </div>

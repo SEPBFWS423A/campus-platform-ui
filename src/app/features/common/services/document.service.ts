@@ -22,16 +22,18 @@ export class DocumentService {
     return this.http.get(`${this.apiUrl}/${id}/download`, { responseType: 'blob' });
   }
 
-  // --- Admin Endpoints ---
-  adminGetDocuments(): Observable<GeneralDocument[]> {
-    return this.http.get<GeneralDocument[]>(this.adminApiUrl);
+  // --- General Endpoints ---
+  adminGetDocuments(category?: string): Observable<GeneralDocument[]> {
+    const params: any = {};
+    if (category) params.category = category;
+    return this.http.get<GeneralDocument[]>(this.apiUrl, { params });
   }
 
   uploadDocument(request: UploadGeneralDocumentRequest): Observable<GeneralDocument> {
-    return this.http.post<GeneralDocument>(this.adminApiUrl, request);
+    return this.http.post<GeneralDocument>(this.apiUrl, request);
   }
 
   deleteDocument(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.adminApiUrl}/${id}`);
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }

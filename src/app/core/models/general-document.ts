@@ -5,6 +5,7 @@ export interface GeneralDocument {
   mimeType: string;
   fileSize: number;
   uploadedAt: string;
+  category: string;
 }
 
 export interface UploadGeneralDocumentRequest {
@@ -13,4 +14,5 @@ export interface UploadGeneralDocumentRequest {
   mimeType: string;
   contentBase64: string;
   fileSize?: number;
+  category?: string;
 }

@@ -7,7 +7,9 @@ import {
   ExamMaterialsRequest,
   GradeBulkRequest,
   SingleGradeRequest,
-  ExamDocumentResponse
+  ExamDocumentResponse,
+  CourseDocumentResponse,
+  CourseDocumentRequest
 } from '../models/lecturer.models';
 
 import { environment } from '../../../../environments/environment';
@@ -47,5 +49,21 @@ export class LecturerApi {
 
   downloadDocument(seriesId: number, type: string): Observable<ExamDocumentResponse> {
     return this.http.get<ExamDocumentResponse>(`${this.baseUrl}/course-series/${seriesId}/download-document?type=${type}`);
+  }
+
+  getCourseDocuments(seriesId: number): Observable<CourseDocumentResponse[]> {
+    return this.http.get<CourseDocumentResponse[]>(`${this.baseUrl}/course-series/${seriesId}/documents`);
+  }
+
+  uploadCourseDocument(seriesId: number, request: CourseDocumentRequest): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}/course-series/${seriesId}/documents`, request);
+  }
+
+  deleteCourseDocument(seriesId: number, documentId: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/course-series/${seriesId}/documents/${documentId}`);
+  }
+
+  downloadCourseDocument(seriesId: number, documentId: number): Observable<Blob> {
+    return this.http.get(`${this.baseUrl}/course-series/${seriesId}/documents/${documentId}/download`, { responseType: 'blob' });
   }
 }
