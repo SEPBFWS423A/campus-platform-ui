@@ -40,8 +40,10 @@ const NAVIGATION_CONFIG: Record<string, NavLink[]> = {
     { path: '/admin/room-management', label: 'navigation.admin.roomManagement', icon: 'room_preferences', exact: false },
     { path: '/admin/event-management', label: 'navigation.admin.eventManagement', icon: 'event', exact: false },
     { path: '/admin/exam-management', label: 'navigation.admin.examManagement', icon: 'insert_chart', exact: false },
+{ path: '/admin/applications', label: 'navigation.admin.applications', icon: 'assignment', exact: false },
     { path: '/admin/lecturer-absences', label: 'nav.lecturerAbsences', icon: 'event_busy', exact: false },
-    { path: '/admin/job-postings', label: 'nav.jobPostings', icon: 'work_outline', exact: false }
+    { path: '/admin/job-postings', label: 'nav.jobPostings', icon: 'work_outline', exact: false },
+    { path: '/admin/holidays', label: 'navigation.admin.holidays', icon: 'beach_access', exact: false },
   ],
   [UserRole.Lecturer]: [
     { path: '/lecturer', label: 'navigation.lecturer.home', icon: 'home', exact: true },
@@ -53,7 +55,8 @@ const NAVIGATION_CONFIG: Record<string, NavLink[]> = {
     { path: '/student', label: 'navigation.student.home', icon: 'home', exact: true },
     { path: '/student/timetable', label: 'navigation.student.timetable', icon: 'calendar_month', exact: false },
     { path: '/student/grades', label: 'navigation.student.grades', icon: 'star_outline', activeIcon: 'star', exact: false },
-    { path: '/student/submissions', label: 'navigation.student.submissions', icon: 'task', exact: false }
+    { path: '/student/submissions', label: 'navigation.student.submissions', icon: 'task', exact: false },
+    { path: '/student/applications', label: 'navigation.student.applications', icon: 'school', exact: false }
   ]
 }
 

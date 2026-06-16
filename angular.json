@@ -65,17 +65,20 @@
           "defaultConfiguration": "production"
         },
         "serve": {
-          "builder": "@angular/build:dev-server",
-          "configurations": {
-            "production": {
-              "buildTarget": "campus-platform-ui:build:production"
-            },
-            "development": {
-              "buildTarget": "campus-platform-ui:build:development"
-            }
-          },
-          "defaultConfiguration": "development"
-        },
+  "builder": "@angular/build:dev-server",
+  "options": {
+    "proxyConfig": "proxy.conf.json"
+  },
+  "configurations": {
+    "production": {
+      "buildTarget": "campus-platform-ui:build:production"
+    },
+    "development": {
+      "buildTarget": "campus-platform-ui:build:development"
+    }
+  },
+         "defaultConfiguration": "development"
+         },
         "test": {
           "builder": "@angular/build:unit-test"
         }

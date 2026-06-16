@@ -1,15 +1,16 @@
-import { Component } from '@angular/core';
+import { Component, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 
-type AppStatus = 'pending' | 'accepted' | 'rejected';
-
-interface Application {
+interface AdminApplication {
   id: number;
   studentName: string;
-  studentNumber: string;
-  program: string;
-  date: string;
-  status: AppStatus;
+  studentEmail: string;
+  programName: string;
+  status: string;
+  priority: number;
+  motivation: string;
+  createdAt: string;
 }
 
 @Component({
@@ -19,25 +20,43 @@ interface Application {
   styleUrl: './applications.scss',
 })
 export class AdminApplications {
-  applications: Application[] = [
-    { id: 1, studentName: 'Max Mustermann', studentNumber: 'S10001', program: 'Wirtschaftsinformatik', date: '10.04.2026', status: 'pending' },
-    { id: 2, studentName: 'Anna Schmidt', studentNumber: 'S10002', program: 'Data Science', date: '11.04.2026', status: 'pending' },
-    { id: 3, studentName: 'Lukas Bauer', studentNumber: 'S10003', program: 'Informatik', date: '09.04.2026', status: 'accepted' },
-    { id: 4, studentName: 'Sara Yilmaz', studentNumber: 'S10004', program: 'BWL', date: '08.04.2026', status: 'rejected' },
-    { id: 5, studentName: 'Tom Fischer', studentNumber: 'S10005', program: 'Digital Marketing', date: '12.04.2026', status: 'pending' },
-  ];
+  applications = signal<AdminApplication[]>([]);
+  loading = signal(true);
+  error = signal<string | null>(null);
 
-  accept(id: number): void {
-    const app = this.applications.find(a => a.id === id);
-    if (app) app.status = 'accepted';
+  constructor(private http: HttpClient) {
+    this.load();
   }
 
-  reject(id: number): void {
-    const app = this.applications.find(a => a.id === id);
-    if (app) app.status = 'rejected';
+  load() {
+    this.loading.set(true);
+    this.http.get<AdminApplication[]>('/api/admin/applications').subscribe({
+      next: (data) => {
+        this.applications.set(data);
+        this.loading.set(false);
+      },
+      error: () => {
+        this.error.set('Bewerbungen konnten nicht geladen werden.');
+        this.loading.set(false);
+      }
+    });
   }
 
-  get pending() { return this.applications.filter(a => a.status === 'pending').length; }
-  get accepted() { return this.applications.filter(a => a.status === 'accepted').length; }
-  get rejected() { return this.applications.filter(a => a.status === 'rejected').length; }
+  updateStatus(id: number, status: string) {
+    this.http.patch<AdminApplication>(`/api/admin/applications/${id}/status?status=${status}`, {}).subscribe({
+      next: (updated) => {
+        this.applications.update(apps =>
+          apps.map(a => a.id === id ? updated : a)
+        );
+      },
+      error: () => this.error.set('Status konnte nicht aktualisiert werden.')
+    });
+  }
+
+  accept(id: number) { this.updateStatus(id, 'ACCEPTED'); }
+  reject(id: number) { this.updateStatus(id, 'REJECTED'); }
+
+  pending = computed(() => this.applications().filter(a => a.status === 'PENDING').length);
+  accepted = computed(() => this.applications().filter(a => a.status === 'ACCEPTED').length);
+  rejected = computed(() => this.applications().filter(a => a.status === 'REJECTED').length);
 }
